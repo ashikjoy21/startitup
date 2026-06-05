@@ -43,7 +43,7 @@ export function MeityDirectoryPage({
   const filtered = useMemo(() => {
     return items.filter((org) => {
       if (q && !org.name.toLowerCase().includes(q.toLowerCase())) return false;
-      if (state !== "All" && normalizeState(org.state) !== state) return false;
+      if (state !== "All" && normalizeState(org.state || "") !== state) return false;
       if (domain !== "All" && !org.domains.includes(domain)) return false;
       return true;
     });
@@ -135,6 +135,7 @@ export function MeityDirectoryPage({
                 </div>
                 {remaining > 0 && (
                   <button
+                    type="button"
                     onClick={() => setCount((c) => c + INITIAL_COUNT)}
                     className="mt-6 w-full border border-border bg-card py-3 text-[13.5px] text-foreground/80 hover:bg-muted"
                   >
@@ -157,7 +158,7 @@ function DirectoryCard({
   org: MeityOrg;
   meityUrl: string;
 }) {
-  const location = [org.city, org.state ? normalizeState(org.state) : ""]
+  const location = [org.city?.trim(), org.state ? normalizeState(org.state) : ""]
     .filter(Boolean)
     .join(", ");
 
@@ -177,9 +178,9 @@ function DirectoryCard({
 
       {org.domains.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {org.domains.slice(0, 3).map((d, i) => (
+          {org.domains.slice(0, 3).map((d) => (
             <span
-              key={i}
+              key={d}
               className="border border-border px-2 py-0.5 text-[11px] text-muted-foreground"
             >
               {d}
@@ -255,6 +256,8 @@ function DirFilterGroup({
         {options.map((o) => (
           <li key={o}>
             <button
+              type="button"
+              aria-pressed={value === o}
               onClick={() => setValue(o)}
               className={
                 "text-[13.5px] " +

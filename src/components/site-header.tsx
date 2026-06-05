@@ -31,6 +31,9 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
+          <Link to="/admin" className="hidden text-[13.5px] text-foreground/85 hover:text-primary md:inline">
+            Admin
+          </Link>
           <Link to="/dashboard" className="hidden text-[13.5px] text-foreground/85 hover:text-primary md:inline">
             Sign In
           </Link>

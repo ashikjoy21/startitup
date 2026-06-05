@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
-import { opportunities } from "@/lib/opportunities";
+import { useOpportunitiesStore } from "@/lib/opportunities-store";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({ meta: [{ title: "Saved Opportunities — StartItUp.in" }] }),
@@ -9,7 +9,8 @@ export const Route = createFileRoute("/saved")({
 });
 
 function Saved() {
-  const saved = opportunities.slice(2, 6);
+  const { items } = useOpportunitiesStore();
+  const saved = items.slice(2, 6);
   return (
     <SiteLayout>
       <section className="border-b border-border">

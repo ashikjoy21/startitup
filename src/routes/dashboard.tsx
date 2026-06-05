@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
-import { opportunities } from "@/lib/opportunities";
+import { useOpportunitiesStore } from "@/lib/opportunities-store";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Founder Dashboard — StartItUp.in" }] }),
@@ -9,7 +9,8 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const recs = opportunities.slice(0, 6);
+  const { items } = useOpportunitiesStore();
+  const recs = items.slice(0, 6);
   return (
     <SiteLayout>
       <section className="border-b border-border">

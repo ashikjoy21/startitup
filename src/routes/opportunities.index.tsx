@@ -4,7 +4,6 @@ import { z } from "zod";
 import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
 import { listOpportunities } from "@/lib/api/opportunities.functions";
-import { meityAccelerators, meityIncubators, MEITY_ACCELERATOR_URL, MEITY_INCUBATOR_URL, type MeityOrg } from "@/lib/meity";
 
 export const Route = createFileRoute("/opportunities/")({
   head: () => ({
@@ -103,13 +102,6 @@ function OpportunitiesPage() {
                 </div>
               )}
             </div>
-
-            {cat === "Accelerators" && (
-              <MeitySection items={meityAccelerators} meityUrl={MEITY_ACCELERATOR_URL} />
-            )}
-            {cat === "Incubators" && (
-              <MeitySection items={meityIncubators} meityUrl={MEITY_INCUBATOR_URL} />
-            )}
           </div>
         </div>
       </section>
@@ -150,140 +142,6 @@ function FilterGroup({
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-const INITIAL_COUNT = 24;
-
-function MeitySection({
-  items,
-  meityUrl,
-}: {
-  items: MeityOrg[];
-  meityUrl: string;
-}) {
-  const [showAll, setShowAll] = useState(false);
-  if (items.length === 0) return null;
-
-  const visible = showAll ? items : items.slice(0, INITIAL_COUNT);
-
-  return (
-    <div className="mt-16 border-t border-border pt-10">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            MeitY Startup Hub
-          </div>
-          <h2 className="mt-1 font-serif text-[22px]">
-            Also registered on MeitY Startup Hub
-          </h2>
-        </div>
-        <a
-          href={meityUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden text-[13px] text-primary hover:underline md:block"
-        >
-          View all on msh.meity.gov.in →
-        </a>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visible.map((org) => (
-          <MeityCard key={org.id} org={org} meityUrl={meityUrl} />
-        ))}
-      </div>
-
-      {!showAll && items.length > INITIAL_COUNT && (
-        <button
-          onClick={() => setShowAll(true)}
-          className="mt-6 w-full border border-border bg-card py-3 text-[13.5px] text-foreground/80 hover:bg-muted"
-        >
-          Show all {items.length} →
-        </button>
-      )}
-
-      <div className="mt-6 text-center md:hidden">
-        <a
-          href={meityUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[13px] text-primary hover:underline"
-        >
-          View all on msh.meity.gov.in →
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function MeityCard({ org, meityUrl }: { org: MeityOrg; meityUrl: string }) {
-  const location = [org.city, org.state].filter(Boolean).join(", ");
-
-  return (
-    <div className="flex flex-col gap-3 border border-border bg-card p-5">
-      <div className="flex items-center gap-3">
-        <MeityLogo name={org.name} logoUrl={org.logoUrl} />
-        <div className="min-w-0">
-          <div className="truncate text-[14px] font-medium text-foreground">
-            {org.name}
-          </div>
-          {location && (
-            <div className="mt-0.5 text-[12px] text-muted-foreground">
-              {location}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {org.domains.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {org.domains.slice(0, 3).map((d) => (
-            <span
-              key={d}
-              className="rounded-none border border-border px-2 py-0.5 text-[11px] text-muted-foreground"
-            >
-              {d}
-            </span>
-          ))}
-          {org.domains.length > 3 && (
-            <span className="px-1 py-0.5 text-[11px] text-muted-foreground">
-              +{org.domains.length - 3} more
-            </span>
-          )}
-        </div>
-      )}
-
-      <a
-        href={meityUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-auto text-[12.5px] text-primary hover:underline"
-      >
-        Browse on MeitY →
-      </a>
-    </div>
-  );
-}
-
-function MeityLogo({ name, logoUrl }: { name: string; logoUrl: string | null }) {
-  const size = 40;
-  const base = "flex shrink-0 items-center justify-center border border-border bg-primary-soft overflow-hidden";
-
-  if (logoUrl) {
-    return (
-      <div className={base} style={{ width: size, height: size, minWidth: size }}>
-        <img src={logoUrl} alt={name} className="h-full w-full object-contain p-1" />
-      </div>
-    );
-  }
-  return (
-    <div
-      className={`${base} font-serif text-primary`}
-      style={{ width: size, height: size, minWidth: size, fontSize: size * 0.45 }}
-    >
-      {name.charAt(0).toUpperCase()}
     </div>
   );
 }

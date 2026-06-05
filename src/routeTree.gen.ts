@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
@@ -17,11 +19,22 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
 
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -59,6 +72,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OpportunitiesRoute,
+} as any)
 const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -73,8 +91,11 @@ export interface FileRoutesByFullPath {
   '/newsletter': typeof NewsletterRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/resources': typeof ResourcesRoute
   '/saved': typeof SavedRoute
+  '/submit': typeof SubmitRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,10 +103,12 @@ export interface FileRoutesByTo {
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
   '/newsletter': typeof NewsletterRoute
-  '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/resources': typeof ResourcesRoute
   '/saved': typeof SavedRoute
+  '/submit': typeof SubmitRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/opportunities': typeof OpportunitiesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,8 +119,11 @@ export interface FileRoutesById {
   '/newsletter': typeof NewsletterRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/resources': typeof ResourcesRoute
   '/saved': typeof SavedRoute
+  '/submit': typeof SubmitRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,8 +135,11 @@ export interface FileRouteTypes {
     | '/newsletter'
     | '/opportunities'
     | '/profile'
+    | '/resources'
     | '/saved'
+    | '/submit'
     | '/opportunities/$id'
+    | '/opportunities/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,10 +147,12 @@ export interface FileRouteTypes {
     | '/calculator'
     | '/dashboard'
     | '/newsletter'
-    | '/opportunities'
     | '/profile'
+    | '/resources'
     | '/saved'
+    | '/submit'
     | '/opportunities/$id'
+    | '/opportunities'
   id:
     | '__root__'
     | '/'
@@ -131,8 +162,11 @@ export interface FileRouteTypes {
     | '/newsletter'
     | '/opportunities'
     | '/profile'
+    | '/resources'
     | '/saved'
+    | '/submit'
     | '/opportunities/$id'
+    | '/opportunities/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -143,16 +177,32 @@ export interface RootRouteChildren {
   NewsletterRoute: typeof NewsletterRoute
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
+  ResourcesRoute: typeof ResourcesRoute
   SavedRoute: typeof SavedRoute
+  SubmitRoute: typeof SubmitRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/saved': {
       id: '/saved'
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -204,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/': {
+      id: '/opportunities/'
+      path: '/'
+      fullPath: '/opportunities/'
+      preLoaderRoute: typeof OpportunitiesIndexRouteImport
+      parentRoute: typeof OpportunitiesRoute
+    }
     '/opportunities/$id': {
       id: '/opportunities/$id'
       path: '/$id'
@@ -216,10 +273,12 @@ declare module '@tanstack/react-router' {
 
 interface OpportunitiesRouteChildren {
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
+  OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
 }
 
 const OpportunitiesRouteChildren: OpportunitiesRouteChildren = {
   OpportunitiesIdRoute: OpportunitiesIdRoute,
+  OpportunitiesIndexRoute: OpportunitiesIndexRoute,
 }
 
 const OpportunitiesRouteWithChildren = OpportunitiesRoute._addFileChildren(
@@ -234,8 +293,20 @@ const rootRouteChildren: RootRouteChildren = {
   NewsletterRoute: NewsletterRoute,
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
   ProfileRoute: ProfileRoute,
+  ResourcesRoute: ResourcesRoute,
   SavedRoute: SavedRoute,
+  SubmitRoute: SubmitRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

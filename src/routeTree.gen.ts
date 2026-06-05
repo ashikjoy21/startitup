@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResourcesRouteImport } from './routes/resources'
@@ -24,6 +25,11 @@ import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.i
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
 
+const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
+  id: '/success-stories',
+  path: '/success-stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
+  '/success-stories': typeof SuccessStoriesRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
+  '/success-stories': typeof SuccessStoriesRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/opportunities': typeof OpportunitiesIndexRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
+  '/success-stories': typeof SuccessStoriesRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/saved'
     | '/submit'
+    | '/success-stories'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/opportunities/'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/saved'
     | '/submit'
+    | '/success-stories'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/opportunities'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/saved'
     | '/submit'
+    | '/success-stories'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/opportunities/'
@@ -202,10 +214,18 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRouteWithChildren
   SavedRoute: typeof SavedRoute
   SubmitRoute: typeof SubmitRoute
+  SuccessStoriesRoute: typeof SuccessStoriesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/success-stories': {
+      id: '/success-stories'
+      path: '/success-stories'
+      fullPath: '/success-stories'
+      preLoaderRoute: typeof SuccessStoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/submit': {
       id: '/submit'
       path: '/submit'
@@ -346,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRouteWithChildren,
   SavedRoute: SavedRoute,
   SubmitRoute: SubmitRoute,
+  SuccessStoriesRoute: SuccessStoriesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

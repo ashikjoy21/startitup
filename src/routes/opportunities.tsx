@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
-import { categories, opportunities } from "@/lib/opportunities";
+import { useOpportunitiesStore } from "@/lib/opportunities-store";
 
 export const Route = createFileRoute("/opportunities")({
   head: () => ({
@@ -19,6 +19,7 @@ const stages = ["All", "Pre-Seed", "Seed", "Series A", "Any"];
 const locations = ["All", "India", "Global", "United Kingdom", "Remote / SF", "India / SEA"];
 
 function OpportunitiesPage() {
+  const { items: opportunities, categories } = useOpportunitiesStore();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("All");
   const [ind, setInd] = useState("All");
@@ -34,7 +35,7 @@ function OpportunitiesPage() {
       if (loc !== "All" && o.location !== loc) return false;
       return true;
     });
-  }, [q, cat, ind, stage, loc]);
+  }, [opportunities, q, cat, ind, stage, loc]);
 
   return (
     <SiteLayout>

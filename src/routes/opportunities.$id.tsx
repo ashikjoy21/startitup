@@ -1,32 +1,14 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
-import { getOpportunity, opportunities } from "@/lib/opportunities";
+import { useOpportunitiesStore } from "@/lib/opportunities-store";
 
 export const Route = createFileRoute("/opportunities/$id")({
-  head: ({ params }) => {
-    const o = getOpportunity(params.id);
-    return {
-      meta: [
-        { title: o ? `${o.name} — StartItUp.in` : "Opportunity — StartItUp.in" },
-        { name: "description", content: o?.short ?? "Startup opportunity details." },
-      ],
-    };
-  },
-  loader: ({ params }) => {
-    const o = getOpportunity(params.id);
-    if (!o) throw notFound();
-    return o;
-  },
-  notFoundComponent: () => (
-    <SiteLayout>
-      <div className="mx-auto max-w-2xl px-6 py-32 text-center">
-        <h1 className="font-serif text-5xl">Opportunity not found</h1>
-        <Link to="/opportunities" className="mt-6 inline-block text-primary hover:underline">
-          ← Back to all opportunities
-        </Link>
-      </div>
-    </SiteLayout>
-  ),
+  head: () => ({
+    meta: [
+      { title: "Opportunity — StartItUp.in" },
+      { name: "description", content: "Startup opportunity details." },
+    ],
+  }),
   errorComponent: ({ error }) => (
     <SiteLayout>
       <div className="mx-auto max-w-2xl px-6 py-32 text-center text-[14px]">{error.message}</div>
@@ -36,8 +18,24 @@ export const Route = createFileRoute("/opportunities/$id")({
 });
 
 function Detail() {
-  const o = Route.useLoaderData();
-  const related = opportunities.filter((x) => x.category === o.category && x.id !== o.id).slice(0, 3);
+  const { id } = Route.useParams();
+  const { items } = useOpportunitiesStore();
+  const o = items.find((x) => x.id === id);
+
+  if (!o) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-2xl px-6 py-32 text-center">
+          <h1 className="font-serif text-5xl">Opportunity not found</h1>
+          <Link to="/opportunities" className="mt-6 inline-block text-primary hover:underline">
+            ← Back to all opportunities
+          </Link>
+        </div>
+      </SiteLayout>
+    );
+  }
+
+  const related = items.filter((x) => x.category === o.category && x.id !== o.id).slice(0, 3);
   return (
     <SiteLayout>
       <article className="mx-auto max-w-[860px] px-6 py-16">

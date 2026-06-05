@@ -18,7 +18,7 @@ export const Route = createFileRoute("/resources/")({
 });
 
 function ResourcesIndex() {
-  const guides = Route.useLoaderData();
+  const guideList = Route.useLoaderData();
 
   return (
     <SiteLayout>
@@ -37,7 +37,7 @@ function ResourcesIndex() {
 
       <section className="mx-auto max-w-[1280px] px-6 py-16">
         <div className="grid grid-cols-1 gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
-          {guides.map((guide) => (
+          {guideList.map((guide) => (
             <Link
               key={guide.slug}
               to="/resources/$slug"

@@ -1,9 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
-import { type Guide, type GuideSection, getGuide, getNextGuide } from "@/lib/guides";
-import { type Opportunity, type OpportunityCategory, seedOpportunities } from "@/lib/opportunities";
+import { getGuide, getNextGuide } from "@/lib/guides";
+import { type OpportunityCategory, seedOpportunities } from "@/lib/opportunities";
 
 export const Route = createFileRoute("/resources/$slug")({
   head: () => ({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/resources/$slug")({
     const guide = getGuide(params.slug);
     if (!guide) throw notFound();
     const related = seedOpportunities
-      .filter((o) => guide.relatedCategories.includes(o.category as OpportunityCategory))
+      .filter((o) => (guide.relatedCategories as string[]).includes(o.category))
       .slice(0, 3);
     const next = getNextGuide(params.slug);
     return { guide, related, next };
@@ -27,7 +27,6 @@ export const Route = createFileRoute("/resources/$slug")({
 function GuidePage() {
   const { guide, related, next } = Route.useLoaderData();
   const [activeSection, setActiveSection] = useState(guide.sections[0]?.id ?? "");
-  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sectionIds = guide.sections.map((s) => s.id);
@@ -99,14 +98,14 @@ function GuidePage() {
           </aside>
 
           {/* Guide content */}
-          <div ref={contentRef} className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1">
             {guide.sections.map((section) => (
               <section key={section.id} id={section.id} className="mb-12 scroll-mt-8">
                 <h2 className="font-serif text-[28px] leading-tight">{section.heading}</h2>
                 {section.body && (
                   <div className="mt-4 space-y-4">
                     {section.body.split("\n\n").filter(Boolean).map((para, i) => (
-                      <p key={i} className="text-[15.5px] leading-relaxed text-foreground/85">
+                      <p key={`${section.id}-p-${i}`} className="text-[15.5px] leading-relaxed text-foreground/85">
                         {para}
                       </p>
                     ))}
@@ -114,8 +113,8 @@ function GuidePage() {
                 )}
                 {section.bullets && section.bullets.length > 0 && (
                   <ul className="mt-4 list-disc space-y-2 pl-5">
-                    {section.bullets.map((b, i) => (
-                      <li key={i} className="text-[15.5px] leading-relaxed text-foreground/85">
+                    {section.bullets.map((b) => (
+                      <li key={b} className="text-[15.5px] leading-relaxed text-foreground/85">
                         {b}
                       </li>
                     ))}

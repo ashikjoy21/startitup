@@ -1,13 +1,13 @@
+export const SECTORS = ["All", "Agritech", "Health", "Education", "Fintech", "Energy", "Industry", "CleanTech", "Consumer"] as const;
+export type Sector = typeof SECTORS[number];
+
 export type StartupStory = {
   name: string;
   tagline: string;
-  sector: string;
+  sector: Sector;
   award: string;
   year: number;
 };
-
-export const SECTORS = ["All", "Agritech", "Health", "Education", "Fintech", "Energy", "Industry", "CleanTech", "Consumer"] as const;
-export type Sector = typeof SECTORS[number];
 
 export const successStories: StartupStory[] = [
   // NSA 2021 Winners
@@ -89,6 +89,7 @@ export const successStories: StartupStory[] = [
     award: "NSA 2022 Winner — Enterprise Technology",
     year: 2022,
   },
+  // NSA 2023 Winners
   {
     name: "Eeki Automation",
     tagline: "Automation solutions for sustainable agriculture, reducing chemical usage and improving yield through precision farming.",

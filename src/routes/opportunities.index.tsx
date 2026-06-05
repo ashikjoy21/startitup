@@ -154,6 +154,8 @@ function FilterGroup({
   );
 }
 
+const INITIAL_COUNT = 24;
+
 function MeitySection({
   items,
   meityUrl,
@@ -161,7 +163,10 @@ function MeitySection({
   items: MeityOrg[];
   meityUrl: string;
 }) {
+  const [showAll, setShowAll] = useState(false);
   if (items.length === 0) return null;
+
+  const visible = showAll ? items : items.slice(0, INITIAL_COUNT);
 
   return (
     <div className="mt-16 border-t border-border pt-10">
@@ -185,10 +190,19 @@ function MeitySection({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((org) => (
+        {visible.map((org) => (
           <MeityCard key={org.id} org={org} meityUrl={meityUrl} />
         ))}
       </div>
+
+      {!showAll && items.length > INITIAL_COUNT && (
+        <button
+          onClick={() => setShowAll(true)}
+          className="mt-6 w-full border border-border bg-card py-3 text-[13.5px] text-foreground/80 hover:bg-muted"
+        >
+          Show all {items.length} →
+        </button>
+      )}
 
       <div className="mt-6 text-center md:hidden">
         <a

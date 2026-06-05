@@ -1,7 +1,9 @@
+import type { OpportunityCategory } from "./opportunities";
+
 export type GuideSection = {
   id: string;
   heading: string;
-  body: string;
+  body?: string;
   bullets?: string[];
 };
 
@@ -11,7 +13,7 @@ export type Guide = {
   description: string;
   readTime: string;
   source: string;
-  relatedCategories: string[];
+  relatedCategories: OpportunityCategory[];
   sections: GuideSection[];
 };
 

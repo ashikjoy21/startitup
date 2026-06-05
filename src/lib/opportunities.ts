@@ -11,10 +11,11 @@ export type Opportunity = {
   amount: string;
   deadline: string;
   eligibility: string;
-  logo: string; // letter
+  logo: string;
+  sourceUrl?: string | null;
 };
 
-export const categories = [
+export const defaultCategories = [
   "Startup Credits",
   "Grants",
   "Accelerators",
@@ -23,9 +24,20 @@ export const categories = [
   "Fellowships",
   "Competitions",
   "Investor Programs",
-];
+] as const;
 
-export const opportunities: Opportunity[] = [
+export type OpportunityCategory = typeof defaultCategories[number];
+
+export function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 60);
+}
+
+export const seedOpportunities: Opportunity[] = [
   {
     id: "aws-activate",
     name: "AWS Activate Credits",
@@ -41,6 +53,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Rolling",
     eligibility: "Privately held, <10 yrs old, <$100M funding.",
     logo: "A",
+    sourceUrl: "https://aws.amazon.com/activate/",
   },
   {
     id: "microsoft-for-startups",
@@ -57,6 +70,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Rolling",
     eligibility: "B2B/B2C startups building software.",
     logo: "M",
+    sourceUrl: "https://www.microsoft.com/en-us/startups",
   },
   {
     id: "startup-india-seed-fund",
@@ -73,6 +87,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Mar 31, 2026",
     eligibility: "DPIIT-recognized startup, <2 yrs old.",
     logo: "G",
+    sourceUrl: "https://seedfund.startupindia.gov.in/",
   },
   {
     id: "nasscom-10k",
@@ -89,6 +104,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Jan 20, 2026",
     eligibility: "Indian tech startups <5 yrs old.",
     logo: "N",
+    sourceUrl: "https://10000startups.com/",
   },
   {
     id: "birac-big",
@@ -105,6 +121,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Feb 14, 2026",
     eligibility: "Indian biotech innovators, individuals or startups.",
     logo: "B",
+    sourceUrl: "https://birac.nic.in/desc_new.php?id=364",
   },
   {
     id: "yc-india-track",
@@ -121,6 +138,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Apr 12, 2026",
     eligibility: "Any startup with a working team.",
     logo: "Y",
+    sourceUrl: "https://www.ycombinator.com/apply",
   },
   {
     id: "google-for-startups",
@@ -137,6 +155,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Rolling",
     eligibility: "Funded startups <5 yrs old.",
     logo: "G",
+    sourceUrl: "https://cloud.google.com/startup",
   },
   {
     id: "tdb-grant",
@@ -153,6 +172,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Mar 30, 2026",
     eligibility: "Indian companies commercializing tech.",
     logo: "T",
+    sourceUrl: "https://tdb.gov.in/",
   },
   {
     id: "tie-grand-challenge",
@@ -169,6 +189,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Feb 28, 2026",
     eligibility: "Startups <7 yrs, revenue <$5M.",
     logo: "T",
+    sourceUrl: "https://tie.org/",
   },
   {
     id: "atal-incubation",
@@ -185,6 +206,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Rolling",
     eligibility: "Indian startups across sectors.",
     logo: "A",
+    sourceUrl: "https://aim.gov.in/atal-incubation-centres.php",
   },
   {
     id: "chevening",
@@ -201,6 +223,7 @@ export const opportunities: Opportunity[] = [
     deadline: "Nov 5, 2026",
     eligibility: "Founders with 2+ yrs work experience.",
     logo: "C",
+    sourceUrl: "https://www.chevening.org/fellowships/",
   },
   {
     id: "sequoia-surge",
@@ -217,9 +240,6 @@ export const opportunities: Opportunity[] = [
     deadline: "Jan 31, 2026",
     eligibility: "Early-stage startups in Asia.",
     logo: "P",
+    sourceUrl: "https://www.surgeahead.com/",
   },
 ];
-
-export function getOpportunity(id: string) {
-  return opportunities.find((o) => o.id === id);
-}

@@ -20,10 +20,7 @@ export const Route = createFileRoute("/opportunities/")({
   validateSearch: z.object({
     category: z.string().optional(),
   }),
-  loader: async () => {
-    const opps = await listOpportunities({ data: { limit: 1000, offset: 0 } });
-    return { ...opps, meityAccelerators, meityIncubators };
-  },
+  loader: () => listOpportunities({ data: { limit: 1000, offset: 0 } }),
   component: OpportunitiesPage,
 });
 
@@ -32,7 +29,7 @@ const stages = ["All", "Idea", "MVP", "Early Revenue", "Growth", "Any"];
 const locations = ["All", "India", "Global", "USA"];
 
 function OpportunitiesPage() {
-  const { items: opportunities, categories, total, source, meityAccelerators, meityIncubators } = Route.useLoaderData();
+  const { items: opportunities, categories, total, source } = Route.useLoaderData();
   const search = Route.useSearch();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>(search.category ?? "All");
@@ -164,6 +161,8 @@ function MeitySection({
   items: MeityOrg[];
   meityUrl: string;
 }) {
+  if (items.length === 0) return null;
+
   return (
     <div className="mt-16 border-t border-border pt-10">
       <div className="mb-6 flex items-center justify-between">
@@ -248,7 +247,7 @@ function MeityCard({ org, meityUrl }: { org: MeityOrg; meityUrl: string }) {
         rel="noopener noreferrer"
         className="mt-auto text-[12.5px] text-primary hover:underline"
       >
-        View on MeitY →
+        Browse on MeitY →
       </a>
     </div>
   );

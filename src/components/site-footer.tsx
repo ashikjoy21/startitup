@@ -15,8 +15,8 @@ const cols = [
     links: [
       ["Startup Credits", "/opportunities"],
       ["Grants", "/opportunities"],
-      ["Accelerators", "/opportunities"],
-      ["Incubators", "/opportunities"],
+      ["Accelerators", "/accelerators"],
+      ["Incubators", "/incubators"],
       ["Fellowships", "/opportunities"],
     ],
   },

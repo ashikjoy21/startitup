@@ -2,21 +2,21 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
-import { getGuide, getNextGuide } from "@/lib/guides";
-import { seedOpportunities } from "@/lib/opportunities";
+import { type Guide, type GuideSection, getGuide, getNextGuide } from "@/lib/guides";
+import { type Opportunity, type OpportunityCategory, seedOpportunities } from "@/lib/opportunities";
 
 export const Route = createFileRoute("/resources/$slug")({
-  head: ({ loaderData }) => ({
+  head: () => ({
     meta: [
-      { title: `${loaderData?.guide.title ?? "Guide"} — StartItUp.in` },
-      { name: "description", content: loaderData?.guide.description ?? "" },
+      { title: "Guide — StartItUp.in" },
+      { name: "description", content: "Startup guide for Indian founders." },
     ],
   }),
   loader: ({ params }) => {
     const guide = getGuide(params.slug);
     if (!guide) throw notFound();
     const related = seedOpportunities
-      .filter((o) => guide.relatedCategories.includes(o.category))
+      .filter((o) => guide.relatedCategories.includes(o.category as OpportunityCategory))
       .slice(0, 3);
     const next = getNextGuide(params.slug);
     return { guide, related, next };

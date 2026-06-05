@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 
 const nav = [
-  { to: "/opportunities", label: "Opportunities" },
-  { to: "/opportunities", label: "Credits" },
-  { to: "/opportunities", label: "Grants" },
-  { to: "/opportunities", label: "Accelerators" },
-  { to: "/newsletter", label: "Resources" },
-  { to: "/calculator", label: "About" },
+  { label: "All", search: {} },
+  { label: "Credits", search: { category: "Startup Credits" } },
+  { label: "Grants", search: { category: "Grants" } },
+  { label: "Accelerators", search: { category: "Accelerators" } },
+  { label: "Gov Schemes", search: { category: "Government Schemes" } },
+  { label: "Incubators", search: { category: "Incubators" } },
 ];
 
 export function SiteHeader() {
@@ -19,29 +19,39 @@ export function SiteHeader() {
           </span>
           <span className="text-[15px] font-medium tracking-tight">StartItUp.in</span>
         </Link>
-        <nav className="hidden items-center gap-7 md:flex">
-          {nav.map((item, i) => (
+        <nav className="hidden items-center gap-6 md:flex">
+          {nav.map((item) => (
             <Link
-              key={i}
-              to={item.to as any}
+              key={item.label}
+              to="/opportunities"
+              search={item.search}
               className="text-[13.5px] text-foreground/85 hover:text-primary"
             >
               {item.label}
             </Link>
           ))}
-        </nav>
-        <div className="flex items-center gap-4">
-          <Link to="/admin" className="hidden text-[13.5px] text-foreground/85 hover:text-primary md:inline">
-            Admin
-          </Link>
-          <Link to="/dashboard" className="hidden text-[13.5px] text-foreground/85 hover:text-primary md:inline">
-            Sign In
+          <Link
+            to="/resources"
+            className="text-[13.5px] text-foreground/85 hover:text-primary"
+          >
+            Resources
           </Link>
           <Link
-            to="/profile"
+            to="/success-stories"
+            className="text-[13.5px] text-foreground/85 hover:text-primary"
+          >
+            Stories
+          </Link>
+        </nav>
+        <div className="flex items-center gap-4">
+          <Link to="/submit" className="hidden text-[13.5px] text-foreground/85 hover:text-primary md:inline">
+            Suggest
+          </Link>
+          <Link
+            to="/submit"
             className="inline-flex h-9 items-center bg-primary px-4 text-[13.5px] font-medium text-primary-foreground hover:bg-primary-dark"
           >
-            Get Started
+            Submit Opportunity
           </Link>
         </div>
       </div>

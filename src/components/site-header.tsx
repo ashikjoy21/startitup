@@ -1,12 +1,10 @@
 import { Link } from "@tanstack/react-router";
 
-const nav = [
+const opportunityNav = [
   { label: "All", search: {} },
   { label: "Credits", search: { category: "Startup Credits" } },
   { label: "Grants", search: { category: "Grants" } },
-  { label: "Accelerators", search: { category: "Accelerators" } },
   { label: "Gov Schemes", search: { category: "Government Schemes" } },
-  { label: "Incubators", search: { category: "Incubators" } },
 ];
 
 export function SiteHeader() {
@@ -20,7 +18,7 @@ export function SiteHeader() {
           <span className="text-[15px] font-medium tracking-tight">StartItUp.in</span>
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
-          {nav.map((item) => (
+          {opportunityNav.map((item) => (
             <Link
               key={item.label}
               to="/opportunities"
@@ -30,6 +28,18 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <Link
+            to="/incubators"
+            className="text-[13.5px] text-foreground/85 hover:text-primary"
+          >
+            Incubators
+          </Link>
+          <Link
+            to="/accelerators"
+            className="text-[13.5px] text-foreground/85 hover:text-primary"
+          >
+            Accelerators
+          </Link>
           <Link
             to="/resources"
             className="text-[13.5px] text-foreground/85 hover:text-primary"

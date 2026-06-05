@@ -2,9 +2,9 @@ import { Link } from "@tanstack/react-router";
 
 const nav = [
   { to: "/opportunities", label: "Opportunities" },
-  { to: "/opportunities", label: "Credits", search: { category: "Startup Credits" } },
-  { to: "/opportunities", label: "Grants", search: { category: "Grants" } },
-  { to: "/opportunities", label: "Accelerators", search: { category: "Accelerators" } },
+  { to: "/opportunities", label: "Credits" },
+  { to: "/opportunities", label: "Grants" },
+  { to: "/opportunities", label: "Accelerators" },
   { to: "/newsletter", label: "Resources" },
   { to: "/calculator", label: "About" },
 ];
@@ -24,7 +24,6 @@ export function SiteHeader() {
             <Link
               key={i}
               to={item.to as any}
-              search={item.search as any}
               className="text-[13.5px] text-foreground/85 hover:text-primary"
             >
               {item.label}

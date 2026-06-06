@@ -79,9 +79,16 @@ function parseDeadline(s: string): Date | null {
   if (!s || /rolling|open|ongoing|tba|tbd|n\/a/i.test(s)) return null;
   const direct = new Date(s);
   if (!isNaN(direct.getTime())) return direct;
+  // "Month YYYY" e.g. "June 2026"
   const monthYear = s.match(/([A-Za-z]+)\s+(\d{4})/);
   if (monthYear) {
     const d = new Date(`${monthYear[1]} 1, ${monthYear[2]}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+  // "DD Month YYYY" e.g. "31 March 2026"
+  const dayMonthYear = s.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (dayMonthYear) {
+    const d = new Date(`${dayMonthYear[2]} ${dayMonthYear[1]}, ${dayMonthYear[3]}`);
     if (!isNaN(d.getTime())) return d;
   }
   return null;
@@ -186,9 +193,9 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
     const opp = toOpportunity(row.opportunities as unknown as DbOpportunity);
     const status = ((row.status as SavedStatus) ?? "saved") as SavedStatus;
     savedOpportunityIds.add(opp.id);
-    pipeline[status].push({ ...opp, savedStatus: status });
+    if (pipeline[status]) pipeline[status].push({ ...opp, savedStatus: status });
   }
-  const savedCount = savedRowsData.length;
+  const savedCount = pipeline.saved.length;
   const appliedCount =
     pipeline.applied.length + pipeline.under_review.length + pipeline.won.length;
 
@@ -222,13 +229,12 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
   const incubatorMatches: IncubatorMatch[] = scored
     .filter(({ o }) => /incubator|accelerator/i.test(o.category))
     .slice(0, 4)
-    .map(({ o, score }) => ({ ...o, matchScore: Math.min(98, 60 + score * 8) }));
+    .map(({ o, score }) => ({ ...o, matchScore: Math.min(98, 60 + score * 8) })); // base 60 + up to 38 points; floor avoids showing 0%
 
   // Upcoming deadlines: next 5 future deadlines from all published opportunities
-  const now2 = now;
   const allWithDeadlines = candidates
     .map((o) => ({ o, date: parseDeadline(o.deadline) }))
-    .filter((x): x is { o: Opportunity; date: Date } => x.date !== null && x.date > now2)
+    .filter((x): x is { o: Opportunity; date: Date } => x.date !== null && x.date > now)
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .slice(0, 5);
 
@@ -244,8 +250,8 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
 
   // Deadlines this week: saved opportunities with deadline in next 7 days
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const deadlinesThisWeek = upcomingDeadlines.filter(
-    (d) => savedOpportunityIds.has(d.id) && new Date(d.deadlineDate) <= nextWeek,
+  const deadlinesThisWeek = allWithDeadlines.filter(
+    ({ o, date }) => savedOpportunityIds.has(o.id) && date <= nextWeek,
   ).length;
 
   return {

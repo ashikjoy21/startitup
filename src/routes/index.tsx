@@ -1,7 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
 import { SiteLayout } from "@/components/site-layout";
-import { OpportunityRow } from "@/components/opportunity-row";
 import { listOpportunities } from "@/lib/api/opportunities.functions";
 import { meityIncubators, meityAccelerators } from "@/lib/meity";
 import { defaultCategories } from "@/lib/opportunities";
@@ -27,31 +25,14 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: async () => {
-    const list = await listOpportunities({ data: { limit: 10, offset: 0 } });
-    return {
-      items: list.items,
-      total: list.total,
-      source: list.source,
-    };
+    const list = await listOpportunities({ data: { limit: 1, offset: 0 } });
+    return { total: list.total, source: list.source };
   },
   component: Index,
 });
 
-const CATEGORY_PILLS = ["All", ...defaultCategories] as const;
-
 function Index() {
-  const { items, total, source } = Route.useLoaderData();
-  const [q, setQ] = useState("");
-  const [cat, setCat] = useState("All");
-
-  const filtered = useMemo(() => {
-    return items.filter((o) => {
-      if (cat !== "All" && o.category !== cat) return false;
-      if (q && !`${o.name} ${o.org} ${o.short}`.toLowerCase().includes(q.toLowerCase()))
-        return false;
-      return true;
-    });
-  }, [items, q, cat]);
+  const { total, source } = Route.useLoaderData();
 
   return (
     <SiteLayout>
@@ -104,54 +85,30 @@ function Index() {
         </div>
       </section>
 
-      {/* Browse */}
-      <section className="mx-auto max-w-[1280px] px-6 py-16">
-        {/* Search */}
-        <input
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search opportunities, organisations, programs…"
-          className="w-full border border-border bg-card px-5 py-3.5 text-[14px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-        />
-
-        {/* Category pills */}
-        <div className="mt-5 flex flex-wrap gap-2">
-          {CATEGORY_PILLS.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCat(c)}
-              aria-pressed={cat === c}
-              className={`inline-flex h-8 items-center border px-3 text-[12.5px] transition-colors ${
-                cat === c
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-background text-foreground/75 hover:border-primary hover:text-primary"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-
-        {/* Listing */}
-        <div className="mt-8 space-y-3">
-          {filtered.length === 0 ? (
-            <p className="py-12 text-center text-[14px] text-muted-foreground">
-              No results. <button onClick={() => { setQ(""); setCat("All"); }} className="text-primary underline">Clear filters</button>
-            </p>
-          ) : (
-            filtered.map((o) => <OpportunityRow key={o.id} o={o} />)
-          )}
-        </div>
-
-        {/* See all link */}
-        <div className="mt-10 text-center">
-          <Link
-            to="/opportunities"
-            className="inline-flex h-11 items-center border border-border bg-card px-6 text-[13.5px] font-medium hover:bg-muted"
-          >
-            See all {total} opportunities →
-          </Link>
+      {/* Browse by category */}
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-20">
+          <div className="flex items-end justify-between">
+            <h2 className="font-serif text-[40px] leading-tight md:text-[48px]">Browse by category</h2>
+            <Link to="/opportunities" className="text-[13.5px] text-primary hover:underline">
+              All opportunities →
+            </Link>
+          </div>
+          <div className="mt-10 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
+            {defaultCategories.map((c) => (
+              <Link
+                key={c}
+                to="/opportunities"
+                search={{ category: c }}
+                className="group flex h-36 flex-col justify-between bg-card p-5 hover:bg-primary-soft"
+              >
+                <span className="font-serif text-[22px] leading-tight">{c}</span>
+                <span className="text-[12.5px] text-muted-foreground group-hover:text-primary">
+                  Browse →
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
     </SiteLayout>

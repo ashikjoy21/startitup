@@ -1,102 +1,100 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
+import { getUser, getProfile } from "@/lib/auth.server";
+import { upsertProfile } from "@/lib/api/auth.functions";
+
+const STAGES = ["Idea", "MVP", "Early Traction", "Growth", "Series A+"];
+const SECTORS = [
+  "Agritech", "Climate/Cleantech", "D2C/Ecommerce", "DeepTech/AI", "Edtech",
+  "Fintech", "Gaming", "Healthtech", "Media/Creator", "Mobility",
+  "SaaS/B2B", "Social Impact", "Spacetech", "Web3", "Other",
+];
+const FUNDING_STATUSES = ["Bootstrapped", "Pre-seed", "Seed", "Series A", "Series B+"];
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Founder Profile — StartItUp.in" }] }),
-  component: ProfilePage,
+  head: () => ({ meta: [{ title: "Profile — StartItUp.in" }] }),
+  loader: async () => {
+    const user = await getUser();
+    if (!user) throw redirect({ to: "/login", search: { redirect: "/profile" } });
+    const profile = await getProfile(user.id);
+    return { profile };
+  },
+  component: Profile,
 });
 
-function ProfilePage() {
-  const [done, setDone] = useState(false);
+function Profile() {
+  const { profile } = Route.useLoaderData();
+  const navigate = useNavigate();
+
+  const [stage, setStage] = useState(profile?.stage ?? "");
+  const [sector, setSector] = useState(profile?.sector ?? "");
+  const [fundingStatus, setFundingStatus] = useState(profile?.funding_status ?? "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await upsertProfile({ data: { stage, sector, fundingStatus } });
+      setSaved(true);
+      setTimeout(() => navigate({ to: "/dashboard" }), 800);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const selectClass =
+    "w-full rounded-sm border border-border bg-background px-3 py-2.5 text-[14px] focus:outline-none focus:ring-1 focus:ring-primary";
+  const labelClass = "block text-[12.5px] font-medium text-muted-foreground";
 
   return (
     <SiteLayout>
       <section className="border-b border-border">
-        <div className="mx-auto max-w-[760px] px-6 py-16 text-center">
-          <div className="text-[13px] text-muted-foreground">Founder Profile</div>
+        <div className="mx-auto max-w-[1280px] px-6 py-16">
+          <div className="text-[13px] text-muted-foreground">Profile</div>
           <h1 className="mt-2 font-serif text-[44px] leading-tight md:text-[56px]">
-            Tell us about your <em className="italic text-primary">startup</em>.
+            Your founder profile
           </h1>
-          <p className="mt-4 text-[15px] text-foreground/75">
-            We use this to recommend the most relevant credits, grants and programs.
-          </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[760px] px-6 py-12">
-        {done ? (
-          <div className="border border-border bg-card p-8 text-center">
-            <h2 className="font-serif text-[28px]">Profile saved.</h2>
-            <p className="mt-2 text-[14px] text-muted-foreground">
-              We've personalized your dashboard.
-            </p>
-            <Link
-              to="/dashboard"
-              className="mt-6 inline-flex h-10 items-center bg-primary px-4 text-[13.5px] font-medium text-primary-foreground hover:bg-primary-dark"
-            >
-              Go to dashboard →
-            </Link>
+      <section className="mx-auto max-w-[1280px] px-6 py-12">
+        <form onSubmit={handleSubmit} className="max-w-md space-y-6">
+          <div className="space-y-1.5">
+            <label className={labelClass}>Stage</label>
+            <select value={stage} onChange={(e) => setStage(e.target.value)} className={selectClass}>
+              <option value="">Select stage</option>
+              {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
           </div>
-        ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setDone(true);
-            }}
-            className="space-y-6"
-          >
-            <Field label="Startup Name" placeholder="Acme Inc." />
-            <Row>
-              <Select label="Industry" options={["SaaS", "AI", "Biotech", "Deep Tech", "Fintech", "Consumer"]} />
-              <Select label="Stage" options={["Idea", "Pre-Seed", "Seed", "Series A", "Growth"]} />
-            </Row>
-            <Row>
-              <Field label="Location" placeholder="Bangalore, India" />
-              <Field label="Team Size" placeholder="5" />
-            </Row>
-            <Field label="Tech Stack" placeholder="Next.js, Postgres, AWS" />
-            <Select label="Funding Status" options={["Bootstrapped", "Angel", "Pre-Seed", "Seed", "Series A+"]} />
 
-            <div className="flex items-center gap-3 pt-2">
-              <button
-                type="submit"
-                className="inline-flex h-11 items-center bg-primary px-5 text-[14px] font-medium text-primary-foreground hover:bg-primary-dark"
-              >
-                Save Profile
-              </button>
-              <Link to="/opportunities" className="text-[13.5px] text-muted-foreground hover:text-primary">
-                Skip for now
-              </Link>
-            </div>
-          </form>
-        )}
+          <div className="space-y-1.5">
+            <label className={labelClass}>Sector</label>
+            <select value={sector} onChange={(e) => setSector(e.target.value)} className={selectClass}>
+              <option value="">Select sector</option>
+              {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className={labelClass}>Funding status</label>
+            <select value={fundingStatus} onChange={(e) => setFundingStatus(e.target.value)} className={selectClass}>
+              <option value="">Select status</option>
+              {FUNDING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            disabled={saving || !stage || !sector || !fundingStatus}
+            className="rounded-sm bg-primary px-6 py-2.5 text-[13.5px] font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {saved ? "Saved! Redirecting…" : saving ? "Saving…" : "Save profile"}
+          </button>
+        </form>
       </section>
     </SiteLayout>
-  );
-}
-
-function Row({ children }: { children: React.ReactNode }) {
-  return <div className="grid gap-6 md:grid-cols-2">{children}</div>;
-}
-function Field({ label, placeholder }: { label: string; placeholder?: string }) {
-  return (
-    <label className="block">
-      <span className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
-      <input
-        placeholder={placeholder}
-        className="mt-2 block h-11 w-full border border-border bg-card px-3 text-[14px] outline-none focus:border-primary"
-      />
-    </label>
-  );
-}
-function Select({ label, options }: { label: string; options: string[] }) {
-  return (
-    <label className="block">
-      <span className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
-      <select className="mt-2 block h-11 w-full border border-border bg-card px-3 text-[14px] outline-none focus:border-primary">
-        {options.map((o) => <option key={o}>{o}</option>)}
-      </select>
-    </label>
   );
 }

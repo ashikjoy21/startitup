@@ -281,6 +281,27 @@ export const unsaveOpportunity = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+export const updateSavedStatus = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      opportunityId: z.string().min(1),
+      status: z.enum(["saved", "applied", "under_review", "won"]),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const user = await getUser();
+    if (!user) throw new Error("Not authenticated");
+
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase
+      .from("saved_opportunities")
+      .update({ status: data.status })
+      .eq("user_id", user.id)
+      .eq("opportunity_id", data.opportunityId);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
 export const upsertProfile = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({

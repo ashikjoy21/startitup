@@ -4,6 +4,7 @@ import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
 import { listOpportunities } from "@/lib/api/opportunities.functions";
 import { meityIncubators, meityAccelerators } from "@/lib/meity";
+import { defaultCategories } from "@/lib/opportunities";
 
 const INCUBATOR_COUNT = meityIncubators.length;
 const ACCELERATOR_COUNT = meityAccelerators.length;
@@ -29,7 +30,6 @@ export const Route = createFileRoute("/")({
     const list = await listOpportunities({ data: { limit: 10, offset: 0 } });
     return {
       items: list.items,
-      categories: list.categories,
       total: list.total,
       source: list.source,
     };
@@ -37,16 +37,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const CATEGORY_PILLS = [
-  "All",
-  "Startup Credits",
-  "Grants",
-  "Government Schemes",
-  "Accelerators",
-  "Incubators",
-  "Fellowships",
-  "Competitions",
-] as const;
+const CATEGORY_PILLS = ["All", ...defaultCategories] as const;
 
 function Index() {
   const { items, total, source } = Route.useLoaderData();

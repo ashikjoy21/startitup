@@ -172,8 +172,9 @@ function Profile() {
 
           <div className="space-y-3">
             <span className={labelClass}>Company Details</span>
-            <label className="flex cursor-pointer items-center gap-3">
+            <label htmlFor="incorporated" className="flex cursor-pointer items-center gap-3">
               <input
+                id="incorporated"
                 type="checkbox"
                 checked={incorporated}
                 onChange={(e) => setIncorporated(e.target.checked)}
@@ -181,8 +182,9 @@ function Profile() {
               />
               <span className="text-[14px]">Incorporated</span>
             </label>
-            <label className="flex cursor-pointer items-center gap-3">
+            <label htmlFor="dpiitRecognized" className="flex cursor-pointer items-center gap-3">
               <input
+                id="dpiitRecognized"
                 type="checkbox"
                 checked={dpiitRecognized}
                 onChange={(e) => setDpiitRecognized(e.target.checked)}

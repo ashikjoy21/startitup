@@ -63,6 +63,12 @@ export async function getProfile(userId: string) {
     stage: string | null;
     sector: string | null;
     funding_status: string | null;
+    startup_name: string | null;
+    location: string | null;
+    team_size: number | null;
+    funding_raised: string | null;
+    incorporated: boolean;
+    dpiit_recognized: boolean;
   } | null;
 }
 

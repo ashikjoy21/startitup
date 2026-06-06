@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
 import { SiteLayout } from "@/components/site-layout";
-import { categories, opportunities } from "@/lib/opportunities";
+import { OpportunityRow } from "@/components/opportunity-row";
+import { listOpportunities } from "@/lib/api/opportunities.functions";
+import { meityIncubators, meityAccelerators } from "@/lib/meity";
+
+const INCUBATOR_COUNT = meityIncubators.length;
+const ACCELERATOR_COUNT = meityAccelerators.length;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,99 +25,88 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: async () => {
+    const list = await listOpportunities({ data: { limit: 10, offset: 0 } });
+    return {
+      items: list.items,
+      categories: list.categories,
+      total: list.total,
+      source: list.source,
+    };
+  },
   component: Index,
 });
 
+const CATEGORY_PILLS = [
+  "All",
+  "Startup Credits",
+  "Grants",
+  "Government Schemes",
+  "Accelerators",
+  "Incubators",
+  "Fellowships",
+  "Competitions",
+] as const;
+
 function Index() {
-  const featured = opportunities.slice(0, 5);
+  const { items, total, source } = Route.useLoaderData();
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState("All");
+
+  const filtered = useMemo(() => {
+    return items.filter((o) => {
+      if (cat !== "All" && o.category !== cat) return false;
+      if (q && !`${o.name} ${o.org} ${o.short}`.toLowerCase().includes(q.toLowerCase()))
+        return false;
+      return true;
+    });
+  }, [items, q, cat]);
+
   return (
     <SiteLayout>
       {/* Hero */}
-      <section className="border-b border-border">
-        <div className="mx-auto grid max-w-[1280px] gap-14 px-6 py-24 lg:grid-cols-[1.05fr_1fr] lg:py-32">
-          <div>
-            <h1 className="font-serif text-[60px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[78px]">
-              Every startup opportunity
-              <br />
-              in India. <em className="italic text-primary">One place.</em>
-            </h1>
-            <p className="mt-8 max-w-xl text-[16px] leading-relaxed text-foreground/75">
-              Discover startup credits, grants, accelerators, incubators, fellowships, and funding
-              opportunities tailored to your startup.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-3">
-              <Link
-                to="/opportunities"
-                className="inline-flex h-11 items-center bg-primary px-5 text-[14px] font-medium text-primary-foreground hover:bg-primary-dark"
-              >
-                Explore Opportunities →
-              </Link>
-              <Link
-                to="/profile"
-                className="inline-flex h-11 items-center border border-border bg-background px-5 text-[14px] font-medium hover:bg-muted"
-              >
-                Create Founder Profile
-              </Link>
-            </div>
-            <p className="mt-6 text-[13px] text-muted-foreground">
-              Used by 12,400+ Indian founders · Updated weekly
-            </p>
-          </div>
+      <section className="flex min-h-[85vh] flex-col items-center justify-center px-6 text-center">
+        <h1 className="font-serif text-[72px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[96px]">
+          Every rupee of startup
+          <br />
+          funding in India.<sup className="font-serif text-[40px] md:text-[52px]">[1]</sup>
+          <br />
+          <em className="italic text-primary">One place.</em>
+        </h1>
 
-          {/* Dashboard mock */}
-          <div className="border border-border bg-card">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-border" />
-                <span className="h-2.5 w-2.5 rounded-full bg-border" />
-                <span className="h-2.5 w-2.5 rounded-full bg-border" />
-              </div>
-              <div className="text-[12px] text-muted-foreground">startitup.in/dashboard</div>
-              <div className="w-10" />
-            </div>
-            <div className="px-5 pb-5 pt-5">
-              <div className="text-[12px] uppercase tracking-wider text-muted-foreground">
-                Recommended for you
-              </div>
-              <h3 className="mt-1 font-serif text-[22px] leading-tight">
-                12 new opportunities this week
-              </h3>
-              <ul className="mt-4 divide-y divide-border border-y border-border">
-                {featured.map((o) => (
-                  <li key={o.id} className="flex items-center gap-3 py-3">
-                    <div className="flex h-9 w-9 items-center justify-center border border-border bg-primary-soft font-serif text-base text-primary">
-                      {o.logo}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-[13.5px] font-medium">{o.name}</div>
-                      <div className="truncate text-[12px] text-muted-foreground">
-                        {o.category} · {o.amount} · {o.deadline}
-                      </div>
-                    </div>
-                    <button className="text-[12px] text-primary hover:underline">View</button>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-4 text-right">
-                <Link to="/opportunities" className="text-[12.5px] text-primary hover:underline">
-                  See all opportunities →
-                </Link>
-              </div>
-            </div>
-          </div>
+        <div className="mt-12 max-w-md text-left">
+          <p className="text-[13.5px] text-muted-foreground">
+            [1]{" "}
+            <em>
+              "Most Indian founders miss crores in credits and grants simply because they don't know
+              they exist."
+            </em>
+          </p>
         </div>
+
+        <div className="mt-16 text-muted-foreground">
+          <svg className="mx-auto h-5 w-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        {source === "seed" && (
+          <p className="mt-4 text-[12px] text-amber-700">
+            Demo data — connect Supabase in .env to load the live database.
+          </p>
+        )}
       </section>
 
-      {/* Metrics */}
-      <section className="border-b border-border">
-        <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-x-8 gap-y-10 px-6 py-16 md:grid-cols-4">
+      {/* Stats row */}
+      <section className="border-b border-t border-border">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-2 divide-x divide-border md:grid-cols-4">
           {[
-            ["1,000+", "Opportunities"],
-            ["₹500Cr+", "Funding Programs"],
-            ["500+", "Credit Offers"],
+            [INCUBATOR_COUNT.toString(), "Incubators"],
+            [ACCELERATOR_COUNT.toString(), "Accelerators"],
+            [`${total}+`, "Opportunities"],
             ["Weekly", "Updated"],
           ].map(([n, l]) => (
-            <div key={l}>
+            <div key={l} className="px-8 py-10">
               <div className="font-serif text-[44px] leading-none text-foreground">{n}</div>
               <div className="mt-3 text-[13px] text-muted-foreground">{l}</div>
             </div>
@@ -119,84 +114,54 @@ function Index() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
-          <div className="flex items-end justify-between">
-            <h2 className="font-serif text-[40px] leading-tight md:text-[48px]">
-              Browse by category
-            </h2>
-            <Link to="/opportunities" className="text-[13.5px] text-primary hover:underline">
-              All opportunities →
-            </Link>
-          </div>
-          <div className="mt-10 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
-            {categories.map((c) => (
-              <Link
-                key={c}
-                to="/opportunities"
-                className="group flex h-36 flex-col justify-between bg-card p-5 hover:bg-primary-soft"
-              >
-                <span className="font-serif text-[22px] leading-tight">{c}</span>
-                <span className="text-[12.5px] text-muted-foreground group-hover:text-primary">
-                  Browse →
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Browse */}
+      <section className="mx-auto max-w-[1280px] px-6 py-16">
+        {/* Search */}
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search opportunities, organisations, programs…"
+          className="w-full border border-border bg-card px-5 py-3.5 text-[14px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+        />
 
-      {/* Editorial pull quote */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1100px] px-6 py-28 text-center">
-          <p className="font-serif text-[36px] leading-[1.2] md:text-[52px]">
-            “Most Indian founders miss out on{" "}
-            <em className="italic text-primary">crores in credits and grants</em> simply because
-            they don't know they exist.”
-          </p>
-          <p className="mt-8 text-[13.5px] text-muted-foreground">— StartItUp.in editorial</p>
+        {/* Category pills */}
+        <div className="mt-5 flex flex-wrap gap-2">
+          {CATEGORY_PILLS.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              aria-pressed={cat === c}
+              className={`inline-flex h-8 items-center border px-3 text-[12.5px] transition-colors ${
+                cat === c
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-background text-foreground/75 hover:border-primary hover:text-primary"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
         </div>
-      </section>
 
-      {/* Featured opportunities */}
-      <section>
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
-          <h2 className="font-serif text-[40px] leading-tight md:text-[48px]">
-            Recently added
-          </h2>
-          <div className="mt-8 space-y-3">
-            {opportunities.slice(0, 4).map((o) => (
-              <div key={o.id} className="flex items-center gap-4 border border-border bg-card p-5">
-                <div className="flex h-12 w-12 items-center justify-center border border-border bg-primary-soft font-serif text-xl text-primary">
-                  {o.logo}
-                </div>
-                <div className="flex-1">
-                  <div className="text-[13.5px]">
-                    <span className="font-semibold">{o.org}</span>
-                    <span className="text-muted-foreground"> · {o.short}</span>
-                  </div>
-                  <Link
-                    to="/opportunities/$id"
-                    params={{ id: o.id }}
-                    className="text-[15px] font-medium text-primary hover:underline"
-                  >
-                    {o.name}
-                  </Link>
-                  <div className="mt-1 text-[12.5px] text-muted-foreground">
-                    {o.category} · {o.amount} · Deadline: {o.deadline}
-                  </div>
-                </div>
-                <Link
-                  to="/opportunities/$id"
-                  params={{ id: o.id }}
-                  className="inline-flex h-9 items-center bg-primary px-4 text-[13px] font-medium text-primary-foreground hover:bg-primary-dark"
-                >
-                  Apply
-                </Link>
-              </div>
-            ))}
-          </div>
+        {/* Listing */}
+        <div className="mt-8 space-y-3">
+          {filtered.length === 0 ? (
+            <p className="py-12 text-center text-[14px] text-muted-foreground">
+              No results. <button onClick={() => { setQ(""); setCat("All"); }} className="text-primary underline">Clear filters</button>
+            </p>
+          ) : (
+            filtered.map((o) => <OpportunityRow key={o.id} o={o} />)
+          )}
+        </div>
+
+        {/* See all link */}
+        <div className="mt-10 text-center">
+          <Link
+            to="/opportunities"
+            className="inline-flex h-11 items-center border border-border bg-card px-6 text-[13.5px] font-medium hover:bg-muted"
+          >
+            See all {total} opportunities →
+          </Link>
         </div>
       </section>
     </SiteLayout>

@@ -103,6 +103,7 @@ export function SiteHeader() {
                 onClick={() => setAvatarOpen((v) => !v)}
                 aria-expanded={avatarOpen}
                 aria-haspopup="true"
+                aria-label={name ? `${name} menu` : "User menu"}
               >
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />

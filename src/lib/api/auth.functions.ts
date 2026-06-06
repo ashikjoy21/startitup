@@ -75,6 +75,18 @@ export const loadProfile = createServerFn({ method: "GET" }).handler(async () =>
   return { authenticated: true as const, profile: profile as UserProfile | null };
 });
 
+function parseDeadline(s: string): Date | null {
+  if (!s || /rolling|open|ongoing|tba|tbd|n\/a/i.test(s)) return null;
+  const direct = new Date(s);
+  if (!isNaN(direct.getTime())) return direct;
+  const monthYear = s.match(/([A-Za-z]+)\s+(\d{4})/);
+  if (monthYear) {
+    const d = new Date(`${monthYear[1]} 1, ${monthYear[2]}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
 export type PipelineOpportunity = Opportunity & { savedStatus: SavedStatus };
 export type IncubatorMatch = Opportunity & { matchScore: number };
 export type UpcomingDeadline = {
@@ -100,24 +112,30 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
       authenticated: true as const,
       name,
       profile: null as UserProfile | null,
+      profileCompleteness: 0,
       savedCount: 0,
+      appliedCount: 0,
       totalCount: seedOpportunities.length,
       newThisWeekCount: 0,
-      recs: seedOpportunities.slice(0, 6) as Opportunity[],
-      newItems: [] as Opportunity[],
+      deadlinesThisWeek: 0,
+      actionItems: seedOpportunities.slice(0, 4) as Opportunity[],
+      pipeline: { saved: [], applied: [], under_review: [], won: [] } as Record<SavedStatus, PipelineOpportunity[]>,
+      incubatorMatches: [] as IncubatorMatch[],
+      upcomingDeadlines: [] as UpcomingDeadline[],
     };
   }
 
   const supabase = getSupabaseAdmin();
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const now = new Date();
 
-  const [profile, savedCount, totalResult, candidateRows, newRows] = await Promise.all([
-    getProfile(user.id),
+  const [profileRaw, savedRows, totalResult, candidateRows, newIdsResult] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle().then(({ data }) => data),
     supabase
       .from("saved_opportunities")
-      .select("id", { count: "exact", head: true })
+      .select("opportunity_id, status, opportunities(*)")
       .eq("user_id", user.id)
-      .then(({ count }) => count ?? 0),
+      .order("created_at", { ascending: false }),
     supabase
       .from("opportunities")
       .select("id", { count: "exact", head: true })
@@ -127,19 +145,56 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
       .select("*")
       .eq("status", "published")
       .order("published_at", { ascending: false })
-      .limit(50),
+      .limit(100),
     supabase
       .from("opportunities")
       .select("id")
       .eq("status", "published")
       .gte("published_at", sevenDaysAgo)
-      .limit(100),
+      .limit(200),
   ]);
 
-  const candidates = (candidateRows.data ?? []).map((r) => toOpportunity(r as DbOpportunity));
-  const newIds = new Set((newRows.data ?? []).map((r) => r.id as string));
+  const p = profileRaw as UserProfile | null;
 
-  const p = profile as UserProfile | null;
+  // Profile completeness: 7 text/number fields
+  const completenessFields = [
+    p?.startup_name,
+    p?.stage,
+    p?.sector,
+    p?.funding_status,
+    p?.location,
+    p?.team_size != null ? String(p.team_size) : null,
+    p?.funding_raised,
+  ];
+  const profileCompleteness = Math.round(
+    (completenessFields.filter((v) => v !== null && v !== undefined && v !== "").length /
+      completenessFields.length) *
+      100,
+  );
+
+  // Pipeline: group saved opportunities by status
+  const savedRowsData = savedRows.data ?? [];
+  const pipeline: Record<SavedStatus, PipelineOpportunity[]> = {
+    saved: [],
+    applied: [],
+    under_review: [],
+    won: [],
+  };
+  const savedOpportunityIds = new Set<string>();
+  for (const row of savedRowsData) {
+    if (!row.opportunities) continue;
+    const opp = toOpportunity(row.opportunities as unknown as DbOpportunity);
+    const status = ((row.status as SavedStatus) ?? "saved") as SavedStatus;
+    savedOpportunityIds.add(opp.id);
+    pipeline[status].push({ ...opp, savedStatus: status });
+  }
+  const savedCount = savedRowsData.length;
+  const appliedCount =
+    pipeline.applied.length + pipeline.under_review.length + pipeline.won.length;
+
+  // Score all candidates against profile
+  const candidates = (candidateRows.data ?? []).map((r) => toOpportunity(r as DbOpportunity));
+  const newIds = new Set((newIdsResult.data ?? []).map((r) => r.id as string));
   const pStage = p?.stage?.toLowerCase() ?? "";
   const pSector = p?.sector?.toLowerCase() ?? "";
   const sectorParts = pSector.split(/[/\s]+/).filter(Boolean);
@@ -150,28 +205,63 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
     const oIndustry = o.industry.toLowerCase();
     if (pStage && oStage === pStage) score += 3;
     else if (oStage === "any") score += 1;
-    if (sectorParts.length > 0 && sectorParts.some((part) => oIndustry.includes(part))) score += 3;
+    if (sectorParts.length > 0 && sectorParts.some((part) => oIndustry.includes(part)))
+      score += 3;
     else if (oIndustry === "all") score += 1;
     return { o, score };
   });
-
   scored.sort((a, b) => b.score - a.score);
-  const recs = scored.slice(0, 6).map(({ o }) => o);
-  const recIds = new Set(recs.map((o) => o.id));
 
-  const newItems = candidates
-    .filter((o) => newIds.has(o.id) && !recIds.has(o.id))
-    .slice(0, 3);
+  // Action items: top 4 recommendations not already in pipeline
+  const actionItems = scored
+    .filter(({ o }) => !savedOpportunityIds.has(o.id))
+    .slice(0, 4)
+    .map(({ o }) => o);
+
+  // Incubator matches: top 4 from incubator/accelerator category, scored
+  const incubatorMatches: IncubatorMatch[] = scored
+    .filter(({ o }) => /incubator|accelerator/i.test(o.category))
+    .slice(0, 4)
+    .map(({ o, score }) => ({ ...o, matchScore: Math.min(98, 60 + score * 8) }));
+
+  // Upcoming deadlines: next 5 future deadlines from all published opportunities
+  const now2 = now;
+  const allWithDeadlines = candidates
+    .map((o) => ({ o, date: parseDeadline(o.deadline) }))
+    .filter((x): x is { o: Opportunity; date: Date } => x.date !== null && x.date > now2)
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .slice(0, 5);
+
+  const upcomingDeadlines: UpcomingDeadline[] = allWithDeadlines.map(({ o, date }) => ({
+    id: o.id,
+    name: o.name,
+    org: o.org,
+    deadline: o.deadline,
+    deadlineDate: date.toISOString(),
+    daysUntil: Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+    isSaved: savedOpportunityIds.has(o.id),
+  }));
+
+  // Deadlines this week: saved opportunities with deadline in next 7 days
+  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const deadlinesThisWeek = upcomingDeadlines.filter(
+    (d) => savedOpportunityIds.has(d.id) && new Date(d.deadlineDate) <= nextWeek,
+  ).length;
 
   return {
     authenticated: true as const,
     name,
     profile: p,
+    profileCompleteness,
     savedCount,
+    appliedCount,
     totalCount: totalResult.count ?? 0,
     newThisWeekCount: newIds.size,
-    recs,
-    newItems,
+    deadlinesThisWeek,
+    actionItems,
+    pipeline,
+    incubatorMatches,
+    upcomingDeadlines,
   };
 });
 

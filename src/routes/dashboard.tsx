@@ -27,7 +27,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const { name, profile, savedCount, totalCount, newThisWeekCount, recs, newItems } =
+  const { name, profile, savedCount, totalCount, newThisWeekCount, actionItems } =
     Route.useLoaderData();
 
   const profileSummary = [profile?.stage, profile?.sector, profile?.funding_status]
@@ -113,8 +113,8 @@ function Dashboard() {
           </Link>
         </div>
         <div className="mt-6 space-y-3">
-          {recs.length > 0 ? (
-            recs.map((o) => <OpportunityRow key={o.id} o={o} />)
+          {actionItems.length > 0 ? (
+            actionItems.map((o) => <OpportunityRow key={o.id} o={o} />)
           ) : (
             <div className="border border-border bg-card py-16 text-center">
               <p className="text-[14px] text-muted-foreground">No opportunities yet.</p>
@@ -129,20 +129,13 @@ function Dashboard() {
         </div>
 
         {/* New This Week */}
-        {newItems.length > 0 && (
-          <>
-            <div className="mt-12 flex items-baseline gap-3">
-              <h2 className="font-serif text-[32px]">New This Week</h2>
-              <span className="bg-primary px-2 py-0.5 text-[11px] font-medium text-primary-foreground">
-                +{newThisWeekCount}
-              </span>
-            </div>
-            <div className="mt-6 space-y-3">
-              {newItems.map((o) => (
-                <OpportunityRow key={o.id} o={o} />
-              ))}
-            </div>
-          </>
+        {newThisWeekCount > 0 && (
+          <div className="mt-12 flex items-baseline gap-3">
+            <h2 className="font-serif text-[32px]">New This Week</h2>
+            <span className="bg-primary px-2 py-0.5 text-[11px] font-medium text-primary-foreground">
+              +{newThisWeekCount}
+            </span>
+          </div>
         )}
 
         {/* Saved shortcut */}

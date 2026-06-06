@@ -404,6 +404,12 @@ export const upsertProfile = createServerFn({ method: "POST" })
       stage: z.string().min(1),
       sector: z.string().min(1),
       fundingStatus: z.string().min(1),
+      startupName: z.string().optional(),
+      location: z.string().optional(),
+      teamSize: z.coerce.number().int().min(1).max(9999).optional(),
+      fundingRaised: z.string().optional(),
+      incorporated: z.boolean().optional(),
+      dpiitRecognized: z.boolean().optional(),
     }),
   )
   .handler(async ({ data }) => {
@@ -416,6 +422,12 @@ export const upsertProfile = createServerFn({ method: "POST" })
       stage: data.stage,
       sector: data.sector,
       funding_status: data.fundingStatus,
+      startup_name: data.startupName ?? null,
+      location: data.location ?? null,
+      team_size: data.teamSize ?? null,
+      funding_raised: data.fundingRaised ?? null,
+      incorporated: data.incorporated ?? false,
+      dpiit_recognized: data.dpiitRecognized ?? false,
     });
     if (error) throw new Error(error.message);
     return { ok: true as const };

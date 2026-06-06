@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { getUser } from "@/lib/auth.server";
+import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase.server";
 
 function NotFoundComponent() {
   return (
@@ -73,6 +75,26 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: async () => {
+    if (!isSupabaseConfigured()) return { user: null, savedIds: [] as string[] };
+    try {
+      const user = await getUser();
+      if (!user) return { user: null, savedIds: [] as string[] };
+
+      const supabase = getSupabaseAdmin();
+      const { data } = await supabase
+        .from("saved_opportunities")
+        .select("opportunity_id")
+        .eq("user_id", user.id);
+
+      return {
+        user,
+        savedIds: (data ?? []).map((r) => r.opportunity_id as string),
+      };
+    } catch {
+      return { user: null, savedIds: [] as string[] };
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

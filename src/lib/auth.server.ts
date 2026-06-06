@@ -11,10 +11,13 @@ function parseRequestCookies(): { name: string; value: string }[] {
     .map((c: string) => {
       const i = c.indexOf("=");
       if (i < 0) return null;
-      return {
-        name: c.slice(0, i).trim(),
-        value: decodeURIComponent(c.slice(i + 1).trim()),
-      };
+      const name = c.slice(0, i).trim();
+      if (!name) return null;
+      try {
+        return { name, value: decodeURIComponent(c.slice(i + 1).trim()) };
+      } catch {
+        return null;
+      }
     })
     .filter(Boolean) as { name: string; value: string }[];
 }
@@ -66,6 +69,7 @@ export async function getProfile(userId: string) {
 export function serializeCookie(name: string, value: string, opts: CookieOptions): string {
   let str = `${name}=${encodeURIComponent(value)}`;
   if (opts.maxAge != null) str += `; Max-Age=${opts.maxAge}`;
+  if (opts.expires) str += `; Expires=${opts.expires.toUTCString()}`;
   str += `; Path=${opts.path ?? "/"}`;
   if (opts.httpOnly) str += `; HttpOnly`;
   if (opts.secure) str += `; Secure`;

@@ -18,12 +18,16 @@ type Props = { pipeline: Pipeline };
 export function PipelineKanban({ pipeline }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [mutationError, setMutationError] = useState<string | null>(null);
 
   async function moveCard(opportunityId: string, status: SavedStatus) {
     setLoading(opportunityId);
+    setMutationError(null);
     try {
       await updateSavedStatus({ data: { opportunityId, status } });
       await router.invalidate();
+    } catch (err) {
+      setMutationError(err instanceof Error ? err.message : "Failed to update status.");
     } finally {
       setLoading(null);
     }
@@ -31,9 +35,12 @@ export function PipelineKanban({ pipeline }: Props) {
 
   async function removeCard(opportunityId: string) {
     setLoading(opportunityId);
+    setMutationError(null);
     try {
       await unsaveOpportunity({ data: { opportunityId } });
       await router.invalidate();
+    } catch (err) {
+      setMutationError(err instanceof Error ? err.message : "Failed to remove.");
     } finally {
       setLoading(null);
     }
@@ -83,6 +90,9 @@ export function PipelineKanban({ pipeline }: Props) {
           );
         })}
       </div>
+      {mutationError && (
+        <p className="mt-2 text-[12.5px] text-destructive">{mutationError}</p>
+      )}
     </div>
   );
 }
@@ -130,9 +140,10 @@ function PipelineCard({
           <button
             key={status}
             onClick={() => onMove(status)}
+            aria-label={`Move to ${label}`}
             className="border border-border px-2 py-0.5 text-[10.5px] text-foreground/60 hover:border-primary hover:text-primary"
           >
-            → {label}
+            <span aria-hidden="true">→ </span>{label}
           </button>
         ))}
         <button

@@ -10,6 +10,7 @@ type Props = {
 export function ActionCenter({ items }: Props) {
   const router = useRouter();
   const [dismissed, setDismissed] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
     try {
       const raw = localStorage.getItem("siu_dismissed_actions");
       return new Set(raw ? (JSON.parse(raw) as string[]) : []);
@@ -18,6 +19,7 @@ export function ActionCenter({ items }: Props) {
     }
   });
   const [saving, setSaving] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const visible = items.filter((o) => !dismissed.has(o.id));
 
@@ -34,9 +36,12 @@ export function ActionCenter({ items }: Props) {
 
   async function handleSave(id: string) {
     setSaving(id);
+    setSaveError(null);
     try {
       await saveOpportunity({ data: { opportunityId: id } });
       await router.invalidate();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
     } finally {
       setSaving(null);
     }
@@ -75,7 +80,7 @@ export function ActionCenter({ items }: Props) {
                 </div>
                 <button
                   onClick={() => dismiss(o.id)}
-                  aria-label="Dismiss"
+                  aria-label={`Dismiss ${o.name}`}
                   className="shrink-0 px-1 py-0.5 text-[11px] text-muted-foreground/40 hover:text-muted-foreground"
                 >
                   ✕
@@ -113,6 +118,9 @@ export function ActionCenter({ items }: Props) {
             </div>
           ))}
         </div>
+      )}
+      {saveError && (
+        <p className="mt-2 text-[12.5px] text-destructive">{saveError}</p>
       )}
     </div>
   );

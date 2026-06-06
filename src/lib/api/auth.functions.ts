@@ -10,7 +10,7 @@ import {
 import { getSupabaseAdmin, isSupabaseConfigured } from "../supabase.server";
 import type { Opportunity } from "../opportunities";
 import { toOpportunity } from "../opportunity-mapper";
-import type { DbOpportunity } from "../database.types";
+import type { DbOpportunity, SavedStatus } from "../database.types";
 import { listOpportunities } from "./opportunities.functions";
 
 export type AuthUser = {
@@ -24,6 +24,12 @@ export type UserProfile = {
   stage: string | null;
   sector: string | null;
   funding_status: string | null;
+  startup_name: string | null;
+  location: string | null;
+  team_size: number | null;
+  funding_raised: string | null;
+  incorporated: boolean;
+  dpiit_recognized: boolean;
 };
 
 function toAuthUser(user: User): AuthUser {
@@ -68,6 +74,18 @@ export const loadProfile = createServerFn({ method: "GET" }).handler(async () =>
   const profile = await getProfile(user.id);
   return { authenticated: true as const, profile: profile as UserProfile | null };
 });
+
+export type PipelineOpportunity = Opportunity & { savedStatus: SavedStatus };
+export type IncubatorMatch = Opportunity & { matchScore: number };
+export type UpcomingDeadline = {
+  id: string;
+  name: string;
+  org: string;
+  deadline: string;
+  deadlineDate: string;
+  daysUntil: number;
+  isSaved: boolean;
+};
 
 export const loadDashboard = createServerFn({ method: "GET" }).handler(async () => {
   const user = await getUser();

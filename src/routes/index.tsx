@@ -57,19 +57,19 @@ function Index() {
     <SiteLayout>
       {/* Hero */}
       <section className="relative flex min-h-[90vh] flex-col items-center justify-center px-6 py-24 text-center">
-        <h1 className="font-serif text-[68px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[88px] lg:text-[108px]">
+        <h1 className="font-serif text-[48px] leading-[1.06] tracking-[-0.01em] text-foreground md:text-[62px] lg:text-[76px]">
           Building a startup is hard.
           <br />
           <em className="italic text-primary">Finding opportunities</em>
           <br />
-          <em className="italic text-primary">shouldn't be.<sup className="font-serif text-[32px] not-italic text-foreground/40 md:text-[44px]">[1]</sup></em>
+          <em className="italic text-primary">shouldn't be.<sup className="font-serif text-[22px] not-italic text-foreground/40 md:text-[28px]">[1]</sup></em>
         </h1>
 
-        <div className="mt-16 max-w-sm">
-          <p className="font-serif text-[15px] italic leading-relaxed text-foreground/60">
+        <div className="mt-14 max-w-md">
+          <p className="font-serif text-[18px] italic leading-relaxed text-foreground/60">
             [1] "Opportunities don't happen. You create them."
           </p>
-          <p className="mt-3 text-right font-serif text-[14px] italic text-foreground/45">
+          <p className="mt-3 text-right font-serif text-[16px] italic text-foreground/45">
             — Chris Grosser
           </p>
         </div>

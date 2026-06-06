@@ -86,6 +86,7 @@ function Dashboard() {
 
         {activeTab === "calendar" && (
           <div className="mt-10 max-w-lg">
+            {/* TODO: replace with calendar grid view */}
             <h2 className="font-serif text-[28px]">Deadline Calendar</h2>
             <p className="mt-1 text-[13px] text-muted-foreground">
               Upcoming deadlines across all published opportunities.

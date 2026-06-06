@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
-import { getSupabaseBrowser } from "@/lib/supabase.client";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in — StartItUp.in" }] }),
@@ -14,6 +13,7 @@ function LoginPage() {
   const { redirect } = Route.useSearch();
 
   async function handleGoogleLogin() {
+    const { getSupabaseBrowser } = await import("@/lib/supabase.client");
     const supabase = getSupabaseBrowser();
     const origin = window.location.origin;
     const next = redirect ? `?next=${encodeURIComponent(redirect)}` : "";

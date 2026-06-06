@@ -29,7 +29,9 @@ export function ActionCenter({ items }: Props) {
       next.add(id);
       try {
         localStorage.setItem("siu_dismissed_actions", JSON.stringify([...next]));
-      } catch {}
+      } catch {
+        // localStorage unavailable (private browsing, storage full) — dismiss is still applied in memory
+      }
       return next;
     });
   }
@@ -94,9 +96,7 @@ export function ActionCenter({ items }: Props) {
                 </p>
               )}
               {o.deadline && o.deadline !== "—" && (
-                <p className="mt-0.5 text-[12px] text-muted-foreground">
-                  Deadline: {o.deadline}
-                </p>
+                <p className="mt-0.5 text-[12px] text-muted-foreground">Deadline: {o.deadline}</p>
               )}
 
               <div className="mt-auto flex items-center gap-2 pt-4">
@@ -119,9 +119,7 @@ export function ActionCenter({ items }: Props) {
           ))}
         </div>
       )}
-      {saveError && (
-        <p className="mt-2 text-[12.5px] text-destructive">{saveError}</p>
-      )}
+      {saveError && <p className="mt-2 text-[12.5px] text-destructive">{saveError}</p>}
     </div>
   );
 }

@@ -1,12 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { User } from "@supabase/supabase-js";
 import { z } from "zod";
-import {
-  createSupabaseSSRClient,
-  getProfile,
-  getUser,
-  serializeCookie,
-} from "../auth.server";
+import { createSupabaseSSRClient, getProfile, getUser, serializeCookie } from "../auth.server";
 import { getSupabaseAdmin, isSupabaseConfigured } from "../supabase.server";
 import type { Opportunity } from "../opportunities";
 import { toOpportunity } from "../opportunity-mapper";
@@ -126,7 +121,10 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
       newThisWeekCount: 0,
       deadlinesThisWeek: 0,
       actionItems: seedOpportunities.slice(0, 4) as Opportunity[],
-      pipeline: { saved: [], applied: [], under_review: [], won: [] } as Record<SavedStatus, PipelineOpportunity[]>,
+      pipeline: { saved: [], applied: [], under_review: [], won: [] } as Record<
+        SavedStatus,
+        PipelineOpportunity[]
+      >,
       incubatorMatches: [] as IncubatorMatch[],
       upcomingDeadlines: [] as UpcomingDeadline[],
     };
@@ -137,7 +135,12 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
   const now = new Date();
 
   const [profileRaw, savedRows, totalResult, candidateRows, newIdsResult] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle().then(({ data }) => data),
+    supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => data),
     supabase
       .from("saved_opportunities")
       .select("opportunity_id, status, opportunities(*)")
@@ -196,8 +199,7 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
     if (pipeline[status]) pipeline[status].push({ ...opp, savedStatus: status });
   }
   const savedCount = pipeline.saved.length;
-  const appliedCount =
-    pipeline.applied.length + pipeline.under_review.length + pipeline.won.length;
+  const appliedCount = pipeline.applied.length + pipeline.under_review.length + pipeline.won.length;
 
   // Score all candidates against profile
   const candidates = (candidateRows.data ?? []).map((r) => toOpportunity(r as DbOpportunity));
@@ -212,8 +214,7 @@ export const loadDashboard = createServerFn({ method: "GET" }).handler(async () 
     const oIndustry = o.industry.toLowerCase();
     if (pStage && oStage === pStage) score += 3;
     else if (oStage === "any") score += 1;
-    if (sectorParts.length > 0 && sectorParts.some((part) => oIndustry.includes(part)))
-      score += 3;
+    if (sectorParts.length > 0 && sectorParts.some((part) => oIndustry.includes(part))) score += 3;
     else if (oIndustry === "all") score += 1;
     return { o, score };
   });
@@ -307,15 +308,20 @@ export const completeAuthCallback = createServerFn({ method: "POST" })
     const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(data.code);
 
     if (error || !sessionData.user) {
-      return { ok: false as const, destination: "/login" as const, cookieHeaders: [] as [string, string][] };
+      return {
+        ok: false as const,
+        destination: "/login" as const,
+        cookieHeaders: [] as [string, string][],
+      };
     }
 
     const profile = await getProfile(sessionData.user.id);
     const destination = profile ? (data.next ?? "/dashboard") : "/onboarding";
 
-    const cookieHeaders = getPending().map(
-      (c): [string, string] => ["Set-Cookie", serializeCookie(c.name, c.value, c.options)],
-    );
+    const cookieHeaders = getPending().map((c): [string, string] => [
+      "Set-Cookie",
+      serializeCookie(c.name, c.value, c.options),
+    ]);
 
     return { ok: true as const, destination, cookieHeaders };
   });
@@ -324,9 +330,10 @@ export const completeLogout = createServerFn({ method: "POST" }).handler(async (
   const { supabase, getPending } = createSupabaseSSRClient();
   await supabase.auth.signOut();
 
-  const cookieHeaders = getPending().map(
-    (c): [string, string] => ["Set-Cookie", serializeCookie(c.name, c.value, c.options)],
-  );
+  const cookieHeaders = getPending().map((c): [string, string] => [
+    "Set-Cookie",
+    serializeCookie(c.name, c.value, c.options),
+  ]);
 
   return { cookieHeaders };
 });

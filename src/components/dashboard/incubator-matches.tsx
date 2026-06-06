@@ -37,11 +37,13 @@ export function IncubatorMatches({ matches, profile }: Props) {
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {matches.map((m) => {
           const sectorParts = profile?.sector
-            ? profile.sector.toLowerCase().split(/[/\s]+/).filter(Boolean)
+            ? profile.sector
+                .toLowerCase()
+                .split(/[/\s]+/)
+                .filter(Boolean)
             : [];
           const reasons = [
-            profile?.stage &&
-            m.stage.toLowerCase() === profile.stage.toLowerCase()
+            profile?.stage && m.stage.toLowerCase() === profile.stage.toLowerCase()
               ? profile.stage
               : null,
             sectorParts.length > 0 &&

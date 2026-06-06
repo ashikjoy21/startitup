@@ -29,8 +29,7 @@ export function DashboardHero({
           <div>
             <div className="text-[13px] text-muted-foreground">Founder Dashboard</div>
             <h1 className="mt-1 font-serif text-[40px] leading-tight md:text-[52px]">
-              Welcome back,{" "}
-              <em className="italic text-primary">{name}</em>.
+              Welcome back, <em className="italic text-primary">{name}</em>.
             </h1>
             {profileSummary && (
               <p className="mt-2 text-[14px] text-foreground/70">{profileSummary}</p>

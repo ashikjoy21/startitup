@@ -53,11 +53,7 @@ export async function getUser() {
 
 export async function getProfile(userId: string) {
   const supabase = getSupabaseAdmin();
-  const { data } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
+  const { data } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
   return data as {
     id: string;
     stage: string | null;

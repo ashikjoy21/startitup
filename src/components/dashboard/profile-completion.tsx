@@ -53,9 +53,7 @@ export function ProfileCompletion({ profile, completeness }: Props) {
                   filled ? "bg-emerald-500" : "bg-border",
                 ].join(" ")}
               />
-              <span className={filled ? "text-foreground" : "text-muted-foreground"}>
-                {label}
-              </span>
+              <span className={filled ? "text-foreground" : "text-muted-foreground"}>{label}</span>
             </li>
           );
         })}

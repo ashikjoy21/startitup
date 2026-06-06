@@ -5,13 +5,30 @@ import { loadProfile, upsertProfile } from "@/lib/api/auth.functions";
 
 const STAGES = ["Idea", "MVP", "Early Traction", "Growth", "Series A+"];
 const SECTORS = [
-  "Agritech", "Climate/Cleantech", "D2C/Ecommerce", "DeepTech/AI", "Edtech",
-  "Fintech", "Gaming", "Healthtech", "Media/Creator", "Mobility",
-  "SaaS/B2B", "Social Impact", "Spacetech", "Web3", "Other",
+  "Agritech",
+  "Climate/Cleantech",
+  "D2C/Ecommerce",
+  "DeepTech/AI",
+  "Edtech",
+  "Fintech",
+  "Gaming",
+  "Healthtech",
+  "Media/Creator",
+  "Mobility",
+  "SaaS/B2B",
+  "Social Impact",
+  "Spacetech",
+  "Web3",
+  "Other",
 ];
 const FUNDING_STATUSES = ["Bootstrapped", "Pre-seed", "Seed", "Series A", "Series B+"];
 const FUNDING_RAISED_OPTIONS = [
-  "None yet", "Under ₹10L", "₹10L–₹50L", "₹50L–₹1Cr", "₹1Cr–₹5Cr", "₹5Cr+",
+  "None yet",
+  "Under ₹10L",
+  "₹10L–₹50L",
+  "₹50L–₹1Cr",
+  "₹1Cr–₹5Cr",
+  "₹5Cr+",
 ];
 
 export const Route = createFileRoute("/profile")({
@@ -46,7 +63,9 @@ function Profile() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -95,7 +114,9 @@ function Profile() {
       <section className="mx-auto max-w-[1280px] px-6 py-12">
         <form onSubmit={handleSubmit} className="max-w-md space-y-6">
           <div className="space-y-1.5">
-            <label htmlFor="startupName" className={labelClass}>Startup Name</label>
+            <label htmlFor="startupName" className={labelClass}>
+              Startup Name
+            </label>
             <input
               id="startupName"
               type="text"
@@ -110,9 +131,18 @@ function Profile() {
             <label htmlFor="stage" className={labelClass}>
               Stage <span className="text-destructive">*</span>
             </label>
-            <select id="stage" value={stage} onChange={(e) => setStage(e.target.value)} className={selectClass}>
+            <select
+              id="stage"
+              value={stage}
+              onChange={(e) => setStage(e.target.value)}
+              className={selectClass}
+            >
               <option value="">Select stage</option>
-              {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+              {STAGES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -120,9 +150,18 @@ function Profile() {
             <label htmlFor="sector" className={labelClass}>
               Industry / Sector <span className="text-destructive">*</span>
             </label>
-            <select id="sector" value={sector} onChange={(e) => setSector(e.target.value)} className={selectClass}>
+            <select
+              id="sector"
+              value={sector}
+              onChange={(e) => setSector(e.target.value)}
+              className={selectClass}
+            >
               <option value="">Select sector</option>
-              {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+              {SECTORS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -130,14 +169,25 @@ function Profile() {
             <label htmlFor="fundingStatus" className={labelClass}>
               Funding Status <span className="text-destructive">*</span>
             </label>
-            <select id="fundingStatus" value={fundingStatus} onChange={(e) => setFundingStatus(e.target.value)} className={selectClass}>
+            <select
+              id="fundingStatus"
+              value={fundingStatus}
+              onChange={(e) => setFundingStatus(e.target.value)}
+              className={selectClass}
+            >
               <option value="">Select status</option>
-              {FUNDING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+              {FUNDING_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="location" className={labelClass}>Location</label>
+            <label htmlFor="location" className={labelClass}>
+              Location
+            </label>
             <input
               id="location"
               type="text"
@@ -149,7 +199,9 @@ function Profile() {
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="teamSize" className={labelClass}>Team Size</label>
+            <label htmlFor="teamSize" className={labelClass}>
+              Team Size
+            </label>
             <input
               id="teamSize"
               type="number"
@@ -163,10 +215,21 @@ function Profile() {
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="fundingRaised" className={labelClass}>Funding Raised</label>
-            <select id="fundingRaised" value={fundingRaised} onChange={(e) => setFundingRaised(e.target.value)} className={selectClass}>
+            <label htmlFor="fundingRaised" className={labelClass}>
+              Funding Raised
+            </label>
+            <select
+              id="fundingRaised"
+              value={fundingRaised}
+              onChange={(e) => setFundingRaised(e.target.value)}
+              className={selectClass}
+            >
               <option value="">Select range</option>
-              {FUNDING_RAISED_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+              {FUNDING_RAISED_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
 

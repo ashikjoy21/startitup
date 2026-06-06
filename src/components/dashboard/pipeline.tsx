@@ -90,9 +90,7 @@ export function PipelineKanban({ pipeline }: Props) {
           );
         })}
       </div>
-      {mutationError && (
-        <p className="mt-2 text-[12.5px] text-destructive">{mutationError}</p>
-      )}
+      {mutationError && <p className="mt-2 text-[12.5px] text-destructive">{mutationError}</p>}
     </div>
   );
 }
@@ -105,13 +103,7 @@ type CardProps = {
   onRemove: () => void;
 };
 
-function PipelineCard({
-  opportunity: o,
-  currentStatus,
-  isLoading,
-  onMove,
-  onRemove,
-}: CardProps) {
+function PipelineCard({ opportunity: o, currentStatus, isLoading, onMove, onRemove }: CardProps) {
   const otherColumns = COLUMNS.filter((c) => c.status !== currentStatus);
 
   return (
@@ -143,7 +135,8 @@ function PipelineCard({
             aria-label={`Move to ${label}`}
             className="border border-border px-2 py-0.5 text-[10.5px] text-foreground/60 hover:border-primary hover:text-primary"
           >
-            <span aria-hidden="true">→ </span>{label}
+            <span aria-hidden="true">→ </span>
+            {label}
           </button>
         ))}
         <button

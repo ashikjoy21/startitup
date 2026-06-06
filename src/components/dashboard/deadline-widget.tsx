@@ -37,11 +37,7 @@ export function DeadlineWidget({ deadlines }: Props) {
                         : "bg-muted text-muted-foreground",
                   ].join(" ")}
                 >
-                  {d.daysUntil === 0
-                    ? "Today"
-                    : d.daysUntil === 1
-                      ? "Tomorrow"
-                      : `${d.daysUntil}d`}
+                  {d.daysUntil === 0 ? "Today" : d.daysUntil === 1 ? "Tomorrow" : `${d.daysUntil}d`}
                 </span>
                 <Link
                   to="/opportunities/$id"

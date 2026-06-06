@@ -13,7 +13,7 @@ function LoginPage() {
   const { redirect } = Route.useSearch();
 
   async function handleGoogleLogin() {
-    const { getSupabaseBrowser } = await import("@/lib/supabase.client");
+    const { getSupabaseBrowser } = await import("@/lib/supabase-browser");
     const supabase = getSupabaseBrowser();
     const origin = window.location.origin;
     const next = redirect ? `?next=${encodeURIComponent(redirect)}` : "";

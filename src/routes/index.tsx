@@ -56,24 +56,36 @@ function Index() {
   return (
     <SiteLayout>
       {/* Hero */}
-      <section className="flex min-h-[85vh] flex-col items-center justify-center px-6 text-center">
-        <h1 className="font-serif text-[72px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[96px]">
+      <section className="relative flex min-h-[90vh] flex-col justify-center px-6 py-24 md:px-16 lg:px-24">
+        <h1 className="font-serif text-[68px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[88px] lg:text-[108px]">
           Building a startup is hard.
           <br />
-          <em className="italic text-primary">Finding opportunities shouldn't be.</em>
+          <em className="italic text-primary">Finding opportunities</em>
+          <br />
+          <em className="italic text-primary">shouldn't be.<sup className="font-serif text-[32px] not-italic text-foreground/40 md:text-[44px]">[1]</sup></em>
         </h1>
 
-        <div className="mt-16 text-muted-foreground">
-          <svg className="mx-auto h-5 w-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-          </svg>
+        <div className="mt-16 max-w-md md:ml-12">
+          <p className="font-serif text-[15px] italic leading-relaxed text-foreground/60">
+            [1] "Most Indian founders miss crores in credits, grants and
+            incubators simply because they don't know they exist."
+          </p>
+          <p className="mt-4 text-right font-serif text-[14px] italic text-foreground/50">
+            — StartItUp.in
+          </p>
         </div>
 
         {source === "seed" && (
-          <p className="mt-4 text-[12px] text-amber-700">
+          <p className="mt-6 text-[12px] text-amber-700">
             Demo data — connect Supabase in .env to load the live database.
           </p>
         )}
+
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-foreground/30">
+          <svg className="h-5 w-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
       </section>
 
       {/* Stats row */}

@@ -14,11 +14,12 @@ export const Route = createFileRoute("/saved")({
     if (!isSupabaseConfigured()) return { items: [] as Opportunity[] };
 
     const supabase = getSupabaseAdmin();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("saved_opportunities")
       .select("opportunity_id, opportunities(*)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
+    if (error) throw error;
 
     const items = (data ?? [])
       .map((row) => row.opportunities)

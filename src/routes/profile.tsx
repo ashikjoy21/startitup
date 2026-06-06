@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { getUser, getProfile } from "@/lib/auth.server";
 import { upsertProfile } from "@/lib/api/auth.functions";
@@ -32,14 +32,25 @@ function Profile() {
   const [fundingStatus, setFundingStatus] = useState(profile?.funding_status ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaveError(null);
     try {
       await upsertProfile({ data: { stage, sector, fundingStatus } });
       setSaved(true);
-      setTimeout(() => navigate({ to: "/dashboard" }), 800);
+      timerRef.current = setTimeout(() => navigate({ to: "/dashboard" }), 800);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -63,24 +74,24 @@ function Profile() {
       <section className="mx-auto max-w-[1280px] px-6 py-12">
         <form onSubmit={handleSubmit} className="max-w-md space-y-6">
           <div className="space-y-1.5">
-            <label className={labelClass}>Stage</label>
-            <select value={stage} onChange={(e) => setStage(e.target.value)} className={selectClass}>
+            <label htmlFor="stage" className={labelClass}>Stage</label>
+            <select id="stage" value={stage} onChange={(e) => setStage(e.target.value)} className={selectClass}>
               <option value="">Select stage</option>
               {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label className={labelClass}>Sector</label>
-            <select value={sector} onChange={(e) => setSector(e.target.value)} className={selectClass}>
+            <label htmlFor="sector" className={labelClass}>Sector</label>
+            <select id="sector" value={sector} onChange={(e) => setSector(e.target.value)} className={selectClass}>
               <option value="">Select sector</option>
               {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label className={labelClass}>Funding status</label>
-            <select value={fundingStatus} onChange={(e) => setFundingStatus(e.target.value)} className={selectClass}>
+            <label htmlFor="fundingStatus" className={labelClass}>Funding status</label>
+            <select id="fundingStatus" value={fundingStatus} onChange={(e) => setFundingStatus(e.target.value)} className={selectClass}>
               <option value="">Select status</option>
               {FUNDING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
@@ -93,6 +104,9 @@ function Profile() {
           >
             {saved ? "Saved! Redirecting…" : saving ? "Saving…" : "Save profile"}
           </button>
+          {saveError && (
+            <p className="text-[13px] text-destructive">{saveError}</p>
+          )}
         </form>
       </section>
     </SiteLayout>

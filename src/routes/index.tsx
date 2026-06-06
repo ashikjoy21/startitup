@@ -56,7 +56,7 @@ function Index() {
   return (
     <SiteLayout>
       {/* Hero */}
-      <section className="relative flex min-h-[90vh] flex-col justify-center px-6 py-24 md:px-16 lg:px-24">
+      <section className="relative flex min-h-[90vh] flex-col items-center justify-center px-6 py-24 text-center">
         <h1 className="font-serif text-[68px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[88px] lg:text-[108px]">
           Building a startup is hard.
           <br />
@@ -65,13 +65,12 @@ function Index() {
           <em className="italic text-primary">shouldn't be.<sup className="font-serif text-[32px] not-italic text-foreground/40 md:text-[44px]">[1]</sup></em>
         </h1>
 
-        <div className="mt-16 max-w-md md:ml-12">
+        <div className="mt-16 max-w-sm">
           <p className="font-serif text-[15px] italic leading-relaxed text-foreground/60">
-            [1] "Most Indian founders miss crores in credits, grants and
-            incubators simply because they don't know they exist."
+            [1] "Opportunities don't happen. You create them."
           </p>
-          <p className="mt-4 text-right font-serif text-[14px] italic text-foreground/50">
-            — StartItUp.in
+          <p className="mt-3 text-right font-serif text-[14px] italic text-foreground/45">
+            — Chris Grosser
           </p>
         </div>
 

@@ -58,12 +58,10 @@ function Index() {
       {/* Hero */}
       <section className="flex min-h-[85vh] flex-col items-center justify-center px-6 text-center">
         <h1 className="font-serif text-[72px] leading-[1.04] tracking-[-0.01em] text-foreground md:text-[96px]">
-          Find your <em className="italic text-primary">unfair advantage.</em>
+          Building a startup is hard.
+          <br />
+          <em className="italic text-primary">Finding opportunities shouldn't be.</em>
         </h1>
-
-        <p className="mt-8 max-w-xl text-[18px] leading-relaxed text-foreground/70">
-          Grants, credits, incubators and opportunities for Indian startups.
-        </p>
 
         <div className="mt-16 text-muted-foreground">
           <svg className="mx-auto h-5 w-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

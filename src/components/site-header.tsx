@@ -17,14 +17,21 @@ export function SiteHeader() {
           </Link>
 
           {/* Directories dropdown */}
-          <div className="relative">
+          <div className="relative" onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+              setDirOpen(false);
+            }
+          }}>
             <button
               onClick={() => setDirOpen((v) => !v)}
-              onBlur={() => setTimeout(() => setDirOpen(false), 150)}
+              onKeyDown={(e) => { if (e.key === "Escape") setDirOpen(false); }}
+              aria-expanded={dirOpen}
+              aria-haspopup="true"
               className="flex items-center gap-1 text-[13.5px] text-foreground/85 hover:text-primary"
             >
               Directories
               <svg
+                aria-hidden="true"
                 className={`h-3 w-3 transition-transform ${dirOpen ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
@@ -34,7 +41,7 @@ export function SiteHeader() {
               </svg>
             </button>
             {dirOpen && (
-              <div className="absolute left-0 top-full z-50 mt-1 w-40 border border-border bg-background shadow-sm">
+              <div className="absolute left-0 top-full z-50 mt-1 w-40 rounded-sm border border-border bg-background shadow-sm">
                 <Link
                   to="/incubators"
                   className="block px-4 py-2.5 text-[13.5px] text-foreground/85 hover:bg-muted hover:text-primary"
@@ -94,7 +101,7 @@ export function SiteHeader() {
         </div>
 
         {/* Mobile — just logo + explore */}
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="ml-auto flex items-center gap-3 md:hidden">
           <Link
             to="/opportunities"
             className="inline-flex h-9 items-center bg-primary px-4 text-[13.5px] font-medium text-primary-foreground hover:bg-primary-dark"

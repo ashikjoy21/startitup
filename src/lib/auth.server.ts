@@ -1,8 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { getRequest } from "@tanstack/react-start/server";
 import { getSupabaseAdmin } from "./supabase.server";
 
-function parseRequestCookies(): { name: string; value: string }[] {
+async function parseRequestCookies(): Promise<{ name: string; value: string }[]> {
+  const { getRequest } = await import("@tanstack/react-start/server");
   const req = getRequest();
   const cookieStr = req.headers.get("cookie") ?? "";
   if (!cookieStr) return [];

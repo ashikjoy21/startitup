@@ -1,16 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { getRequest } from "@tanstack/react-start/server";
 import { createSupabaseSSRClient, serializeCookie, getProfile } from "@/lib/auth.server";
 
 export const Route = createFileRoute("/auth/callback")({
   validateSearch: (s: Record<string, unknown>) => ({
+    code: typeof s.code === "string" ? s.code : undefined,
     next: typeof s.next === "string" ? s.next : undefined,
   }),
-  loaderDeps: ({ search }) => ({ next: search.next }),
+  loaderDeps: ({ search }) => ({ code: search.code, next: search.next }),
   loader: async ({ deps }) => {
-    const req = getRequest();
-    const url = new URL(req.url);
-    const code = url.searchParams.get("code");
+    const code = deps.code ?? null;
 
     if (!code) {
       throw redirect({ to: "/" });

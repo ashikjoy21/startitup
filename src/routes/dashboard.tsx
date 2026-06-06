@@ -11,19 +11,21 @@ export const Route = createFileRoute("/dashboard")({
     const user = await getUser();
     if (!user) throw redirect({ to: "/login", search: { redirect: "/dashboard" } });
 
-    const profile = await getProfile(user.id);
-    const name =
-      ((user.user_metadata?.name as string | undefined) ?? "").split(" ")[0] || "Founder";
+    const [profile, savedCountResult] = await Promise.all([
+      isSupabaseConfigured() ? getProfile(user.id) : Promise.resolve(null),
+      isSupabaseConfigured()
+        ? getSupabaseAdmin()
+            .from("saved_opportunities")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .then(({ count }) => count ?? 0)
+        : Promise.resolve(0),
+    ]);
+    const savedCount = savedCountResult;
 
-    let savedCount = 0;
-    if (isSupabaseConfigured()) {
-      const supabase = getSupabaseAdmin();
-      const { count } = await supabase
-        .from("saved_opportunities")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id);
-      savedCount = count ?? 0;
-    }
+    const rawName = user.user_metadata?.name;
+    const name =
+      (typeof rawName === "string" ? rawName : "").split(" ")[0] || "Founder";
 
     const recs = await listOpportunities({
       data: {
@@ -106,14 +108,12 @@ function Dashboard() {
         </div>
 
         {savedCount > 0 && (
-          <>
-            <div className="mt-12 flex items-end justify-between">
-              <h2 className="font-serif text-[32px]">Saved</h2>
-              <Link to="/saved" className="text-[13.5px] text-primary hover:underline">
-                View all {savedCount} →
-              </Link>
-            </div>
-          </>
+          <div className="mt-12 flex items-end justify-between">
+            <h2 className="font-serif text-[32px]">Saved</h2>
+            <Link to="/saved" className="text-[13.5px] text-primary hover:underline">
+              View all {savedCount} →
+            </Link>
+          </div>
         )}
       </section>
     </SiteLayout>

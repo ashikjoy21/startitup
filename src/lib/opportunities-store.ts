@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import {
-  opportunities as seedOpportunities,
-  categories as seedCategories,
+  seedOpportunities,
+  defaultCategories as seedCategories,
   type Opportunity,
 } from "./opportunities";
 

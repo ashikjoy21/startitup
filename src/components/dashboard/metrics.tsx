@@ -1,21 +1,25 @@
+import { formatInrCompact } from "@/lib/parse-opportunity-amount";
+
 type Props = {
   savedCount: number;
   appliedCount: number;
   deadlinesThisWeek: number;
-  newThisWeekCount: number;
+  potentialFundingInr: number;
 };
 
 export function DashboardMetrics({
   savedCount,
   appliedCount,
   deadlinesThisWeek,
-  newThisWeekCount,
+  potentialFundingInr,
 }: Props) {
+  const fundingValue = potentialFundingInr > 0 ? formatInrCompact(potentialFundingInr) : "—";
+
   const items = [
     { value: String(savedCount), label: "Saved" },
     { value: String(appliedCount), label: "Applied" },
     { value: String(deadlinesThisWeek), label: "Deadlines This Week" },
-    { value: newThisWeekCount > 0 ? `+${newThisWeekCount}` : "—", label: "New This Week" },
+    { value: fundingValue, label: "Funding in reach" },
   ];
 
   return (

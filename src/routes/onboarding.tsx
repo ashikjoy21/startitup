@@ -1,8 +1,8 @@
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
-import { getUser } from "@/lib/auth.server";
-import { upsertProfile } from "@/lib/api/auth.functions";
+import { fetchSessionUser, upsertProfile } from "@/lib/api/auth.functions";
+import { clearDismissedRecommendations } from "@/lib/profile-fingerprint";
 
 const STAGES = ["Idea", "Pre-Seed", "Seed", "Series A", "Growth"] as const;
 const SECTORS = [
@@ -16,9 +16,8 @@ const FUNDING_STATUSES = [
 export const Route = createFileRoute("/onboarding")({
   head: () => ({ meta: [{ title: "Set Up Your Profile — StartItUp.in" }] }),
   loader: async () => {
-    const user = await getUser();
+    const user = await fetchSessionUser();
     if (!user) throw redirect({ to: "/login", search: { redirect: "/onboarding" } });
-    return { userId: user.id };
   },
   component: OnboardingPage,
 });
@@ -36,6 +35,8 @@ function OnboardingPage() {
     setSaving(true);
     try {
       await upsertProfile({ data: { stage, sector, fundingStatus } });
+      clearDismissedRecommendations();
+      await router.invalidate();
       router.navigate({ to: "/dashboard" });
     } finally {
       setSaving(false);

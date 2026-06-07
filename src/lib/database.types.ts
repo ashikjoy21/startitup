@@ -17,6 +17,7 @@ export type DbOpportunity = {
   eligibility: string;
   logo: string;
   source_url: string | null;
+  tags: string[];
   status: OpportunityStatus;
   created_at: string;
   updated_at: string;
@@ -66,6 +67,8 @@ export type DbProfile = {
   funding_raised: string | null;
   incorporated: boolean;
   dpiit_recognized: boolean;
+  women_led: boolean;
+  student_led: boolean;
 };
 
 export type SavedStatus = "saved" | "applied" | "under_review" | "won";

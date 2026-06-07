@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import type { Opportunity } from "@/lib/opportunities";
 import { Route as RootRoute } from "@/routes/__root";
@@ -28,9 +28,11 @@ export { OrgLogo };
 export function OpportunityRow({ o }: { o: Opportunity }) {
   const { user, savedIds } = RootRoute.useLoaderData();
   const navigate = useNavigate();
+  const router = useRouter();
   const location = useLocation();
   const [isSaved, setIsSaved] = useState(() => savedIds.includes(o.id));
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   async function handleSave() {
     if (!user) {
@@ -38,6 +40,7 @@ export function OpportunityRow({ o }: { o: Opportunity }) {
       return;
     }
     setSaving(true);
+    setSaveError(null);
     try {
       if (isSaved) {
         await unsaveOpportunity({ data: { opportunityId: o.id } });
@@ -46,6 +49,9 @@ export function OpportunityRow({ o }: { o: Opportunity }) {
         await saveOpportunity({ data: { opportunityId: o.id } });
         setIsSaved(true);
       }
+      await router.invalidate();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -79,18 +85,25 @@ export function OpportunityRow({ o }: { o: Opportunity }) {
           </div>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 flex-col items-end gap-1">
+        <div className="flex items-center gap-2">
         <button
           onClick={handleSave}
           disabled={saving}
-          aria-label={isSaved ? "Unsave opportunity" : "Save opportunity"}
+          aria-label={
+            !user
+              ? "Sign in to save opportunity"
+              : isSaved
+                ? "Unsave opportunity"
+                : "Save opportunity"
+          }
           className={`h-9 border px-3 text-[13px] transition-colors disabled:opacity-50 ${
             isSaved
               ? "border-primary bg-primary/5 text-primary"
               : "border-border bg-background hover:bg-muted"
           }`}
         >
-          {isSaved ? "Saved ✓" : "Save"}
+          {saving ? "Saving…" : !user ? "Sign in to save" : isSaved ? "Saved ✓" : "Save"}
         </button>
         <Link
           to="/opportunities/$id"
@@ -109,6 +122,8 @@ export function OpportunityRow({ o }: { o: Opportunity }) {
             Apply →
           </a>
         )}
+        </div>
+        {saveError && <p className="text-[11.5px] text-destructive">{saveError}</p>}
       </div>
     </div>
   );

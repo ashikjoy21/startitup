@@ -1,27 +1,15 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { SiteLayout } from "@/components/site-layout";
+import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { LocationPicker } from "@/components/location-picker";
 import { loadProfile, upsertProfile } from "@/lib/api/auth.functions";
-
-const STAGES = ["Idea", "MVP", "Early Traction", "Growth", "Series A+"];
-const SECTORS = [
-  "Agritech",
-  "Climate/Cleantech",
-  "D2C/Ecommerce",
-  "DeepTech/AI",
-  "Edtech",
-  "Fintech",
-  "Gaming",
-  "Healthtech",
-  "Media/Creator",
-  "Mobility",
-  "SaaS/B2B",
-  "Social Impact",
-  "Spacetech",
-  "Web3",
-  "Other",
-];
-const FUNDING_STATUSES = ["Bootstrapped", "Pre-seed", "Seed", "Series A", "Series B+"];
+import { clearDismissedRecommendations } from "@/lib/profile-fingerprint";
+import {
+  PROFILE_FUNDING_STATUSES,
+  PROFILE_SECTORS,
+  PROFILE_STAGES,
+} from "@/lib/profile-form-options";
 const FUNDING_RAISED_OPTIONS = [
   "None yet",
   "Under ₹10L",
@@ -44,6 +32,7 @@ export const Route = createFileRoute("/profile")({
 function Profile() {
   const { profile } = Route.useLoaderData();
   const navigate = useNavigate();
+  const router = useRouter();
 
   const [startupName, setStartupName] = useState(profile?.startup_name ?? "");
   const [stage, setStage] = useState(profile?.stage ?? "");
@@ -56,6 +45,8 @@ function Profile() {
   const [fundingRaised, setFundingRaised] = useState(profile?.funding_raised ?? "");
   const [incorporated, setIncorporated] = useState(profile?.incorporated ?? false);
   const [dpiitRecognized, setDpiitRecognized] = useState(profile?.dpiit_recognized ?? false);
+  const [womenLed, setWomenLed] = useState(profile?.women_led ?? false);
+  const [studentLed, setStudentLed] = useState(profile?.student_led ?? false);
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -84,10 +75,17 @@ function Profile() {
           fundingRaised: fundingRaised || undefined,
           incorporated,
           dpiitRecognized,
+          womenLed,
+          studentLed,
         },
       });
+      clearDismissedRecommendations();
+      await router.invalidate();
       setSaved(true);
-      timerRef.current = setTimeout(() => navigate({ to: "/dashboard" }), 800);
+      timerRef.current = setTimeout(
+        () => navigate({ to: "/dashboard", search: { tab: "matches" } }),
+        800,
+      );
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
     } finally {
@@ -102,6 +100,7 @@ function Profile() {
 
   return (
     <SiteLayout>
+      <DashboardNav active="profile" />
       <section className="border-b border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-16">
           <div className="text-[13px] text-muted-foreground">Profile</div>
@@ -138,7 +137,7 @@ function Profile() {
               className={selectClass}
             >
               <option value="">Select stage</option>
-              {STAGES.map((s) => (
+              {PROFILE_STAGES.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
@@ -157,7 +156,7 @@ function Profile() {
               className={selectClass}
             >
               <option value="">Select sector</option>
-              {SECTORS.map((s) => (
+              {PROFILE_SECTORS.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
@@ -176,7 +175,7 @@ function Profile() {
               className={selectClass}
             >
               <option value="">Select status</option>
-              {FUNDING_STATUSES.map((s) => (
+              {PROFILE_FUNDING_STATUSES.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
@@ -184,19 +183,7 @@ function Profile() {
             </select>
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="location" className={labelClass}>
-              Location
-            </label>
-            <input
-              id="location"
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Bangalore, Kerala"
-              className={inputClass}
-            />
-          </div>
+          <LocationPicker value={location} onChange={setLocation} selectClass={selectClass} />
 
           <div className="space-y-1.5">
             <label htmlFor="teamSize" className={labelClass}>
@@ -255,6 +242,26 @@ function Profile() {
               />
               <span className="text-[14px]">DPIIT Recognized</span>
             </label>
+            <label htmlFor="womenLed" className="flex cursor-pointer items-center gap-3">
+              <input
+                id="womenLed"
+                type="checkbox"
+                checked={womenLed}
+                onChange={(e) => setWomenLed(e.target.checked)}
+                className="size-4 accent-primary"
+              />
+              <span className="text-[14px]">Women-led startup</span>
+            </label>
+            <label htmlFor="studentLed" className="flex cursor-pointer items-center gap-3">
+              <input
+                id="studentLed"
+                type="checkbox"
+                checked={studentLed}
+                onChange={(e) => setStudentLed(e.target.checked)}
+                className="size-4 accent-primary"
+              />
+              <span className="text-[14px]">Student-led startup</span>
+            </label>
           </div>
 
           <button
@@ -265,6 +272,13 @@ function Profile() {
             {saved ? "Saved! Redirecting…" : saving ? "Saving…" : "Save profile"}
           </button>
           {saveError && <p className="text-[13px] text-destructive">{saveError}</p>}
+          <p className="text-[12.5px] text-muted-foreground">
+            Matches update automatically when you save. View them on{" "}
+            <Link to="/dashboard" search={{ tab: "matches" }} className="text-primary hover:underline">
+              Dashboard → Matches
+            </Link>
+            .
+          </p>
         </form>
       </section>
     </SiteLayout>

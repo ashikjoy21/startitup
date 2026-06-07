@@ -13,6 +13,7 @@ export type Opportunity = {
   eligibility: string;
   logo: string;
   sourceUrl?: string | null;
+  tags?: string[];
 };
 
 export const defaultCategories = [

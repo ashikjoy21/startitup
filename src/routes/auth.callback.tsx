@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { createSupabaseSSRClient, serializeCookie, getProfile } from "@/lib/auth.server";
+import { completeAuthCallback } from "@/lib/api/auth.functions";
 
 export const Route = createFileRoute("/auth/callback")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -8,33 +8,13 @@ export const Route = createFileRoute("/auth/callback")({
   }),
   loaderDeps: ({ search }) => ({ code: search.code, next: search.next }),
   loader: async ({ deps }) => {
-    const code = deps.code ?? null;
-
-    if (!code) {
-      throw redirect({ to: "/" });
-    }
-
-    const { supabase, getPending } = createSupabaseSSRClient();
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (error || !data.user) {
-      throw redirect({ to: "/login", search: { redirect: undefined } });
-    }
-
-    const profile = await getProfile(data.user.id);
-    const destination = profile ? (deps.next ?? "/dashboard") : "/onboarding";
-
-    // Build Set-Cookie pairs — string[][] is valid HeadersInit and supports
-    // multiple entries with the same header name.
-    const cookieHeaders = getPending().map((c): [string, string] => [
-      "Set-Cookie",
-      serializeCookie(c.name, c.value, c.options),
-    ]);
-
+    const code = deps.code;
+    if (!code) throw redirect({ to: "/" });
+    const result = await completeAuthCallback({ data: { code, next: deps.next } });
     throw redirect({
-      to: destination,
+      to: result.destination,
       statusCode: 302,
-      headers: cookieHeaders as HeadersInit,
+      headers: result.cookieHeaders as HeadersInit,
     });
   },
   component: () => (

@@ -65,6 +65,8 @@ export async function getProfile(userId: string) {
     funding_raised: string | null;
     incorporated: boolean;
     dpiit_recognized: boolean;
+    women_led: boolean;
+    student_led: boolean;
   } | null;
 }
 

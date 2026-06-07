@@ -15,15 +15,21 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
+import { Route as LogoutRouteImport } from './routes/logout'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as IncubatorsRouteImport } from './routes/incubators'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AcceleratorsRouteImport } from './routes/accelerators'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 
 const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
   id: '/success-stories',
@@ -55,9 +61,29 @@ const OpportunitiesRoute = OpportunitiesRouteImport.update({
   path: '/opportunities',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsletterRoute = NewsletterRouteImport.update({
   id: '/newsletter',
   path: '/newsletter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogoutRoute = LogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IncubatorsRoute = IncubatorsRouteImport.update({
+  id: '/incubators',
+  path: '/incubators',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -73,6 +99,11 @@ const CalculatorRoute = CalculatorRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceleratorsRoute = AcceleratorsRouteImport.update({
+  id: '/accelerators',
+  path: '/accelerators',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -100,19 +131,30 @@ const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => OpportunitiesRoute,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
+  '/incubators': typeof IncubatorsRoute
+  '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
+  '/onboarding': typeof OnboardingRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -120,14 +162,20 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
+  '/incubators': typeof IncubatorsRoute
+  '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
+  '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/opportunities': typeof OpportunitiesIndexRoute
@@ -136,16 +184,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
+  '/incubators': typeof IncubatorsRoute
+  '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
+  '/onboarding': typeof OnboardingRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -155,16 +209,22 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accelerators'
     | '/admin'
     | '/calculator'
     | '/dashboard'
+    | '/incubators'
+    | '/login'
+    | '/logout'
     | '/newsletter'
+    | '/onboarding'
     | '/opportunities'
     | '/profile'
     | '/resources'
     | '/saved'
     | '/submit'
     | '/success-stories'
+    | '/auth/callback'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/opportunities/'
@@ -172,14 +232,20 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accelerators'
     | '/admin'
     | '/calculator'
     | '/dashboard'
+    | '/incubators'
+    | '/login'
+    | '/logout'
     | '/newsletter'
+    | '/onboarding'
     | '/profile'
     | '/saved'
     | '/submit'
     | '/success-stories'
+    | '/auth/callback'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/opportunities'
@@ -187,16 +253,22 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/accelerators'
     | '/admin'
     | '/calculator'
     | '/dashboard'
+    | '/incubators'
+    | '/login'
+    | '/logout'
     | '/newsletter'
+    | '/onboarding'
     | '/opportunities'
     | '/profile'
     | '/resources'
     | '/saved'
     | '/submit'
     | '/success-stories'
+    | '/auth/callback'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/opportunities/'
@@ -205,16 +277,22 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcceleratorsRoute: typeof AcceleratorsRoute
   AdminRoute: typeof AdminRoute
   CalculatorRoute: typeof CalculatorRoute
   DashboardRoute: typeof DashboardRoute
+  IncubatorsRoute: typeof IncubatorsRoute
+  LoginRoute: typeof LoginRoute
+  LogoutRoute: typeof LogoutRoute
   NewsletterRoute: typeof NewsletterRoute
+  OnboardingRoute: typeof OnboardingRoute
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   SavedRoute: typeof SavedRoute
   SubmitRoute: typeof SubmitRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -261,11 +339,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/newsletter': {
       id: '/newsletter'
       path: '/newsletter'
       fullPath: '/newsletter'
       preLoaderRoute: typeof NewsletterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/incubators': {
+      id: '/incubators'
+      path: '/incubators'
+      fullPath: '/incubators'
+      preLoaderRoute: typeof IncubatorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -287,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accelerators': {
+      id: '/accelerators'
+      path: '/accelerators'
+      fullPath: '/accelerators'
+      preLoaderRoute: typeof AcceleratorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -324,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdRouteImport
       parentRoute: typeof OpportunitiesRoute
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -357,16 +477,22 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcceleratorsRoute: AcceleratorsRoute,
   AdminRoute: AdminRoute,
   CalculatorRoute: CalculatorRoute,
   DashboardRoute: DashboardRoute,
+  IncubatorsRoute: IncubatorsRoute,
+  LoginRoute: LoginRoute,
+  LogoutRoute: LogoutRoute,
   NewsletterRoute: NewsletterRoute,
+  OnboardingRoute: OnboardingRoute,
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
   ProfileRoute: ProfileRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   SavedRoute: SavedRoute,
   SubmitRoute: SubmitRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

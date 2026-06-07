@@ -130,7 +130,8 @@ export function SiteHeader() {
                     Profile
                   </Link>
                   <Link
-                    to="/saved"
+                    to="/dashboard"
+                    search={{ tab: "saved" }}
                     onClick={() => setAvatarOpen(false)}
                     className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
                   >

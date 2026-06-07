@@ -1,23 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
-import type { Opportunity } from "@/lib/opportunities";
 import { saveOpportunity } from "@/lib/api/auth.functions";
+import type { RecommendedOpportunity } from "@/lib/api/auth.functions";
+import { STRENGTH_LABEL, STRENGTH_COLOR } from "@/lib/matching";
+import { syncDismissedWithProfile } from "@/lib/profile-fingerprint";
 
 type Props = {
-  items: Opportunity[];
+  items: RecommendedOpportunity[];
+  profileFingerprint: string;
 };
 
-export function ActionCenter({ items }: Props) {
+export function ActionCenter({ items, profileFingerprint }: Props) {
   const router = useRouter();
-  const [dismissed, setDismissed] = useState<Set<string>>(() => {
-    if (typeof window === "undefined") return new Set();
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    syncDismissedWithProfile(profileFingerprint);
     try {
       const raw = localStorage.getItem("siu_dismissed_actions");
-      return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+      setDismissed(new Set(raw ? (JSON.parse(raw) as string[]) : []));
     } catch {
-      return new Set();
+      setDismissed(new Set());
     }
-  });
+  }, [profileFingerprint]);
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -30,7 +35,7 @@ export function ActionCenter({ items }: Props) {
       try {
         localStorage.setItem("siu_dismissed_actions", JSON.stringify([...next]));
       } catch {
-        // localStorage unavailable (private browsing, storage full) — dismiss is still applied in memory
+        // localStorage unavailable — dismiss applied in memory only
       }
       return next;
     });
@@ -52,11 +57,11 @@ export function ActionCenter({ items }: Props) {
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <h2 className="font-serif text-[28px]">Action Center</h2>
-        <span className="text-[12.5px] text-muted-foreground">{visible.length} recommended</span>
+        <h2 className="font-serif text-[28px]">Recommended for You</h2>
+        <span className="text-[12.5px] text-muted-foreground">{visible.length} matches</span>
       </div>
       <p className="mt-0.5 text-[13px] text-muted-foreground">
-        Opportunities matched to your profile — act this week.
+        Ranked by stage, sector, location, and eligibility fit.
       </p>
 
       {visible.length === 0 ? (
@@ -73,10 +78,17 @@ export function ActionCenter({ items }: Props) {
           {visible.map((o) => (
             <div key={o.id} className="flex flex-col border border-border bg-card p-5">
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                    {o.category}
-                  </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      {o.category}
+                    </p>
+                    {o.matchScore > 0 && (
+                      <span className={`text-[10.5px] font-semibold ${STRENGTH_COLOR[o.matchStrength]}`}>
+                        {o.matchScore}% · {STRENGTH_LABEL[o.matchStrength]}
+                      </span>
+                    )}
+                  </div>
                   <h3 className="mt-0.5 font-serif text-[17px] leading-snug">{o.name}</h3>
                   <p className="mt-0.5 text-[12.5px] text-foreground/60">{o.org}</p>
                 </div>
@@ -88,6 +100,20 @@ export function ActionCenter({ items }: Props) {
                   ✕
                 </button>
               </div>
+
+              {o.matchReasons.length > 0 && (
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {o.matchReasons.slice(0, 4).map((r) => (
+                    <span
+                      key={r.label}
+                      className="inline-flex items-center gap-1 rounded-sm border border-border bg-muted/60 px-2 py-0.5 text-[10.5px] text-foreground/70"
+                    >
+                      <span className="text-emerald-600">✓</span>
+                      {r.detail}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {o.amount && o.amount !== "—" && (
                 <p className="mt-3 text-[12.5px]">

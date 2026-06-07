@@ -5,44 +5,41 @@ const TAB_ITEMS = [
   { id: "pipeline", label: "Pipeline" },
   { id: "calendar", label: "Calendar" },
   { id: "matches", label: "Matches" },
+  { id: "saved", label: "Saved" },
 ] as const;
 
 export type DashboardTab = (typeof TAB_ITEMS)[number]["id"];
+export type DashboardNavId = DashboardTab | "profile";
 
 type Props = {
-  active: DashboardTab;
-  onChange: (tab: DashboardTab) => void;
+  active: DashboardNavId;
 };
 
-export function DashboardNav({ active, onChange }: Props) {
+function navClass(isActive: boolean) {
+  return [
+    "shrink-0 border-b-2 px-4 py-3 text-[13px] font-medium transition-colors",
+    isActive
+      ? "border-primary text-primary"
+      : "border-transparent text-muted-foreground hover:text-foreground",
+  ].join(" ");
+}
+
+export function DashboardNav({ active }: Props) {
   return (
     <div className="border-b border-border">
       <div className="mx-auto max-w-[1280px] px-6">
         <nav className="flex overflow-x-auto">
           {TAB_ITEMS.map(({ id, label }) => (
-            <button
+            <Link
               key={id}
-              onClick={() => onChange(id)}
-              className={[
-                "shrink-0 border-b-2 px-4 py-3 text-[13px] font-medium transition-colors",
-                active === id
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              ].join(" ")}
+              to="/dashboard"
+              search={id === "overview" ? {} : { tab: id }}
+              className={navClass(active === id)}
             >
               {label}
-            </button>
+            </Link>
           ))}
-          <Link
-            to="/saved"
-            className="shrink-0 border-b-2 border-transparent px-4 py-3 text-[13px] font-medium text-muted-foreground hover:text-foreground"
-          >
-            Saved
-          </Link>
-          <Link
-            to="/profile"
-            className="shrink-0 border-b-2 border-transparent px-4 py-3 text-[13px] font-medium text-muted-foreground hover:text-foreground"
-          >
+          <Link to="/profile" className={navClass(active === "profile")}>
             Profile
           </Link>
         </nav>

@@ -1,17 +1,46 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
-import { useOpportunitiesStore } from "@/lib/opportunities-store";
+import { Route as RootRoute } from "@/routes/__root";
+import { saveOpportunity, unsaveOpportunity } from "@/lib/api/auth.functions";
+import { getOpportunityById, listOpportunities } from "@/lib/api/opportunities.functions";
 
 export const Route = createFileRoute("/opportunities/$id")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: "Opportunity — StartItUp.in" },
+      {
+        title: loaderData?.opportunity
+          ? `${loaderData.opportunity.name} — StartItUp.in`
+          : "Opportunity — StartItUp.in",
+      },
       { name: "description", content: "Startup opportunity details." },
     ],
   }),
+  loader: async ({ params }) => {
+    const id = decodeURIComponent(params.id);
+    const { item } = await getOpportunityById({ data: { id } });
+
+    let related: Awaited<ReturnType<typeof listOpportunities>>["items"] = [];
+    try {
+      const relatedResult = await listOpportunities({
+        data: { category: item.category, limit: 8, offset: 0 },
+      });
+      related = relatedResult.items.filter((r) => r.id !== item.id).slice(0, 3);
+    } catch {
+      related = [];
+    }
+
+    return { opportunity: item, related };
+  },
   errorComponent: ({ error }) => (
     <SiteLayout>
-      <div className="mx-auto max-w-2xl px-6 py-32 text-center text-[14px]">{error.message}</div>
+      <div className="mx-auto max-w-2xl px-6 py-32 text-center">
+        <h1 className="font-serif text-4xl">Opportunity not found</h1>
+        <p className="mt-3 text-[14px] text-muted-foreground">{error.message}</p>
+        <Link to="/opportunities" className="mt-6 inline-block text-primary hover:underline">
+          ← Back to all opportunities
+        </Link>
+      </div>
     </SiteLayout>
   ),
   component: Detail,
@@ -19,23 +48,38 @@ export const Route = createFileRoute("/opportunities/$id")({
 
 function Detail() {
   const { id } = Route.useParams();
-  const { items } = useOpportunitiesStore();
-  const o = items.find((x) => x.id === id);
+  const { opportunity: o, related } = Route.useLoaderData();
+  const { user, savedIds } = RootRoute.useLoaderData();
+  const navigate = useNavigate();
+  const router = useRouter();
 
-  if (!o) {
-    return (
-      <SiteLayout>
-        <div className="mx-auto max-w-2xl px-6 py-32 text-center">
-          <h1 className="font-serif text-5xl">Opportunity not found</h1>
-          <Link to="/opportunities" className="mt-6 inline-block text-primary hover:underline">
-            ← Back to all opportunities
-          </Link>
-        </div>
-      </SiteLayout>
-    );
+  const [isSaved, setIsSaved] = useState(() => savedIds.includes(id));
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!user) {
+      navigate({ to: "/login", search: { redirect: `/opportunities/${id}` } });
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      if (isSaved) {
+        await unsaveOpportunity({ data: { opportunityId: id } });
+        setIsSaved(false);
+      } else {
+        await saveOpportunity({ data: { opportunityId: id } });
+        setIsSaved(true);
+      }
+      await router.invalidate();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  const related = items.filter((x) => x.category === o.category && x.id !== o.id).slice(0, 3);
   return (
     <SiteLayout>
       <article className="mx-auto max-w-[860px] px-6 py-16">
@@ -44,9 +88,7 @@ function Detail() {
         </Link>
 
         <div className="mt-8 flex items-start gap-5">
-          <div className="flex h-16 w-16 items-center justify-center border border-border bg-primary-soft font-serif text-3xl text-primary">
-            {o.logo}
-          </div>
+          <OpportunityLogo logo={o.logo} org={o.org} />
           <div>
             <div className="text-[13.5px] text-muted-foreground">{o.org}</div>
             <h1 className="mt-1 font-serif text-[44px] leading-[1.1] md:text-[56px]">{o.name}</h1>
@@ -70,14 +112,34 @@ function Detail() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-wrap gap-3">
-          <button className="inline-flex h-11 items-center bg-primary px-5 text-[14px] font-medium text-primary-foreground hover:bg-primary-dark">
-            Apply Now →
-          </button>
-          <button className="inline-flex h-11 items-center border border-border bg-background px-5 text-[14px] hover:bg-muted">
-            Save Opportunity
+        <div className="mt-12 flex flex-wrap items-center gap-3">
+          {o.sourceUrl ? (
+            <a
+              href={o.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-11 items-center bg-primary px-5 text-[14px] font-medium text-primary-foreground hover:bg-primary-dark"
+            >
+              Apply Now →
+            </a>
+          ) : (
+            <span className="inline-flex h-11 items-center bg-muted px-5 text-[14px] text-muted-foreground">
+              Apply link unavailable
+            </span>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className={`inline-flex h-11 items-center border px-5 text-[14px] transition-colors disabled:opacity-50 ${
+              isSaved
+                ? "border-primary bg-primary/5 text-primary"
+                : "border-border bg-background hover:bg-muted"
+            }`}
+          >
+            {saving ? "Saving…" : !user ? "Sign in to save" : isSaved ? "Saved ✓" : "Save Opportunity"}
           </button>
         </div>
+        {saveError && <p className="mt-2 text-[13px] text-destructive">{saveError}</p>}
 
         <div className="prose mt-14 max-w-none">
           <h2 className="font-serif text-[28px]">About this program</h2>
@@ -100,9 +162,7 @@ function Detail() {
             <ul className="mt-5 divide-y divide-border border-y border-border">
               {related.map((r) => (
                 <li key={r.id} className="flex items-center gap-3 py-3">
-                  <div className="flex h-9 w-9 items-center justify-center border border-border bg-primary-soft font-serif text-base text-primary">
-                    {r.logo}
-                  </div>
+                  <OpportunityLogo logo={r.logo} org={r.org} size="sm" />
                   <Link
                     to="/opportunities/$id"
                     params={{ id: r.id }}
@@ -118,5 +178,31 @@ function Detail() {
         )}
       </article>
     </SiteLayout>
+  );
+}
+
+function OpportunityLogo({
+  logo,
+  org,
+  size = "lg",
+}: {
+  logo: string;
+  org: string;
+  size?: "sm" | "lg";
+}) {
+  const dim = size === "lg" ? "h-16 w-16 text-3xl" : "h-9 w-9 text-base";
+  if (logo?.startsWith("http")) {
+    return (
+      <div className={`flex shrink-0 items-center justify-center border border-border bg-primary-soft overflow-hidden ${dim}`}>
+        <img src={logo} alt={org} className="h-full w-full object-contain p-1.5" />
+      </div>
+    );
+  }
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center border border-border bg-primary-soft font-serif text-primary ${dim}`}
+    >
+      {logo || org.charAt(0).toUpperCase()}
+    </div>
   );
 }

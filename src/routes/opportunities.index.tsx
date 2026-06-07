@@ -4,6 +4,11 @@ import { z } from "zod";
 import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
 import { listOpportunities } from "@/lib/api/opportunities.functions";
+import {
+  classifyDeadline,
+  DEADLINE_FILTER_OPTIONS,
+  type DeadlineFilter,
+} from "@/lib/deadline-status";
 
 export const Route = createFileRoute("/opportunities/")({
   head: () => ({
@@ -35,8 +40,9 @@ function OpportunitiesPage() {
   const [ind, setInd] = useState("All");
   const [stage, setStage] = useState("All");
   const [loc, setLoc] = useState("All");
+  const [deadline, setDeadline] = useState<DeadlineFilter>("all");
 
-  const filtered = useMemo(() => {
+  const baseFiltered = useMemo(() => {
     return opportunities.filter((o) => {
       if (q && !`${o.name} ${o.org} ${o.short} ${o.description}`.toLowerCase().includes(q.toLowerCase()))
         return false;
@@ -47,6 +53,26 @@ function OpportunitiesPage() {
       return true;
     });
   }, [opportunities, q, cat, ind, stage, loc]);
+
+  const deadlineCounts = useMemo(() => {
+    const counts: Record<DeadlineFilter, number> = {
+      all: baseFiltered.length,
+      rolling: 0,
+      closing_week: 0,
+      closing_month: 0,
+      closing_later: 0,
+      closed: 0,
+    };
+    for (const o of baseFiltered) {
+      counts[classifyDeadline(o.deadline)] += 1;
+    }
+    return counts;
+  }, [baseFiltered]);
+
+  const filtered = useMemo(() => {
+    if (deadline === "all") return baseFiltered;
+    return baseFiltered.filter((o) => classifyDeadline(o.deadline) === deadline);
+  }, [baseFiltered, deadline]);
 
   return (
     <SiteLayout>
@@ -77,6 +103,15 @@ function OpportunitiesPage() {
             <FilterGroup label="Industry" value={ind} setValue={setInd} options={industries} />
             <FilterGroup label="Stage" value={stage} setValue={setStage} options={stages} />
             <FilterGroup label="Location" value={loc} setValue={setLoc} options={locations} />
+            <DeadlineFilterGroup
+              value={deadline}
+              setValue={setDeadline}
+              options={DEADLINE_FILTER_OPTIONS.map((o) => ({
+                id: o.id,
+                label: o.label,
+                count: deadlineCounts[o.id],
+              }))}
+            />
           </aside>
 
           <div>
@@ -106,6 +141,42 @@ function OpportunitiesPage() {
         </div>
       </section>
     </SiteLayout>
+  );
+}
+
+function DeadlineFilterGroup({
+  value,
+  setValue,
+  options,
+}: {
+  value: DeadlineFilter;
+  setValue: (v: DeadlineFilter) => void;
+  options: { id: DeadlineFilter; label: string; count: number }[];
+}) {
+  return (
+    <div>
+      <div className="mb-3 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+        Deadline
+      </div>
+      <ul className="space-y-1.5">
+        {options.map((o) => (
+          <li key={o.id}>
+            <button
+              onClick={() => setValue(o.id)}
+              className={
+                "flex w-full items-center justify-between gap-3 text-[13.5px] " +
+                (value === o.id
+                  ? "text-primary underline underline-offset-2"
+                  : "text-foreground/80 hover:text-primary")
+              }
+            >
+              <span>{o.label}</span>
+              <span className="text-[11.5px] tabular-nums text-muted-foreground">{o.count}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

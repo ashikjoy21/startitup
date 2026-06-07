@@ -19,7 +19,11 @@ dist-ssr
 .env.*
 !.env.example
 data/
-!data/meity-network.json
+
+# Internal / local-only
+docs/superpowers/
+.lovable/
+scripts/import_to_supabase.py
 
 # Wrangler / Cloudflare
 .wrangler/

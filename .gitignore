@@ -18,12 +18,15 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Local data, import scripts, and DB migrations (keep off public repo)
 data/
+scripts/
+supabase/
 
 # Internal / local-only
 docs/superpowers/
 .lovable/
-scripts/import_to_supabase.py
 
 # Wrangler / Cloudflare
 .wrangler/

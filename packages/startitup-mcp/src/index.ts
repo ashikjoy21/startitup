@@ -5,12 +5,14 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { readSavedApiKey } from "./config.js";
+import { runOnboarding } from "./onboarding.js";
 
 const DEFAULT_ENDPOINT = "https://startitup.in/api/mcp";
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  let apiKey = process.env.STARTITUP_API_KEY ?? "";
+  let apiKey = process.env.STARTITUP_API_KEY ?? readSavedApiKey();
   let endpoint = process.env.STARTITUP_MCP_ENDPOINT ?? DEFAULT_ENDPOINT;
 
   for (let i = 0; i < args.length; i++) {
@@ -117,15 +119,18 @@ async function callRemote(
 }
 
 async function main() {
-  const { apiKey, endpoint } = parseArgs();
+  let { apiKey, endpoint } = parseArgs();
 
   if (!apiKey) {
-    console.error(
-      "Error: API key required.\n" +
-        "  Set STARTITUP_API_KEY env var, or pass --api-key siu_live_xxx\n" +
-        "  Get your key at https://startitup.in/profile",
-    );
-    process.exit(1);
+    if (!process.stdout.isTTY) {
+      process.stderr.write(
+        "Error: API key required.\n" +
+          "  Set STARTITUP_API_KEY env var, or pass --api-key siu_live_xxx\n" +
+          "  Get your key at https://startitup.in/profile\n"
+      );
+      process.exit(1);
+    }
+    apiKey = await runOnboarding(endpoint);
   }
 
   const server = new Server(

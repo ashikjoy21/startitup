@@ -37,6 +37,7 @@ import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
 import { Route as InvestorsIdRouteImport } from './routes/investors.$id'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as ApiMcpRouteImport } from './routes/api/mcp'
 
 const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
   id: '/success-stories',
@@ -178,6 +179,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMcpRoute = ApiMcpRouteImport.update({
+  id: '/api/mcp',
+  path: '/api/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/success-stories'
     | '/auth/callback'
+    | '/api/mcp'
     | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/success-stories'
     | '/auth/callback'
+    | '/api/mcp'
     | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/success-stories'
     | '/auth/callback'
+    | '/api/mcp'
     | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
@@ -376,6 +388,7 @@ export interface RootRouteChildren {
   SubmitRoute: typeof SubmitRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  ApiMcpRoute: typeof ApiMcpRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -576,6 +589,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mcp': {
+      id: '/api/mcp'
+      path: '/api/mcp'
+      fullPath: '/api/mcp'
+      preLoaderRoute: typeof ApiMcpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -656,7 +676,18 @@ const rootRouteChildren: RootRouteChildren = {
   SubmitRoute: SubmitRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  ApiMcpRoute: ApiMcpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

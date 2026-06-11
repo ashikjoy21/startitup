@@ -2,7 +2,7 @@ const KSUM_LOGO = "/logos/kerala-startup-mission.svg";
 
 const ORG_LOGO_OVERRIDES: Array<{ test: (org: string) => boolean; src: string }> = [
   {
-    test: (org) => /kerala startup mission|\bksum\b/i.test(org),
+    test: (org) => /kerala startup mission|\bksum\b|startupmission\.kerala/i.test(org),
     src: KSUM_LOGO,
   },
 ];

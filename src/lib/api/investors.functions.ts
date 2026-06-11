@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import { z } from "zod";
+import uiBundle from "../../data/investor-ui-bundle.json";
 import type {
   FundingRoundListItem,
   InvestorDetail,
@@ -33,19 +32,10 @@ const startupFiltersSchema = z.object({
   offset: z.number().int().min(0).default(0),
 });
 
-let bundleCache: InvestorUiBundle | null = null;
-
 function loadBundle(): InvestorUiBundle {
-  if (bundleCache) return bundleCache;
-  const path = join(process.cwd(), "data/investor-ecosystem/ui-bundle.json");
-  if (!existsSync(path)) {
-    throw new Error(
-      "Investor data not built. Run: npm run investors:enrich && npm run investors:ui",
-    );
-  }
-  bundleCache = JSON.parse(readFileSync(path, "utf8")) as InvestorUiBundle;
-  if (!bundleCache.funded_startups) bundleCache.funded_startups = [];
-  return bundleCache;
+  const bundle = uiBundle as InvestorUiBundle;
+  if (!bundle.funded_startups) bundle.funded_startups = [];
+  return bundle;
 }
 
 function filterInvestors(items: InvestorListItem[], filters: z.infer<typeof listFiltersSchema>) {

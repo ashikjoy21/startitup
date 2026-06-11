@@ -1,5 +1,6 @@
 import type { DbOpportunity } from "./database.types";
 import type { Opportunity } from "./opportunities";
+import { resolveOpportunityLogo } from "./org-logos";
 
 export function toOpportunity(row: DbOpportunity): Opportunity {
   return {
@@ -15,7 +16,7 @@ export function toOpportunity(row: DbOpportunity): Opportunity {
     amount: row.amount,
     deadline: row.deadline,
     eligibility: row.eligibility,
-    logo: row.logo,
+    logo: resolveOpportunityLogo(row.org, row.logo),
     sourceUrl: row.source_url,
     tags: row.tags ?? [],
   };

@@ -1,18 +1,25 @@
 import { Link, useNavigate, useLocation, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import type { Opportunity } from "@/lib/opportunities";
+import { isImageLogo } from "@/lib/org-logos";
 import { Route as RootRoute } from "@/routes/__root";
 import { saveOpportunity, unsaveOpportunity } from "@/lib/api/auth.functions";
 
 function OrgLogo({ logo, org, size = 12 }: { logo: string; org: string; size?: number }) {
+  const [imgError, setImgError] = useState(false);
   const px = size * 4;
   const style = { width: px, height: px, minWidth: px };
   const base =
     "flex shrink-0 items-center justify-center border border-border bg-primary-soft overflow-hidden";
-  if (logo?.startsWith("http")) {
+  if (isImageLogo(logo) && !imgError) {
     return (
       <div className={base} style={style}>
-        <img src={logo} alt={org} className="h-full w-full object-contain p-1.5" />
+        <img
+          src={logo}
+          alt={org}
+          className="h-full w-full object-contain p-1.5"
+          onError={() => setImgError(true)}
+        />
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
+import { isImageLogo } from "@/lib/org-logos";
 import { Route as RootRoute } from "@/routes/__root";
 import { saveOpportunity, unsaveOpportunity } from "@/lib/api/auth.functions";
 import { getOpportunityById, listOpportunities } from "@/lib/api/opportunities.functions";
@@ -83,9 +84,12 @@ function Detail() {
   return (
     <SiteLayout>
       <article className="mx-auto max-w-[860px] px-6 py-16">
-        <Link to="/opportunities" className="text-[13px] text-muted-foreground hover:text-primary">
+        <button
+          onClick={() => router.history.back()}
+          className="text-[13px] text-muted-foreground hover:text-primary"
+        >
           ← All opportunities
-        </Link>
+        </button>
 
         <div className="mt-8 flex items-start gap-5">
           <OpportunityLogo logo={o.logo} org={o.org} />
@@ -190,11 +194,17 @@ function OpportunityLogo({
   org: string;
   size?: "sm" | "lg";
 }) {
+  const [imgError, setImgError] = useState(false);
   const dim = size === "lg" ? "h-16 w-16 text-3xl" : "h-9 w-9 text-base";
-  if (logo?.startsWith("http")) {
+  if (isImageLogo(logo) && !imgError) {
     return (
       <div className={`flex shrink-0 items-center justify-center border border-border bg-primary-soft overflow-hidden ${dim}`}>
-        <img src={logo} alt={org} className="h-full w-full object-contain p-1.5" />
+        <img
+          src={logo}
+          alt={org}
+          className="h-full w-full object-contain p-1.5"
+          onError={() => setImgError(true)}
+        />
       </div>
     );
   }
@@ -202,7 +212,7 @@ function OpportunityLogo({
     <div
       className={`flex shrink-0 items-center justify-center border border-border bg-primary-soft font-serif text-primary ${dim}`}
     >
-      {logo || org.charAt(0).toUpperCase()}
+      {org.charAt(0).toUpperCase()}
     </div>
   );
 }

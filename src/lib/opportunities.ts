@@ -410,7 +410,7 @@ export const seedOpportunities: Opportunity[] = [
     amount: "Up to ₹15,00,000",
     deadline: "Rolling",
     eligibility: "Startups based in Kerala or willing to relocate.",
-    logo: "K",
+    logo: "/logos/kerala-startup-mission.svg",
     sourceUrl: "https://startupmission.kerala.gov.in/",
   },
   {

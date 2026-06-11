@@ -1,9 +1,10 @@
 import { createFileRoute, Link, redirect, useNavigate, useRouter } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { LocationPicker } from "@/components/location-picker";
 import { loadProfile, upsertProfile } from "@/lib/api/auth.functions";
+import { listApiKeys, generateApiKey, revokeApiKey, type ApiKeyRow } from "@/lib/api/mcp.functions";
 import { clearDismissedRecommendations } from "@/lib/profile-fingerprint";
 import {
   PROFILE_FUNDING_STATUSES,
@@ -112,6 +113,7 @@ function Profile() {
 
       <section className="mx-auto max-w-[1280px] px-6 py-12">
         <form onSubmit={handleSubmit} className="max-w-md space-y-6">
+
           <div className="space-y-1.5">
             <label htmlFor="startupName" className={labelClass}>
               Startup Name
@@ -280,7 +282,194 @@ function Profile() {
             .
           </p>
         </form>
+
+        <div className="mt-16 max-w-md border-t border-border pt-12">
+          <h2 className="font-serif text-[28px]">API Access</h2>
+          <p className="mt-2 text-[13.5px] text-muted-foreground">
+            Use your API key to connect AI agents (Claude Code, Cursor, Windsurf) to StartItUp
+            via the{" "}
+            <a
+              href="https://modelcontextprotocol.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Model Context Protocol
+            </a>
+            .
+          </p>
+          <ApiKeyManager />
+        </div>
       </section>
     </SiteLayout>
+  );
+}
+
+function ApiKeyManager() {
+  const [keys, setKeys] = useState<ApiKeyRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [newKey, setNewKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [keyName, setKeyName] = useState("Default");
+  const [error, setError] = useState<string | null>(null);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadKeys = useCallback(async () => {
+    try {
+      const result = await listApiKeys();
+      setKeys(result.items);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load keys");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadKeys();
+    return () => {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    };
+  }, [loadKeys]);
+
+  async function handleGenerate() {
+    setGenerating(true);
+    setError(null);
+    try {
+      const result = await generateApiKey({ data: { name: keyName || "Default" } });
+      setNewKey(result.key);
+      setKeyName("Default");
+      await loadKeys();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to generate key");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  async function handleRevoke(id: string) {
+    if (!confirm("Revoke this API key? This cannot be undone.")) return;
+    try {
+      await revokeApiKey({ data: { id } });
+      await loadKeys();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to revoke key");
+    }
+  }
+
+  function handleCopy() {
+    if (!newKey) return;
+    navigator.clipboard.writeText(newKey);
+    setCopied(true);
+    copiedTimerRef.current = setTimeout(() => setCopied(false), 2000);
+  }
+
+  const inputClass =
+    "w-full border border-border bg-background px-3 py-2.5 text-[14px] focus:outline-none focus:ring-1 focus:ring-primary";
+  const activeKeys = keys.filter((k) => !k.revoked_at);
+
+  if (loading) {
+    return <p className="mt-6 text-[13px] text-muted-foreground">Loading…</p>;
+  }
+
+  return (
+    <div className="mt-6 space-y-6">
+      {error && <p className="text-[13px] text-destructive">{error}</p>}
+
+      {newKey && (
+        <div className="border border-primary/30 bg-primary/5 p-4 space-y-3">
+          <p className="text-[12.5px] font-medium text-primary">
+            Copy your API key — it won't be shown again.
+          </p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 break-all rounded bg-muted px-2 py-1.5 text-[12px]">
+              {newKey}
+            </code>
+            <button
+              onClick={handleCopy}
+              className="shrink-0 border border-border px-3 py-1.5 text-[12.5px] hover:bg-muted"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+          <button
+            onClick={() => setNewKey(null)}
+            className="text-[12px] text-muted-foreground hover:underline"
+          >
+            I've saved it, dismiss
+          </button>
+        </div>
+      )}
+
+      {activeKeys.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[12.5px] font-medium text-muted-foreground">Active keys</p>
+          {activeKeys.map((k) => (
+            <div
+              key={k.id}
+              className="flex items-center justify-between border border-border px-3 py-2.5"
+            >
+              <div>
+                <p className="text-[13.5px] font-medium">{k.name}</p>
+                <p className="text-[11.5px] text-muted-foreground">
+                  Created {new Date(k.created_at).toLocaleDateString("en-IN")}
+                  {k.last_used_at
+                    ? ` · Last used ${new Date(k.last_used_at).toLocaleDateString("en-IN")}`
+                    : " · Never used"}
+                </p>
+              </div>
+              <button
+                onClick={() => handleRevoke(k.id)}
+                className="text-[12px] text-destructive hover:underline"
+              >
+                Revoke
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <label htmlFor="keyName" className="block text-[12.5px] font-medium text-muted-foreground">
+            Key name
+          </label>
+          <input
+            id="keyName"
+            type="text"
+            value={keyName}
+            onChange={(e) => setKeyName(e.target.value)}
+            placeholder="e.g. Claude Code"
+            className={inputClass}
+            maxLength={64}
+          />
+        </div>
+        <button
+          onClick={handleGenerate}
+          disabled={generating}
+          className="bg-primary px-6 py-2.5 text-[13.5px] font-medium text-primary-foreground disabled:opacity-50 hover:opacity-90"
+        >
+          {generating ? "Generating…" : "Generate API key"}
+        </button>
+      </div>
+
+      {activeKeys.length === 0 && !newKey && (
+        <p className="text-[13px] text-muted-foreground">No active API keys.</p>
+      )}
+
+      <div className="border border-border p-4 space-y-2">
+        <p className="text-[12.5px] font-medium">Usage in Claude Code</p>
+        <p className="text-[12px] text-muted-foreground">Add to your <code className="rounded bg-muted px-1 py-0.5">~/.claude/settings.json</code>:</p>
+        <pre className="overflow-x-auto rounded bg-muted p-3 text-[11.5px]">{`{
+  "mcpServers": {
+    "startitup": {
+      "command": "npx",
+      "args": ["startitup-mcp", "--api-key", "siu_live_..."]
+    }
+  }
+}`}</pre>
+      </div>
+    </div>
   );
 }

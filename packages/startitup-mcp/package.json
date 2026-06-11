@@ -1,0 +1,27 @@
+{
+  "name": "startitup-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for StartItUp.in — search Indian startup opportunities from any AI agent",
+  "keywords": ["mcp", "startitup", "startups", "india", "grants", "accelerators", "ai-agent"],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "startitup-mcp": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^22.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

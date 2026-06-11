@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as StartupsRouteImport } from './routes/startups'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -19,16 +20,22 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as InvestorsRouteImport } from './routes/investors'
 import { Route as IncubatorsRouteImport } from './routes/incubators'
+import { Route as FundingRouteImport } from './routes/funding'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AcceleratorsRouteImport } from './routes/accelerators'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StartupsIndexRouteImport } from './routes/startups.index'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
+import { Route as InvestorsIndexRouteImport } from './routes/investors.index'
+import { Route as StartupsIdRouteImport } from './routes/startups.$id'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
+import { Route as InvestorsIdRouteImport } from './routes/investors.$id'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 
 const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
@@ -39,6 +46,11 @@ const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StartupsRoute = StartupsRouteImport.update({
+  id: '/startups',
+  path: '/startups',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -81,9 +93,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvestorsRoute = InvestorsRouteImport.update({
+  id: '/investors',
+  path: '/investors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IncubatorsRoute = IncubatorsRouteImport.update({
   id: '/incubators',
   path: '/incubators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundingRoute = FundingRouteImport.update({
+  id: '/funding',
+  path: '/funding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -111,6 +133,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StartupsIndexRoute = StartupsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StartupsRoute,
+} as any)
 const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -121,6 +148,16 @@ const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OpportunitiesRoute,
 } as any)
+const InvestorsIndexRoute = InvestorsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InvestorsRoute,
+} as any)
+const StartupsIdRoute = StartupsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => StartupsRoute,
+} as any)
 const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -130,6 +167,11 @@ const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => OpportunitiesRoute,
+} as any)
+const InvestorsIdRoute = InvestorsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => InvestorsRoute,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
@@ -143,7 +185,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
+  '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
+  '/investors': typeof InvestorsRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -152,13 +196,18 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
+  '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/startups/$id': typeof StartupsIdRoute
+  '/investors/': typeof InvestorsIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/startups/': typeof StartupsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -166,6 +215,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
+  '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -176,10 +226,14 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/startups/$id': typeof StartupsIdRoute
+  '/investors': typeof InvestorsIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
   '/resources': typeof ResourcesIndexRoute
+  '/startups': typeof StartupsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -188,7 +242,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
+  '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
+  '/investors': typeof InvestorsRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -197,13 +253,18 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
+  '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/startups/$id': typeof StartupsIdRoute
+  '/investors/': typeof InvestorsIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/startups/': typeof StartupsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -213,7 +274,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calculator'
     | '/dashboard'
+    | '/funding'
     | '/incubators'
+    | '/investors'
     | '/login'
     | '/logout'
     | '/newsletter'
@@ -222,13 +285,18 @@ export interface FileRouteTypes {
     | '/profile'
     | '/resources'
     | '/saved'
+    | '/startups'
     | '/submit'
     | '/success-stories'
     | '/auth/callback'
+    | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
+    | '/startups/$id'
+    | '/investors/'
     | '/opportunities/'
     | '/resources/'
+    | '/startups/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -236,6 +304,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calculator'
     | '/dashboard'
+    | '/funding'
     | '/incubators'
     | '/login'
     | '/logout'
@@ -246,10 +315,14 @@ export interface FileRouteTypes {
     | '/submit'
     | '/success-stories'
     | '/auth/callback'
+    | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
+    | '/startups/$id'
+    | '/investors'
     | '/opportunities'
     | '/resources'
+    | '/startups'
   id:
     | '__root__'
     | '/'
@@ -257,7 +330,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calculator'
     | '/dashboard'
+    | '/funding'
     | '/incubators'
+    | '/investors'
     | '/login'
     | '/logout'
     | '/newsletter'
@@ -266,13 +341,18 @@ export interface FileRouteTypes {
     | '/profile'
     | '/resources'
     | '/saved'
+    | '/startups'
     | '/submit'
     | '/success-stories'
     | '/auth/callback'
+    | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
+    | '/startups/$id'
+    | '/investors/'
     | '/opportunities/'
     | '/resources/'
+    | '/startups/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -281,7 +361,9 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   CalculatorRoute: typeof CalculatorRoute
   DashboardRoute: typeof DashboardRoute
+  FundingRoute: typeof FundingRoute
   IncubatorsRoute: typeof IncubatorsRoute
+  InvestorsRoute: typeof InvestorsRouteWithChildren
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   NewsletterRoute: typeof NewsletterRoute
@@ -290,6 +372,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   SavedRoute: typeof SavedRoute
+  StartupsRoute: typeof StartupsRouteWithChildren
   SubmitRoute: typeof SubmitRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -309,6 +392,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/submit'
       preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/startups': {
+      id: '/startups'
+      path: '/startups'
+      fullPath: '/startups'
+      preLoaderRoute: typeof StartupsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -367,11 +457,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/investors': {
+      id: '/investors'
+      path: '/investors'
+      fullPath: '/investors'
+      preLoaderRoute: typeof InvestorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/incubators': {
       id: '/incubators'
       path: '/incubators'
       fullPath: '/incubators'
       preLoaderRoute: typeof IncubatorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/funding': {
+      id: '/funding'
+      path: '/funding'
+      fullPath: '/funding'
+      preLoaderRoute: typeof FundingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -409,6 +513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/startups/': {
+      id: '/startups/'
+      path: '/'
+      fullPath: '/startups/'
+      preLoaderRoute: typeof StartupsIndexRouteImport
+      parentRoute: typeof StartupsRoute
+    }
     '/resources/': {
       id: '/resources/'
       path: '/'
@@ -422,6 +533,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/opportunities/'
       preLoaderRoute: typeof OpportunitiesIndexRouteImport
       parentRoute: typeof OpportunitiesRoute
+    }
+    '/investors/': {
+      id: '/investors/'
+      path: '/'
+      fullPath: '/investors/'
+      preLoaderRoute: typeof InvestorsIndexRouteImport
+      parentRoute: typeof InvestorsRoute
+    }
+    '/startups/$id': {
+      id: '/startups/$id'
+      path: '/$id'
+      fullPath: '/startups/$id'
+      preLoaderRoute: typeof StartupsIdRouteImport
+      parentRoute: typeof StartupsRoute
     }
     '/resources/$slug': {
       id: '/resources/$slug'
@@ -437,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdRouteImport
       parentRoute: typeof OpportunitiesRoute
     }
+    '/investors/$id': {
+      id: '/investors/$id'
+      path: '/$id'
+      fullPath: '/investors/$id'
+      preLoaderRoute: typeof InvestorsIdRouteImport
+      parentRoute: typeof InvestorsRoute
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -446,6 +578,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface InvestorsRouteChildren {
+  InvestorsIdRoute: typeof InvestorsIdRoute
+  InvestorsIndexRoute: typeof InvestorsIndexRoute
+}
+
+const InvestorsRouteChildren: InvestorsRouteChildren = {
+  InvestorsIdRoute: InvestorsIdRoute,
+  InvestorsIndexRoute: InvestorsIndexRoute,
+}
+
+const InvestorsRouteWithChildren = InvestorsRoute._addFileChildren(
+  InvestorsRouteChildren,
+)
 
 interface OpportunitiesRouteChildren {
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
@@ -475,13 +621,29 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
   ResourcesRouteChildren,
 )
 
+interface StartupsRouteChildren {
+  StartupsIdRoute: typeof StartupsIdRoute
+  StartupsIndexRoute: typeof StartupsIndexRoute
+}
+
+const StartupsRouteChildren: StartupsRouteChildren = {
+  StartupsIdRoute: StartupsIdRoute,
+  StartupsIndexRoute: StartupsIndexRoute,
+}
+
+const StartupsRouteWithChildren = StartupsRoute._addFileChildren(
+  StartupsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcceleratorsRoute: AcceleratorsRoute,
   AdminRoute: AdminRoute,
   CalculatorRoute: CalculatorRoute,
   DashboardRoute: DashboardRoute,
+  FundingRoute: FundingRoute,
   IncubatorsRoute: IncubatorsRoute,
+  InvestorsRoute: InvestorsRouteWithChildren,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   NewsletterRoute: NewsletterRoute,
@@ -490,6 +652,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   SavedRoute: SavedRoute,
+  StartupsRoute: StartupsRouteWithChildren,
   SubmitRoute: SubmitRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
   AuthCallbackRoute: AuthCallbackRoute,
@@ -497,13 +660,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

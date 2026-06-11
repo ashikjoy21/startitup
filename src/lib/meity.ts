@@ -1,4 +1,5 @@
 import rawData from "../../data/meity-network.json";
+// Generated from data/meity.json — run: npm run meity:network
 
 export interface MeityOrg {
   id: string;

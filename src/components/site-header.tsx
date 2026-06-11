@@ -72,6 +72,27 @@ export function SiteHeader() {
                 >
                   Accelerators
                 </Link>
+                <Link
+                  to="/investors"
+                  onClick={() => setDirOpen(false)}
+                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
+                >
+                  Investors
+                </Link>
+                <Link
+                  to="/funding"
+                  onClick={() => setDirOpen(false)}
+                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
+                >
+                  Funding rounds
+                </Link>
+                <Link
+                  to="/startups"
+                  onClick={() => setDirOpen(false)}
+                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
+                >
+                  Funded startups
+                </Link>
               </div>
             )}
           </div>

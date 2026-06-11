@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
 import { listOpportunities } from "@/lib/api/opportunities.functions";
+import { getInvestorMeta } from "@/lib/api/investors.functions";
 import { meityIncubators, meityAccelerators } from "@/lib/meity";
 import { defaultCategories } from "@/lib/opportunities";
 
@@ -26,13 +27,20 @@ export const Route = createFileRoute("/")({
   }),
   loader: async () => {
     const list = await listOpportunities({ data: { limit: 1, offset: 0 } });
-    return { total: list.total, source: list.source };
+    let investorCounts = { investors: 0, funding_rounds: 0 };
+    try {
+      const meta = await getInvestorMeta();
+      investorCounts = meta.counts;
+    } catch {
+      /* investor bundle not built yet */
+    }
+    return { total: list.total, source: list.source, investorCounts };
   },
   component: Index,
 });
 
 function Index() {
-  const { total, source } = Route.useLoaderData();
+  const { total, source, investorCounts } = Route.useLoaderData();
 
   return (
     <SiteLayout>
@@ -74,8 +82,18 @@ function Index() {
           {[
             [INCUBATOR_COUNT.toString(), "Incubators"],
             [ACCELERATOR_COUNT.toString(), "Accelerators"],
-            [`${total}+`, "Opportunities"],
-            ["Weekly", "Updated"],
+            [
+              investorCounts.investors > 0
+                ? `${investorCounts.investors.toLocaleString()}+`
+                : `${total}+`,
+              investorCounts.investors > 0 ? "Investors" : "Opportunities",
+            ],
+            [
+              investorCounts.funding_rounds > 0
+                ? `${investorCounts.funding_rounds.toLocaleString()}+`
+                : "Weekly",
+              investorCounts.funding_rounds > 0 ? "Funding rounds" : "Updated",
+            ],
           ].map(([n, l]) => (
             <div key={l} className="px-8 py-10">
               <div className="font-serif text-[44px] leading-none text-foreground">{n}</div>
@@ -109,6 +127,34 @@ function Index() {
               </Link>
             ))}
           </div>
+          {(investorCounts.investors > 0 || investorCounts.funding_rounds > 0) && (
+            <div className="mt-8 flex flex-wrap gap-4">
+              {investorCounts.investors > 0 && (
+                <Link
+                  to="/investors"
+                  className="border border-border bg-card px-6 py-4 text-[14px] hover:border-primary/40"
+                >
+                  Browse {investorCounts.investors.toLocaleString()} investors →
+                </Link>
+              )}
+              {investorCounts.funding_rounds > 0 && (
+                <Link
+                  to="/funding"
+                  className="border border-border bg-card px-6 py-4 text-[14px] hover:border-primary/40"
+                >
+                  {investorCounts.funding_rounds.toLocaleString()} funding rounds →
+                </Link>
+              )}
+              {(investorCounts.funded_startups ?? 0) > 0 && (
+                <Link
+                  to="/startups"
+                  className="border border-border bg-card px-6 py-4 text-[14px] hover:border-primary/40"
+                >
+                  {(investorCounts.funded_startups ?? 0).toLocaleString()} funded startups →
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </SiteLayout>

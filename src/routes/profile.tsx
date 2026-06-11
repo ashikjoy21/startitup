@@ -1,5 +1,6 @@
 import { createFileRoute, Link, redirect, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { z } from "zod";
 import { SiteLayout } from "@/components/site-layout";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { LocationPicker } from "@/components/location-picker";
@@ -20,8 +21,13 @@ const FUNDING_RAISED_OPTIONS = [
   "₹5Cr+",
 ];
 
+const profileSearchSchema = z.object({
+  tab: z.enum(["profile", "api"]).optional().default("profile"),
+});
+
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profile — StartItUp.in" }] }),
+  validateSearch: profileSearchSchema,
   loader: async () => {
     const result = await loadProfile();
     if (!result.authenticated) throw redirect({ to: "/login", search: { redirect: "/profile" } });
@@ -32,6 +38,7 @@ export const Route = createFileRoute("/profile")({
 
 function Profile() {
   const { profile } = Route.useLoaderData();
+  const { tab } = Route.useSearch();
   const navigate = useNavigate();
   const router = useRouter();
 
@@ -99,6 +106,14 @@ function Profile() {
   const selectClass = inputClass;
   const labelClass = "block text-[12.5px] font-medium text-muted-foreground";
 
+  const tabClass = (active: boolean) =>
+    [
+      "shrink-0 border-b-2 px-4 py-3 text-[13px] font-medium transition-colors",
+      active
+        ? "border-primary text-primary"
+        : "border-transparent text-muted-foreground hover:text-foreground",
+    ].join(" ");
+
   return (
     <SiteLayout>
       <DashboardNav active="profile" />
@@ -111,7 +126,31 @@ function Profile() {
         </div>
       </section>
 
+      <div className="border-b border-border">
+        <div className="mx-auto max-w-[1280px] px-6">
+          <nav className="flex">
+            <Link
+              to="/profile"
+              search={{ tab: "profile" }}
+              className={tabClass(tab === "profile")}
+            >
+              Founder Profile
+            </Link>
+            <Link
+              to="/profile"
+              search={{ tab: "api" }}
+              className={tabClass(tab === "api")}
+            >
+              API Access
+            </Link>
+          </nav>
+        </div>
+      </div>
+
       <section className="mx-auto max-w-[1280px] px-6 py-12">
+        {tab === "api" ? (
+          <ApiTab />
+        ) : (
         <form onSubmit={handleSubmit} className="max-w-md space-y-6">
 
           <div className="space-y-1.5">
@@ -282,26 +321,30 @@ function Profile() {
             .
           </p>
         </form>
-
-        <div className="mt-16 max-w-md border-t border-border pt-12">
-          <h2 className="font-serif text-[28px]">API Access</h2>
-          <p className="mt-2 text-[13.5px] text-muted-foreground">
-            Use your API key to connect AI agents (Claude Code, Cursor, Windsurf) to StartItUp
-            via the{" "}
-            <a
-              href="https://modelcontextprotocol.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Model Context Protocol
-            </a>
-            .
-          </p>
-          <ApiKeyManager />
-        </div>
+        )}
       </section>
     </SiteLayout>
+  );
+}
+
+function ApiTab() {
+  return (
+    <div className="max-w-md">
+      <h2 className="font-serif text-[28px]">API Access</h2>
+      <p className="mt-2 text-[13.5px] text-muted-foreground">
+        Connect AI agents (Claude Code, Cursor, Windsurf) to StartItUp via the{" "}
+        <a
+          href="https://modelcontextprotocol.io"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Model Context Protocol
+        </a>
+        .
+      </p>
+      <ApiKeyManager />
+    </div>
   );
 }
 

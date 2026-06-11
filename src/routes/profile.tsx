@@ -423,7 +423,7 @@ function ApiKeyManager() {
       {newKey && (
         <div className="border border-primary/30 bg-primary/5 p-4 space-y-3">
           <p className="text-[12.5px] font-medium text-primary">
-            Copy your API key — it won't be shown again.
+            Copy your API key — it won&apos;t be shown again.
           </p>
           <div className="flex items-center gap-2">
             <code className="flex-1 break-all rounded bg-muted px-2 py-1.5 text-[12px]">
@@ -440,7 +440,7 @@ function ApiKeyManager() {
             onClick={() => setNewKey(null)}
             className="text-[12px] text-muted-foreground hover:underline"
           >
-            I've saved it, dismiss
+            I&apos;ve saved it, dismiss
           </button>
         </div>
       )}
@@ -502,13 +502,22 @@ function ApiKeyManager() {
       )}
 
       <div className="border border-border p-4 space-y-2">
-        <p className="text-[12.5px] font-medium">Usage in Claude Code</p>
-        <p className="text-[12px] text-muted-foreground">Add to your <code className="rounded bg-muted px-1 py-0.5">~/.claude/settings.json</code>:</p>
+        <p className="text-[12.5px] font-medium">Usage in Cursor / Claude</p>
+        <p className="text-[12px] text-muted-foreground">
+          Add to your MCP config:
+        </p>
         <pre className="overflow-x-auto rounded bg-muted p-3 text-[11.5px]">{`{
   "mcpServers": {
     "startitup": {
       "command": "npx",
-      "args": ["startitup-mcp", "--api-key", "siu_live_..."]
+      "args": [
+        "-y",
+        "startitup-mcp",
+        "--api-key",
+        "siu_live_...",
+        "--endpoint",
+        "https://startitup.ashikjoy21.workers.dev/api/mcp"
+      ]
     }
   }
 }`}</pre>

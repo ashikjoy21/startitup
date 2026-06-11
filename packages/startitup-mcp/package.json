@@ -4,6 +4,12 @@
   "description": "MCP server for StartItUp.in — search Indian startup opportunities from any AI agent",
   "keywords": ["mcp", "startitup", "startups", "india", "grants", "accelerators", "ai-agent"],
   "license": "MIT",
+  "homepage": "https://startitup.in",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashikjoy21/startitup.git",
+    "directory": "packages/startitup-mcp"
+  },
   "type": "module",
   "bin": {
     "startitup-mcp": "./dist/index.js"

@@ -516,7 +516,7 @@ function ApiKeyManager() {
         "--api-key",
         "siu_live_...",
         "--endpoint",
-        "https://startitup.ashikjoy21.workers.dev/api/mcp"
+        "https://startitup.in/api/mcp"
       ]
     }
   }

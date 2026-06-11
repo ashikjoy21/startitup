@@ -409,10 +409,10 @@ export const completeAuthCallback = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    const { supabase, getPending } = createSupabaseSSRClient();
-    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(data.code);
-
-    if (error || !sessionData.user) {
+    const supabaseUrl = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? "";
+    const anonKey = process.env.VITE_SUPABASE_ANON_KEY ?? "";
+    if (!supabaseUrl || !anonKey) {
+      console.error("Auth callback: missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY on server");
       return {
         ok: false as const,
         destination: "/login" as const,
@@ -420,7 +420,24 @@ export const completeAuthCallback = createServerFn({ method: "POST" })
       };
     }
 
-    const profile = await getProfile(sessionData.user.id);
+    const { supabase, getPending } = createSupabaseSSRClient();
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(data.code);
+
+    if (error || !sessionData.user) {
+      console.error("Auth callback: exchangeCodeForSession failed", error?.message);
+      return {
+        ok: false as const,
+        destination: "/login" as const,
+        cookieHeaders: [] as [string, string][],
+      };
+    }
+
+    let profile = null;
+    try {
+      profile = await getProfile(sessionData.user.id);
+    } catch (e) {
+      console.error("Auth callback: getProfile failed (check SUPABASE_SERVICE_ROLE_KEY)", e);
+    }
     const destination = profile ? (data.next ?? "/dashboard") : "/onboarding";
 
     const cookieHeaders = getPending().map((c): [string, string] => [

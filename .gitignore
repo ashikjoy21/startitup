@@ -21,6 +21,8 @@ dist-ssr
 
 # Local data, import scripts, and DB migrations (keep off public repo)
 data/
+!src/data/
+!src/data/**
 scripts/
 supabase/
 

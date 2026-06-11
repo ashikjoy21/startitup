@@ -117,7 +117,7 @@ function Index() {
               <Link
                 key={c}
                 to="/opportunities"
-                search={{ category: c }}
+                search={{ cat: c }}
                 className="group flex h-36 flex-col justify-between bg-card p-5 hover:bg-primary-soft"
               >
                 <span className="font-serif text-[22px] leading-tight">{c}</span>

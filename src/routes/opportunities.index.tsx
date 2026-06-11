@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { z } from "zod";
 import { SiteLayout } from "@/components/site-layout";
 import { OpportunityRow } from "@/components/opportunity-row";
@@ -22,7 +22,12 @@ export const Route = createFileRoute("/opportunities/")({
     ],
   }),
   validateSearch: z.object({
-    category: z.string().optional(),
+    q:        z.string().optional(),
+    cat:      z.string().optional(),
+    ind:      z.string().optional(),
+    stage:    z.string().optional(),
+    loc:      z.string().optional(),
+    deadline: z.enum(["all", "rolling", "closing_week", "closing_month", "closing_later", "closed"]).optional(),
   }),
   loader: () => listOpportunities({ data: { limit: 1000, offset: 0 } }),
   component: OpportunitiesPage,
@@ -34,13 +39,22 @@ const locations = ["All", "India", "Global", "USA"];
 
 function OpportunitiesPage() {
   const { items: opportunities, categories, total, source } = Route.useLoaderData();
-  const search = Route.useSearch();
-  const [q, setQ] = useState("");
-  const [cat, setCat] = useState<string>(search.category ?? "All");
-  const [ind, setInd] = useState("All");
-  const [stage, setStage] = useState("All");
-  const [loc, setLoc] = useState("All");
-  const [deadline, setDeadline] = useState<DeadlineFilter>("all");
+  const search   = Route.useSearch();
+  const navigate = useNavigate({ from: "/opportunities/" });
+
+  const q        = search.q        ?? "";
+  const cat      = search.cat      ?? "All";
+  const ind      = search.ind      ?? "All";
+  const stage    = search.stage    ?? "All";
+  const loc      = search.loc      ?? "All";
+  const deadline = search.deadline ?? "all";
+
+  const setQ        = (v: string)         => navigate({ search: (p) => ({ ...p, q:        v || undefined }),                      replace: true });
+  const setCat      = (v: string)         => navigate({ search: (p) => ({ ...p, cat:      v === "All" ? undefined : v }),          replace: true });
+  const setInd      = (v: string)         => navigate({ search: (p) => ({ ...p, ind:      v === "All" ? undefined : v }),          replace: true });
+  const setStage    = (v: string)         => navigate({ search: (p) => ({ ...p, stage:    v === "All" ? undefined : v }),          replace: true });
+  const setLoc      = (v: string)         => navigate({ search: (p) => ({ ...p, loc:      v === "All" ? undefined : v }),          replace: true });
+  const setDeadline = (v: DeadlineFilter) => navigate({ search: (p) => ({ ...p, deadline: v === "all"  ? undefined : v }),          replace: true });
 
   const baseFiltered = useMemo(() => {
     return opportunities.filter((o) => {

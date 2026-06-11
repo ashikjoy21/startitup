@@ -26,7 +26,6 @@ export const Route = createFileRoute("/opportunities/")({
     cat:      z.string().optional(),
     ind:      z.string().optional(),
     stage:    z.string().optional(),
-    loc:      z.string().optional(),
     deadline: z.enum(["all", "rolling", "closing_week", "closing_month", "closing_later", "closed"]).optional(),
   }),
   loader: () => listOpportunities({ data: { limit: 1000, offset: 0 } }),
@@ -35,8 +34,6 @@ export const Route = createFileRoute("/opportunities/")({
 
 const industries = ["All", "AI/ML", "DeepTech", "HealthTech", "AgriTech", "CleanTech", "Manufacturing", "FinTech", "Space", "Defence", "EdTech", "SaaS"];
 const stages = ["All", "Idea", "MVP", "Early Revenue", "Growth", "Any"];
-const locations = ["All", "India", "Global", "USA"];
-
 function OpportunitiesPage() {
   const { items: opportunities, categories, total, source } = Route.useLoaderData();
   const search   = Route.useSearch();
@@ -46,14 +43,12 @@ function OpportunitiesPage() {
   const cat      = search.cat      ?? "All";
   const ind      = search.ind      ?? "All";
   const stage    = search.stage    ?? "All";
-  const loc      = search.loc      ?? "All";
   const deadline = search.deadline ?? "all";
 
   const setQ        = (v: string)         => navigate({ search: (p) => ({ ...p, q:        v || undefined }),                      replace: true });
   const setCat      = (v: string)         => navigate({ search: (p) => ({ ...p, cat:      v === "All" ? undefined : v }),          replace: true });
   const setInd      = (v: string)         => navigate({ search: (p) => ({ ...p, ind:      v === "All" ? undefined : v }),          replace: true });
   const setStage    = (v: string)         => navigate({ search: (p) => ({ ...p, stage:    v === "All" ? undefined : v }),          replace: true });
-  const setLoc      = (v: string)         => navigate({ search: (p) => ({ ...p, loc:      v === "All" ? undefined : v }),          replace: true });
   const setDeadline = (v: DeadlineFilter) => navigate({ search: (p) => ({ ...p, deadline: v === "all"  ? undefined : v }),          replace: true });
 
   const baseFiltered = useMemo(() => {
@@ -63,10 +58,9 @@ function OpportunitiesPage() {
       if (cat !== "All" && o.category !== cat) return false;
       if (ind !== "All" && !o.industry.split(",").map((s) => s.trim()).includes(ind)) return false;
       if (stage !== "All" && !o.stage.split(",").map((s) => s.trim()).includes(stage)) return false;
-      if (loc !== "All" && !o.location.includes(loc)) return false;
       return true;
     });
-  }, [opportunities, q, cat, ind, stage, loc]);
+  }, [opportunities, q, cat, ind, stage]);
 
   const deadlineCounts = useMemo(() => {
     const counts: Record<DeadlineFilter, number> = {
@@ -116,7 +110,6 @@ function OpportunitiesPage() {
             <FilterGroup label="Category" value={cat} setValue={setCat} options={["All", ...categories]} />
             <FilterGroup label="Industry" value={ind} setValue={setInd} options={industries} />
             <FilterGroup label="Stage" value={stage} setValue={setStage} options={stages} />
-            <FilterGroup label="Location" value={loc} setValue={setLoc} options={locations} />
             <DeadlineFilterGroup
               value={deadline}
               setValue={setDeadline}

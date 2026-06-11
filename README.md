@@ -21,16 +21,7 @@ StartItUp.in is a free, open-source directory of **1,000+ startup opportunities*
 
 ## What's Inside
 
-| Category | Count |
-|---|---|
-| Grants | 338 |
-| Incubators | 194 |
-| Startup Credits | 141 |
-| Government Schemes | 105 |
-| Accelerators | 101 |
-| Competitions | 79 |
-| Fellowships | 24 |
-| Investor Programs | 18 |
+**1,000+ opportunities** across grants, startup credits, accelerators, incubators, government schemes, fellowships, competitions, and investor programs — all in one searchable directory, updated regularly.
 
 Plus a live **investor graph** with funded startups, funding rounds, and sector data for the Indian ecosystem.
 

@@ -63,7 +63,7 @@ export const Route = createFileRoute("/")({
   }),
   loader: async () => {
     const list = await listOpportunities({ data: { limit: 1, offset: 0 } });
-    let investorCounts = { investors: 0, funding_rounds: 0 };
+    let investorCounts = { investors: 0, funding_rounds: 0, funded_startups: 0, startups: 0 };
     try {
       const meta = await getInvestorMeta();
       investorCounts = meta.counts;

@@ -45,8 +45,6 @@ function FundingPage() {
       total={total}
       roundTypes={roundTypes}
       builtAt={meta.built_at}
-      sectorsVerified={meta.counts.sectors_verified}
-      sectorsVerifiedFunded={meta.counts.sectors_verified_funded}
     />
   );
 }

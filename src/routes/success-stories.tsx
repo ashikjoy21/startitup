@@ -6,7 +6,7 @@ import { successStories, SECTORS, type Sector } from "@/lib/success-stories";
 export const Route = createFileRoute("/success-stories")({
   head: () => ({
     meta: [
-      { title: "Success Stories — StartItUp.in" },
+      { title: "Success Stories — StartItUp" },
       {
         name: "description",
         content:

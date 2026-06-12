@@ -8,7 +8,7 @@ import { type OpportunityCategory, seedOpportunities } from "@/lib/opportunities
 export const Route = createFileRoute("/resources/$slug")({
   head: () => ({
     meta: [
-      { title: "Guide — StartItUp.in" },
+      { title: "Guide — StartItUp" },
       { name: "description", content: "Startup guide for Indian founders." },
     ],
   }),

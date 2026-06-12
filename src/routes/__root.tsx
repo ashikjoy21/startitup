@@ -79,10 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "StartItUp.in — Every startup opportunity in India." },
+      { title: "StartItUp — Every startup opportunity in India." },
       { name: "description", content: "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders." },
-      { name: "author", content: "StartItUp.in" },
-      { property: "og:title", content: "StartItUp.in — Every startup opportunity in India." },
+      { name: "author", content: "StartItUp" },
+      { property: "og:title", content: "StartItUp — Every startup opportunity in India." },
       { property: "og:description", content: "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

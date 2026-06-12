@@ -5,7 +5,7 @@ import { meityIncubators, MEITY_INCUBATOR_URL } from "@/lib/meity";
 export const Route = createFileRoute("/incubators")({
   head: () => ({
     meta: [
-      { title: "Incubators in India — StartItUp.in" },
+      { title: "Incubators in India — StartItUp" },
       {
         name: "description",
         content:

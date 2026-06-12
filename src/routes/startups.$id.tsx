@@ -8,14 +8,14 @@ export const Route = createFileRoute("/startups/$id")({
     meta: [
       {
         title: loaderData?.startup
-          ? `${loaderData.startup.name} — StartItUp.in`
-          : "Startup — StartItUp.in",
+          ? `${loaderData.startup.name} — StartItUp`
+          : "Startup — StartItUp",
       },
       {
         name: "description",
         content: loaderData?.startup
-          ? `${loaderData.startup.name} funding history, investors, and sector on StartItUp.in.`
-          : "Startup profile on StartItUp.in",
+          ? `${loaderData.startup.name} funding history, investors, and sector on StartItUp.`
+          : "Startup profile on StartItUp",
       },
     ],
   }),

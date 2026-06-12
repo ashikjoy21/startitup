@@ -14,7 +14,7 @@ const FUNDING_STATUSES = [
 ] as const;
 
 export const Route = createFileRoute("/onboarding")({
-  head: () => ({ meta: [{ title: "Set Up Your Profile — StartItUp.in" }] }),
+  head: () => ({ meta: [{ title: "Set Up Your Profile — StartItUp" }] }),
   loader: async () => {
     const user = await fetchSessionUser();
     if (!user) throw redirect({ to: "/login", search: { redirect: "/onboarding" } });

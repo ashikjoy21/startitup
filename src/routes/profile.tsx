@@ -26,7 +26,7 @@ const profileSearchSchema = z.object({
 });
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Profile — StartItUp.in" }] }),
+  head: () => ({ meta: [{ title: "Profile — StartItUp" }] }),
   validateSearch: profileSearchSchema,
   loader: async () => {
     const result = await loadProfile();

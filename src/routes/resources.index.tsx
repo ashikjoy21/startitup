@@ -5,7 +5,7 @@ import { guides } from "@/lib/guides";
 export const Route = createFileRoute("/resources/")({
   head: () => ({
     meta: [
-      { title: "Resources — StartItUp.in" },
+      { title: "Resources — StartItUp" },
       {
         name: "description",
         content:

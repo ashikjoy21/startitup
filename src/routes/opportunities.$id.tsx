@@ -11,8 +11,8 @@ export const Route = createFileRoute("/opportunities/$id")({
     meta: [
       {
         title: loaderData?.opportunity
-          ? `${loaderData.opportunity.name} — StartItUp.in`
-          : "Opportunity — StartItUp.in",
+          ? `${loaderData.opportunity.name} — StartItUp`
+          : "Opportunity — StartItUp",
       },
       { name: "description", content: "Startup opportunity details." },
     ],

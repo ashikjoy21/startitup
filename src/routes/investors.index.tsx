@@ -9,7 +9,7 @@ import {
 export const Route = createFileRoute("/investors/")({
   head: () => ({
     meta: [
-      { title: "Investors in India — StartItUp.in" },
+      { title: "Investors in India — StartItUp" },
       {
         name: "description",
         content:

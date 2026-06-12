@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 
 export const Route = createFileRoute("/calculator")({
-  head: () => ({ meta: [{ title: "Credit Calculator — StartItUp.in" }] }),
+  head: () => ({ meta: [{ title: "Credit Calculator — StartItUp" }] }),
   component: Calculator,
 });
 

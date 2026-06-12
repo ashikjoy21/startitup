@@ -4,10 +4,10 @@ import { LegalPage, LegalSection } from "@/components/legal-page";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — StartItUp.in" },
+      { title: "Terms of Service — StartItUp" },
       {
         name: "description",
-        content: "Terms governing use of StartItUp.in and its API.",
+        content: "Terms governing use of StartItUp and its API.",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function TermsPage() {
   return (
     <LegalPage title="Terms of Service" updated="12 June 2026">
       <p>
-        By accessing or using StartItUp.in (the &quot;Service&quot;), you agree to these Terms of
+        By accessing or using StartItUp (the &quot;Service&quot;), you agree to these Terms of
         Service (&quot;Terms&quot;). If you do not agree, do not use the Service.
       </p>
       <p className="rounded border border-border bg-muted/40 px-4 py-3 text-[13.5px] text-muted-foreground">
@@ -40,7 +40,7 @@ function TermsPage() {
 
       <LegalSection title="2. What we provide">
         <p>
-          StartItUp.in is an <strong>information directory and discovery tool</strong> for Indian
+          StartItUp is an <strong>information directory and discovery tool</strong> for Indian
           startup founders. We aggregate listings of grants, credits, accelerators, incubators,
           funding rounds, investors, and related resources.
         </p>
@@ -150,7 +150,7 @@ function TermsPage() {
           <li>Scrape the Service in ways that bypass rate limits, authentication, or access controls.</li>
           <li>Use the API to spam, harass, or violate applicable law.</li>
           <li>
-            Misrepresent StartItUp.in data as official government communication, investment
+            Misrepresent StartItUp data as official government communication, investment
             endorsement, or financial advice.
           </li>
           <li>Use the API for any purpose that violates these Terms or our Privacy Policy.</li>
@@ -183,10 +183,10 @@ function TermsPage() {
 
       <LegalSection title="9. Intellectual property">
         <p>
-          The StartItUp.in name, brand, site design, and original editorial content are owned by or
+          The StartItUp name, brand, site design, and original editorial content are owned by or
           licensed to us. Third-party names, logos, and trademarks belong to their respective owners
           and are used for identification purposes only. Mere appearance on this site does not imply
-          endorsement by or affiliation with StartItUp.in.
+          endorsement by or affiliation with StartItUp.
         </p>
         <p>
           If you believe content on the Service infringes your intellectual property rights, contact
@@ -231,7 +231,7 @@ function TermsPage() {
 
       <LegalSection title="12. Indemnification">
         <p>
-          You agree to indemnify, defend, and hold harmless StartItUp.in and its operators,
+          You agree to indemnify, defend, and hold harmless StartItUp and its operators,
           employees, and agents from and against any claims, liabilities, damages, losses, and
           expenses (including reasonable legal fees) arising out of or related to: (a) your use of
           the Service in violation of these Terms; (b) your submission of content that infringes

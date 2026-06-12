@@ -4,10 +4,10 @@ import { LegalPage, LegalSection } from "@/components/legal-page";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — StartItUp.in" },
+      { title: "Privacy Policy — StartItUp" },
       {
         name: "description",
-        content: "How StartItUp.in collects, uses, and protects your information.",
+        content: "How StartItUp collects, uses, and protects your information.",
       },
     ],
   }),
@@ -20,7 +20,7 @@ function PrivacyPage() {
   return (
     <LegalPage title="Privacy Policy" updated="12 June 2026">
       <p>
-        StartItUp.in (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) operates a directory of
+        StartItUp (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) operates a directory of
         startup opportunities, funding, investors, and related resources for founders in India. This
         policy explains what personal data we collect, why, and how we protect it.
       </p>
@@ -32,7 +32,7 @@ function PrivacyPage() {
 
       <LegalSection title="1. Who this applies to">
         <p>
-          This policy applies to anyone who visits or uses StartItUp.in (the &quot;Service&quot;),
+          This policy applies to anyone who visits or uses StartItUp (the &quot;Service&quot;),
           including visitors browsing anonymously and registered users. The Service is intended for
           users who are <strong>18 years of age or older</strong>. We do not knowingly collect
           personal data from anyone under 18; if you believe a minor has registered, contact us and
@@ -86,7 +86,7 @@ function PrivacyPage() {
 
       <LegalSection title="4. Information we display (not collected from you)">
         <p>
-          Much of what you see on StartItUp.in is{" "}
+          Much of what you see on StartItUp is{" "}
           <strong>aggregated public information</strong> — government scheme listings, incubator
           directories, funding round summaries, investor profiles, and similar facts gathered from
           publicly accessible websites and official sources.

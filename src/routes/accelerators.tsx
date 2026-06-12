@@ -5,7 +5,7 @@ import { meityAccelerators, MEITY_ACCELERATOR_URL } from "@/lib/meity";
 export const Route = createFileRoute("/accelerators")({
   head: () => ({
     meta: [
-      { title: "Accelerators in India — StartItUp.in" },
+      { title: "Accelerators in India — StartItUp" },
       {
         name: "description",
         content:

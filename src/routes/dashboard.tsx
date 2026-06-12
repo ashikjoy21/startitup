@@ -16,7 +16,7 @@ import { LoopTeaser } from "@/components/dashboard/loop-teaser";
 import { SavedList } from "@/components/dashboard/saved-list";
 
 export const Route = createFileRoute("/dashboard")({
-  head: () => ({ meta: [{ title: "Founder Dashboard — StartItUp.in" }] }),
+  head: () => ({ meta: [{ title: "Founder Dashboard — StartItUp" }] }),
   validateSearch: z.object({
     tab: z.enum(["overview", "pipeline", "calendar", "matches", "saved"]).optional(),
   }),

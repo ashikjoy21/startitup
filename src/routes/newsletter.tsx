@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
 
 export const Route = createFileRoute("/newsletter")({
-  head: () => ({ meta: [{ title: "Newsletter Archive — StartItUp.in" }] }),
+  head: () => ({ meta: [{ title: "Newsletter Archive — StartItUp" }] }),
   component: Newsletter,
 });
 

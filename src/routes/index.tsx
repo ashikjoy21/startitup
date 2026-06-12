@@ -11,13 +11,13 @@ const ACCELERATOR_COUNT = meityAccelerators.length;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "StartItUp.in — Every startup opportunity in India." },
+      { title: "StartItUp — Every startup opportunity in India." },
       {
         name: "description",
         content:
           "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders.",
       },
-      { property: "og:title", content: "StartItUp.in — Every startup opportunity in India." },
+      { property: "og:title", content: "StartItUp — Every startup opportunity in India." },
       {
         property: "og:description",
         content:

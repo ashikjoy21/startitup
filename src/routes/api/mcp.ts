@@ -41,7 +41,7 @@ const TOOLS = [
   {
     name: "list_categories",
     description:
-      "List all opportunity categories available on StartItUp.in with their counts. Call this first to understand what types of opportunities exist.",
+      "List all opportunity categories available on StartItUp with their counts. Call this first to understand what types of opportunities exist.",
     inputSchema: { type: "object", properties: {} },
   },
   {
@@ -61,7 +61,7 @@ const TOOLS = [
   {
     name: "search_opportunities",
     description:
-      "Search startup opportunities on StartItUp.in. Returns summary fields. Use get_opportunity to fetch full details.",
+      "Search startup opportunities on StartItUp. Returns summary fields. Use get_opportunity to fetch full details.",
     inputSchema: {
       type: "object",
       properties: {

@@ -13,7 +13,7 @@ import {
 export const Route = createFileRoute("/opportunities/")({
   head: () => ({
     meta: [
-      { title: "Opportunities — StartItUp.in" },
+      { title: "Opportunities — StartItUp" },
       {
         name: "description",
         content:

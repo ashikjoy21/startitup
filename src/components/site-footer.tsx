@@ -40,7 +40,7 @@ export function SiteFooter() {
           <div>
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center bg-primary font-serif text-base">S</span>
-              <span className="text-[15px] font-medium">StartItUp.in</span>
+              <span className="text-[15px] font-medium">StartItUp</span>
             </div>
             <p className="mt-4 max-w-xs text-[13.5px] text-white/60">
               Every startup opportunity in India. One place.
@@ -62,7 +62,7 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="mt-14 border-t border-white/10 pt-6 text-[12.5px] text-white/45">
-          © {new Date().getFullYear()} StartItUp.in · Built for Indian founders.
+          © {new Date().getFullYear()} StartItUp · Built for Indian founders.
         </div>
       </div>
     </footer>

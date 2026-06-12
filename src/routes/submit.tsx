@@ -7,7 +7,7 @@ import { defaultCategories } from "@/lib/opportunities";
 export const Route = createFileRoute("/submit")({
   head: () => ({
     meta: [
-      { title: "Suggest an Opportunity — StartItUp.in" },
+      { title: "Suggest an Opportunity — StartItUp" },
       {
         name: "description",
         content: "Help the community by suggesting a startup grant, credit, or program.",
@@ -85,7 +85,7 @@ function SubmitPage() {
           <h1 className="mt-2 font-serif text-[44px] leading-tight">Suggest an opportunity</h1>
           <p className="mt-4 text-[15px] leading-relaxed text-foreground/75">
             Found a grant, accelerator, or startup credit program? Submit it for review. Approved
-            listings go live on StartItUp.in — the dataset stays on the platform, not as a public
+            listings go live on StartItUp — the dataset stays on the platform, not as a public
             download.
           </p>
           {source === "seed" && (

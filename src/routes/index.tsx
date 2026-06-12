@@ -103,6 +103,59 @@ function Index() {
         </div>
       </section>
 
+      {/* What is StartItUp? */}
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-20">
+          <div className="grid grid-cols-1 gap-14 md:grid-cols-[1fr_1px_1fr] md:gap-0">
+            {/* Left: description */}
+            <div className="md:pr-16">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                About
+              </p>
+              <h2 className="mt-4 font-serif text-[36px] leading-[1.1] md:text-[44px]">
+                What is StartItUp?
+              </h2>
+              <p className="mt-6 text-[15.5px] leading-[1.75] text-muted-foreground">
+                StartItUp is a startup intelligence platform that helps founders, investors,
+                students, incubators, and researchers discover structured information about
+                startups, funding rounds, investors, accelerators, grants, and ecosystem
+                opportunities.
+              </p>
+            </div>
+
+            {/* Divider */}
+            <div className="hidden border-r border-border md:block" />
+
+            {/* Right: capabilities */}
+            <div className="md:pl-16">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                What can you do?
+              </p>
+              <ul className="mt-6">
+                {[
+                  "Discover startups",
+                  "Explore investors",
+                  "Track funding rounds",
+                  "Find incubators & accelerators",
+                  "Access startup ecosystem resources",
+                  "Connect through APIs and MCP integrations",
+                ].map((item, i) => (
+                  <li
+                    key={item}
+                    className="flex items-baseline gap-4 border-b border-border py-3.5 last:border-0"
+                  >
+                    <span className="font-serif text-[13px] text-muted-foreground/50 tabular-nums">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-[15px]">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Browse by category */}
       <section className="border-b border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-20">

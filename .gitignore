@@ -29,6 +29,7 @@ supabase/
 # Internal / local-only
 docs/superpowers/
 .lovable/
+.firecrawl/
 
 # Wrangler / Cloudflare
 .wrangler/

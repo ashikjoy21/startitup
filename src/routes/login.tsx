@@ -49,7 +49,16 @@ function LoginPage() {
           </button>
 
           <p className="mt-6 text-center text-[12px] text-muted-foreground">
-            No password needed. Your Google account is used for identity only.
+            No password needed. Your Google account is used for identity only. By signing in you
+            agree to our{" "}
+            <a href="/terms" className="text-primary hover:underline">
+              Terms
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" className="text-primary hover:underline">
+              Privacy Policy
+            </a>
+            .
           </p>
         </div>
       </section>

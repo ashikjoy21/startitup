@@ -9,12 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as StartupsRouteImport } from './routes/startups'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
@@ -39,6 +41,11 @@ import { Route as InvestorsIdRouteImport } from './routes/investors.$id'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiMcpRouteImport } from './routes/api/mcp'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuccessStoriesRoute = SuccessStoriesRouteImport.update({
   id: '/success-stories',
   path: '/success-stories',
@@ -67,6 +74,11 @@ const ResourcesRoute = ResourcesRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OpportunitiesRoute = OpportunitiesRouteImport.update({
@@ -199,14 +211,16 @@ export interface FileRoutesByFullPath {
   '/newsletter': typeof NewsletterRoute
   '/onboarding': typeof OnboardingRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
   '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
-  '/auth/callback': typeof AuthCallbackRoute
+  '/terms': typeof TermsRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
@@ -228,12 +242,14 @@ export interface FileRoutesByTo {
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
-  '/auth/callback': typeof AuthCallbackRoute
+  '/terms': typeof TermsRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
@@ -258,14 +274,16 @@ export interface FileRoutesById {
   '/newsletter': typeof NewsletterRoute
   '/onboarding': typeof OnboardingRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
   '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
-  '/auth/callback': typeof AuthCallbackRoute
+  '/terms': typeof TermsRoute
   '/api/mcp': typeof ApiMcpRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/investors/$id': typeof InvestorsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
@@ -291,14 +309,16 @@ export interface FileRouteTypes {
     | '/newsletter'
     | '/onboarding'
     | '/opportunities'
+    | '/privacy'
     | '/profile'
     | '/resources'
     | '/saved'
     | '/startups'
     | '/submit'
     | '/success-stories'
-    | '/auth/callback'
+    | '/terms'
     | '/api/mcp'
+    | '/auth/callback'
     | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
@@ -320,12 +340,14 @@ export interface FileRouteTypes {
     | '/logout'
     | '/newsletter'
     | '/onboarding'
+    | '/privacy'
     | '/profile'
     | '/saved'
     | '/submit'
     | '/success-stories'
-    | '/auth/callback'
+    | '/terms'
     | '/api/mcp'
+    | '/auth/callback'
     | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
@@ -349,14 +371,16 @@ export interface FileRouteTypes {
     | '/newsletter'
     | '/onboarding'
     | '/opportunities'
+    | '/privacy'
     | '/profile'
     | '/resources'
     | '/saved'
     | '/startups'
     | '/submit'
     | '/success-stories'
-    | '/auth/callback'
+    | '/terms'
     | '/api/mcp'
+    | '/auth/callback'
     | '/investors/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
@@ -381,18 +405,27 @@ export interface RootRouteChildren {
   NewsletterRoute: typeof NewsletterRoute
   OnboardingRoute: typeof OnboardingRoute
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   SavedRoute: typeof SavedRoute
   StartupsRoute: typeof StartupsRouteWithChildren
   SubmitRoute: typeof SubmitRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
+  TermsRoute: typeof TermsRoute
   ApiMcpRoute: typeof ApiMcpRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/success-stories': {
       id: '/success-stories'
       path: '/success-stories'
@@ -433,6 +466,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/opportunities': {
@@ -669,14 +709,16 @@ const rootRouteChildren: RootRouteChildren = {
   NewsletterRoute: NewsletterRoute,
   OnboardingRoute: OnboardingRoute,
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   SavedRoute: SavedRoute,
   StartupsRoute: StartupsRouteWithChildren,
   SubmitRoute: SubmitRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
+  TermsRoute: TermsRoute,
   ApiMcpRoute: ApiMcpRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

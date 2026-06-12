@@ -27,7 +27,8 @@ const cols = [
       ["Founder Dashboard", "/dashboard"],
       ["Profile", "/profile"],
       ["Contact", "/newsletter"],
-      ["Privacy", "/newsletter"],
+      ["Privacy", "/privacy"],
+      ["Terms", "/terms"],
     ],
   },
 ];

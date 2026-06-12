@@ -6,7 +6,6 @@ const cols = [
     links: [
       ["Opportunities", "/opportunities"],
       ["Credit Calculator", "/calculator"],
-      ["Newsletter Archive", "/newsletter"],
       ["Saved", "/saved"],
     ],
   },
@@ -26,7 +25,7 @@ const cols = [
       ["About", "/calculator"],
       ["Founder Dashboard", "/dashboard"],
       ["Profile", "/profile"],
-      ["Contact", "/newsletter"],
+      ["Contact", "/"],
       ["Privacy", "/privacy"],
       ["Terms", "/terms"],
     ],

@@ -13,6 +13,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as StartupsRouteImport } from './routes/startups'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -59,6 +60,11 @@ const SubmitRoute = SubmitRouteImport.update({
 const StartupsRoute = StartupsRouteImport.update({
   id: '/startups',
   path: '/startups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -245,6 +252,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
   '/terms': typeof TermsRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/resources'
     | '/saved'
+    | '/sitemap.xml'
     | '/startups'
     | '/submit'
     | '/success-stories'
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/profile'
     | '/saved'
+    | '/sitemap.xml'
     | '/submit'
     | '/success-stories'
     | '/terms'
@@ -375,6 +386,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/resources'
     | '/saved'
+    | '/sitemap.xml'
     | '/startups'
     | '/submit'
     | '/success-stories'
@@ -409,6 +421,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   SavedRoute: typeof SavedRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartupsRoute: typeof StartupsRouteWithChildren
   SubmitRoute: typeof SubmitRoute
   SuccessStoriesRoute: typeof SuccessStoriesRoute
@@ -445,6 +458,13 @@ declare module '@tanstack/react-router' {
       path: '/startups'
       fullPath: '/startups'
       preLoaderRoute: typeof StartupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -713,6 +733,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   SavedRoute: SavedRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartupsRoute: StartupsRouteWithChildren,
   SubmitRoute: SubmitRoute,
   SuccessStoriesRoute: SuccessStoriesRoute,

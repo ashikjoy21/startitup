@@ -9,13 +9,17 @@ import {
 export const Route = createFileRoute("/investors/")({
   head: () => ({
     meta: [
-      { title: "Investors in India — StartItUp" },
+      { title: "Investors in India — StartItUp.in" },
       {
         name: "description",
         content:
           "Browse VCs, angels, and funds investing in Indian startups. Filter by stage, sector, and type.",
       },
+      { property: "og:title", content: "Investors in India — StartItUp.in" },
+      { property: "og:description", content: "Browse VCs, angels, and funds investing in Indian startups. Filter by stage, sector, and type." },
+      { property: "og:url", content: "https://startitup.in/investors" },
     ],
+    links: [{ rel: "canonical", href: "https://startitup.in/investors" }],
   }),
   loader: async () => {
     const [meta, options, list] = await Promise.all([

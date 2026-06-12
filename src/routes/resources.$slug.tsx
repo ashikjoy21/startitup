@@ -6,11 +6,61 @@ import { getGuide, getNextGuide } from "@/lib/guides";
 import { type OpportunityCategory, seedOpportunities } from "@/lib/opportunities";
 
 export const Route = createFileRoute("/resources/$slug")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: "Guide — StartItUp" },
-      { name: "description", content: "Startup guide for Indian founders." },
+      {
+        title: loaderData?.guide
+          ? `${loaderData.guide.title} — StartItUp.in`
+          : "Guide — StartItUp.in",
+      },
+      {
+        name: "description",
+        content: loaderData?.guide?.description ?? "Startup guide for Indian founders.",
+      },
+      {
+        property: "og:title",
+        content: loaderData?.guide
+          ? `${loaderData.guide.title} — StartItUp.in`
+          : "Guide — StartItUp.in",
+      },
+      {
+        property: "og:description",
+        content: loaderData?.guide?.description ?? "Startup guide for Indian founders.",
+      },
+      { property: "og:url", content: `https://startitup.in/resources/${loaderData?.guide?.slug ?? ""}` },
     ],
+    links: [
+      { rel: "canonical", href: `https://startitup.in/resources/${loaderData?.guide?.slug ?? ""}` },
+    ],
+    scripts: loaderData?.guide
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: loaderData.guide.title,
+              description: loaderData.guide.description,
+              url: `https://startitup.in/resources/${loaderData.guide.slug}`,
+              publisher: {
+                "@type": "Organization",
+                name: "StartItUp.in",
+                url: "https://startitup.in",
+              },
+              author: {
+                "@type": "Person",
+                name: "Ashik Joy",
+                url: "https://www.linkedin.com/in/ashikjoyofficial/",
+              },
+              inLanguage: "en-IN",
+              audience: {
+                "@type": "Audience",
+                audienceType: "Indian startup founders",
+              },
+            }),
+          },
+        ]
+      : [],
   }),
   loader: ({ params }) => {
     const guide = getGuide(params.slug);

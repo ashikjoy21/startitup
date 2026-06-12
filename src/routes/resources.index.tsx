@@ -5,13 +5,17 @@ import { guides } from "@/lib/guides";
 export const Route = createFileRoute("/resources/")({
   head: () => ({
     meta: [
-      { title: "Resources — StartItUp" },
+      { title: "Resources — StartItUp.in" },
       {
         name: "description",
         content:
           "Practical guides for Indian founders — DPIIT recognition, tax benefits, business entities, and government schemes explained.",
       },
+      { property: "og:title", content: "Resources — StartItUp.in" },
+      { property: "og:description", content: "Practical guides for Indian founders — DPIIT recognition, tax benefits, business entities, and government schemes explained." },
+      { property: "og:url", content: "https://startitup.in/resources" },
     ],
+    links: [{ rel: "canonical", href: "https://startitup.in/resources" }],
   }),
   loader: () => guides,
   component: ResourcesIndex,

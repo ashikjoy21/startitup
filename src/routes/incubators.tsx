@@ -5,13 +5,17 @@ import { meityIncubators, MEITY_INCUBATOR_URL } from "@/lib/meity";
 export const Route = createFileRoute("/incubators")({
   head: () => ({
     meta: [
-      { title: "Incubators in India — StartItUp" },
+      { title: "Incubators in India — StartItUp.in" },
       {
         name: "description",
         content:
           "Browse 517 incubators registered on MeitY Startup Hub. Filter by state and domain to find the right fit for your startup.",
       },
+      { property: "og:title", content: "Incubators in India — StartItUp.in" },
+      { property: "og:description", content: "Browse 517 incubators registered on MeitY Startup Hub. Filter by state and domain to find the right fit for your startup." },
+      { property: "og:url", content: "https://startitup.in/incubators" },
     ],
+    links: [{ rel: "canonical", href: "https://startitup.in/incubators" }],
   }),
   loader: () => meityIncubators,
   component: IncubatorsPage,

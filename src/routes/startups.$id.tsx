@@ -4,20 +4,34 @@ import { StartupDetailPage } from "@/components/startup-detail";
 import { getStartupById } from "@/lib/api/investors.functions";
 
 export const Route = createFileRoute("/startups/$id")({
-  head: ({ loaderData }) => ({
+  head: ({ loaderData, params }) => ({
     meta: [
       {
         title: loaderData?.startup
-          ? `${loaderData.startup.name} — StartItUp`
-          : "Startup — StartItUp",
+          ? `${loaderData.startup.name} — StartItUp.in`
+          : "Startup — StartItUp.in",
       },
       {
         name: "description",
         content: loaderData?.startup
-          ? `${loaderData.startup.name} funding history, investors, and sector on StartItUp.`
-          : "Startup profile on StartItUp",
+          ? `${loaderData.startup.name} funding history, investors, and sector on StartItUp.in.`
+          : "Startup profile on StartItUp.in",
       },
+      {
+        property: "og:title",
+        content: loaderData?.startup
+          ? `${loaderData.startup.name} — StartItUp.in`
+          : "Startup — StartItUp.in",
+      },
+      {
+        property: "og:description",
+        content: loaderData?.startup
+          ? `${loaderData.startup.name} funding history, investors, and sector on StartItUp.in.`
+          : "Startup profile on StartItUp.in",
+      },
+      { property: "og:url", content: `https://startitup.in/startups/${params.id}` },
     ],
+    links: [{ rel: "canonical", href: `https://startitup.in/startups/${params.id}` }],
   }),
   loader: async ({ params }) => {
     const { startup } = await getStartupById({ data: { id: params.id } });

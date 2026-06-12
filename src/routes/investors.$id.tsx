@@ -4,20 +4,48 @@ import { InvestorDetailPage } from "@/components/investor-detail";
 import { getInvestorById } from "@/lib/api/investors.functions";
 
 export const Route = createFileRoute("/investors/$id")({
-  head: ({ loaderData }) => ({
+  head: ({ loaderData, params }) => ({
     meta: [
       {
         title: loaderData?.investor
-          ? `${loaderData.investor.name} — Investors — StartItUp`
-          : "Investor — StartItUp",
+          ? `${loaderData.investor.name} — Investors — StartItUp.in`
+          : "Investor — StartItUp.in",
       },
       {
         name: "description",
         content: loaderData?.investor
           ? `${loaderData.investor.name} portfolio, investment focus, and funding activity in India.`
-          : "Investor profile on StartItUp",
+          : "Investor profile on StartItUp.in",
       },
+      {
+        property: "og:title",
+        content: loaderData?.investor
+          ? `${loaderData.investor.name} — Investors — StartItUp.in`
+          : "Investor — StartItUp.in",
+      },
+      {
+        property: "og:description",
+        content: loaderData?.investor
+          ? `${loaderData.investor.name} portfolio, investment focus, and funding activity in India.`
+          : "Investor profile on StartItUp.in",
+      },
+      { property: "og:url", content: `https://startitup.in/investors/${params.id}` },
     ],
+    links: [{ rel: "canonical", href: `https://startitup.in/investors/${params.id}` }],
+    scripts: loaderData?.investor
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: loaderData.investor.name,
+              description: `${loaderData.investor.name} portfolio, investment focus, and funding activity in India.`,
+              url: `https://startitup.in/investors/${params.id}`,
+            }),
+          },
+        ]
+      : [],
   }),
   loader: async ({ params }) => {
     const { investor } = await getInvestorById({ data: { id: params.id } });

@@ -13,13 +13,17 @@ import {
 export const Route = createFileRoute("/opportunities/")({
   head: () => ({
     meta: [
-      { title: "Opportunities — StartItUp" },
+      { title: "Opportunities — StartItUp.in" },
       {
         name: "description",
         content:
           "Browse every startup opportunity in India — credits, grants, accelerators and more.",
       },
+      { property: "og:title", content: "Opportunities — StartItUp.in" },
+      { property: "og:description", content: "Browse every startup opportunity in India — credits, grants, accelerators and more." },
+      { property: "og:url", content: "https://startitup.in/opportunities" },
     ],
+    links: [{ rel: "canonical", href: "https://startitup.in/opportunities" }],
   }),
   validateSearch: z.object({
     q:        z.string().optional(),

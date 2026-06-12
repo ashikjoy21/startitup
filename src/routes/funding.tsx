@@ -9,13 +9,17 @@ import {
 export const Route = createFileRoute("/funding")({
   head: () => ({
     meta: [
-      { title: "Startup Funding Rounds — StartItUp" },
+      { title: "Startup Funding Rounds — StartItUp.in" },
       {
         name: "description",
         content:
           "Track Indian startup funding rounds — amounts, investors, and sources from Inc42 and Entrackr.",
       },
+      { property: "og:title", content: "Startup Funding Rounds — StartItUp.in" },
+      { property: "og:description", content: "Track Indian startup funding rounds — amounts, investors, and sources from Inc42 and Entrackr." },
+      { property: "og:url", content: "https://startitup.in/funding" },
     ],
+    links: [{ rel: "canonical", href: "https://startitup.in/funding" }],
   }),
   loader: async () => {
     const [meta, options, list] = await Promise.all([

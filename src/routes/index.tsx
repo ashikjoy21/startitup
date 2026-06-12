@@ -11,17 +11,53 @@ const ACCELERATOR_COUNT = meityAccelerators.length;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "StartItUp — Every startup opportunity in India." },
+      { title: "StartItUp.in — Every startup opportunity in India." },
       {
         name: "description",
         content:
           "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders.",
       },
-      { property: "og:title", content: "StartItUp — Every startup opportunity in India." },
+      { property: "og:title", content: "StartItUp.in — Every startup opportunity in India." },
       {
         property: "og:description",
         content:
           "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders.",
+      },
+      { property: "og:url", content: "https://startitup.in" },
+    ],
+    links: [{ rel: "canonical", href: "https://startitup.in" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://startitup.in/#website",
+              url: "https://startitup.in",
+              name: "StartItUp.in",
+              description: "Every startup opportunity in India. One place.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: { "@type": "EntryPoint", urlTemplate: "https://startitup.in/opportunities?q={search_term_string}" },
+                "query-input": "required name=search_term_string",
+              },
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://startitup.in/#organization",
+              name: "StartItUp.in",
+              url: "https://startitup.in",
+              logo: "https://startitup.in/og-image.png",
+              sameAs: [
+                "https://x.com/ashik_j_o_y",
+                "https://www.linkedin.com/in/ashikjoyofficial/",
+                "https://github.com/ashikjoy21",
+              ],
+            },
+          ],
+        }),
       },
     ],
   }),

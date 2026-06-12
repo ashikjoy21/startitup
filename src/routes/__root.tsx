@@ -85,8 +85,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "StartItUp — Every startup opportunity in India." },
       { property: "og:description", content: "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { property: "og:site_name", content: "StartItUp.in" },
+      { property: "og:image", content: "https://startitup.in/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@ashik_j_o_y" },
+      { name: "twitter:creator", content: "@ashik_j_o_y" },
+      { name: "twitter:image", content: "https://startitup.in/og-image.png" },
     ],
     links: [
       {

@@ -11,11 +11,66 @@ export const Route = createFileRoute("/opportunities/$id")({
     meta: [
       {
         title: loaderData?.opportunity
-          ? `${loaderData.opportunity.name} — StartItUp`
-          : "Opportunity — StartItUp",
+          ? `${loaderData.opportunity.name} — StartItUp.in`
+          : "Opportunity — StartItUp.in",
       },
-      { name: "description", content: "Startup opportunity details." },
+      {
+        name: "description",
+        content: loaderData?.opportunity?.description
+          ? loaderData.opportunity.description.slice(0, 160)
+          : "Startup opportunity for Indian founders on StartItUp.in.",
+      },
+      {
+        property: "og:title",
+        content: loaderData?.opportunity
+          ? `${loaderData.opportunity.name} — StartItUp.in`
+          : "Opportunity — StartItUp.in",
+      },
+      {
+        property: "og:description",
+        content: loaderData?.opportunity?.description
+          ? loaderData.opportunity.description.slice(0, 160)
+          : "Startup opportunity for Indian founders on StartItUp.in.",
+      },
+      {
+        property: "og:url",
+        content: loaderData?.opportunity
+          ? `https://startitup.in/opportunities/${loaderData.opportunity.id}`
+          : "https://startitup.in/opportunities",
+      },
     ],
+    links: loaderData?.opportunity
+      ? [{ rel: "canonical", href: `https://startitup.in/opportunities/${loaderData.opportunity.id}` }]
+      : [],
+    scripts: loaderData?.opportunity
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "GovernmentGrant",
+              name: loaderData.opportunity.name,
+              description: loaderData.opportunity.description,
+              url: `https://startitup.in/opportunities/${loaderData.opportunity.id}`,
+              provider: {
+                "@type": "Organization",
+                name: loaderData.opportunity.org,
+              },
+              ...(loaderData.opportunity.amount && {
+                funding: { "@type": "MonetaryAmount", description: loaderData.opportunity.amount },
+              }),
+              ...(loaderData.opportunity.deadline && {
+                endDate: loaderData.opportunity.deadline,
+              }),
+              applicationCategory: loaderData.opportunity.category,
+              audience: {
+                "@type": "Audience",
+                audienceType: "Indian startups and founders",
+              },
+            }),
+          },
+        ]
+      : [],
   }),
   loader: async ({ params }) => {
     const id = decodeURIComponent(params.id);

@@ -41,6 +41,7 @@ async function loadOpportunityIds(): Promise<string[]> {
         .from("opportunities")
         .select("id")
         .eq("status", "published")
+        .contains("audience", ["founder"])
         .limit(5000);
 
       if (!error && data?.length) {

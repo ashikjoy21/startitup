@@ -173,17 +173,20 @@ export const loadDashboard = createServerFn({ method: "POST" }).handler(async ()
     supabase
       .from("opportunities")
       .select("id", { count: "exact", head: true })
-      .eq("status", "published"),
+      .eq("status", "published")
+      .contains("audience", ["founder"]),
     supabase
       .from("opportunities")
       .select("*")
       .eq("status", "published")
+      .contains("audience", ["founder"])
       .order("published_at", { ascending: false })
       .limit(500),
     supabase
       .from("opportunities")
       .select("id")
       .eq("status", "published")
+      .contains("audience", ["founder"])
       .gte("published_at", sevenDaysAgo)
       .limit(200),
   ]);
@@ -607,12 +610,14 @@ async function scoreLiveMatches(data: z.infer<typeof liveMatchInputSchema>): Pro
       .from("opportunities")
       .select("*")
       .eq("status", "published")
+      .contains("audience", ["founder"])
       .order("published_at", { ascending: false })
       .limit(500),
     supabase
       .from("opportunities")
       .select("id")
       .eq("status", "published")
+      .contains("audience", ["founder"])
       .gte("published_at", sevenDaysAgo)
       .limit(200),
   ]);

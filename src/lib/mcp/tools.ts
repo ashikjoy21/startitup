@@ -29,7 +29,8 @@ export async function toolListCategories(): Promise<McpToolResult> {
     supabase
       .from("opportunities")
       .select("category")
-      .eq("status", "published"),
+      .eq("status", "published")
+      .contains("audience", ["founder"]),
   ]);
 
   const counts: Record<string, number> = {};
@@ -59,7 +60,8 @@ export async function toolListFilters(category?: string): Promise<McpToolResult>
     let q = supabase
       .from("opportunities")
       .select("industry, stage, location")
-      .eq("status", "published");
+      .eq("status", "published")
+      .contains("audience", ["founder"]);
     if (category) q = q.eq("category", category);
     const { data, error } = await q;
     if (error) return err(error.message);
@@ -119,6 +121,7 @@ export async function toolSearchOpportunities(
     .from("opportunities")
     .select("*", { count: "exact" })
     .eq("status", "published")
+    .contains("audience", ["founder"])
     .order("published_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -153,6 +156,7 @@ export async function toolGetOpportunity(id: string): Promise<McpToolResult> {
     .select("*")
     .eq("id", id)
     .eq("status", "published")
+    .contains("audience", ["founder"])
     .maybeSingle();
 
   if (error) return err(error.message);

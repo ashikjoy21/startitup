@@ -97,6 +97,7 @@ export const listOpportunities = createServerFn({ method: "GET" })
       .from("opportunities")
       .select("*", { count: "exact" })
       .eq("status", "published")
+      .contains("audience", ["founder"])
       .order("published_at", { ascending: false })
       .range(data.offset, data.offset + data.limit - 1);
 
@@ -144,6 +145,7 @@ export const getOpportunityById = createServerFn({ method: "GET" })
       .select("*")
       .eq("id", id)
       .eq("status", "published")
+      .contains("audience", ["founder"])
       .maybeSingle();
 
     if (error) throw new Error(error.message);
@@ -219,6 +221,7 @@ export const adminListOpportunities = createServerFn({ method: "POST" })
       .from("opportunities")
       .select("*")
       .neq("status", "archived")
+      .contains("audience", ["founder"])
       .order("updated_at", { ascending: false });
 
     if (data.q) {

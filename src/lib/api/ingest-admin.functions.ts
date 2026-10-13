@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { sourcePatch } from "../ingest-source-patch";
 import { assertAdminSecret, getSupabaseAdmin } from "../supabase.server";
 
 export type IngestKpis = {
@@ -63,7 +64,10 @@ export const adminIngestOverview = createServerFn({ method: "POST" })
     ]);
     if (kpis.error) throw new Error(kpis.error.message);
     if (sources.error) throw new Error(sources.error.message);
-    return { kpis: kpis.data as IngestKpis, sources: (sources.data ?? []) as unknown as AdminSourceRow[] };
+    return {
+      kpis: kpis.data as IngestKpis,
+      sources: (sources.data ?? []) as unknown as AdminSourceRow[],
+    };
   });
 
 export const adminUpdateSource = createServerFn({ method: "POST" })
@@ -73,17 +77,13 @@ export const adminUpdateSource = createServerFn({ method: "POST" })
       enabled: z.boolean().optional(),
       trusted: z.boolean().optional(),
       runRequested: z.boolean().optional(),
+      acceptCount: z.boolean().optional(),
     }),
   )
   .handler(async ({ data }) => {
     assertAdminSecret(data.adminSecret);
-    const patch: Record<string, boolean | number> = {};
-    if (data.enabled !== undefined) {
-      patch.enabled = data.enabled;
-      if (data.enabled) patch.consecutive_failures = 0;
-    }
-    if (data.trusted !== undefined) patch.trusted = data.trusted;
-    if (data.runRequested !== undefined) patch.run_requested = data.runRequested;
+    const patch = sourcePatch(data);
+    if (!patch) return { ok: true };
     const { error } = await getSupabaseAdmin().from("sources").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -107,7 +107,10 @@ export const adminReviewQueue = createServerFn({ method: "POST" })
 
 export const adminReviewListings = createServerFn({ method: "POST" })
   .inputValidator(
-    secret.extend({ ids: z.array(z.string().min(1)).min(1).max(500), decision: z.enum(["ok", "rejected"]) }),
+    secret.extend({
+      ids: z.array(z.string().min(1)).min(1).max(500),
+      decision: z.enum(["ok", "rejected"]),
+    }),
   )
   .handler(async ({ data }) => {
     assertAdminSecret(data.adminSecret);

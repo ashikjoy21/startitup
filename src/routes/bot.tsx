@@ -32,9 +32,11 @@ function BotPage() {
       </LegalSection>
       <LegalSection title="How it behaves">
         <p>
-          It identifies itself as <code>StartItUpBot/1.0 (+https://startitup.in/bot)</code>, follows
-          robots.txt, makes at most one request per second to a site, backs off when asked to slow down,
-          and does not attempt to bypass bot protection.
+          It identifies itself as <code>StartItUpBot/1.0 (+https://startitup.in/bot)</code>. It follows
+          robots.txt on company websites and careers pages, spaces out its page requests to each site
+          (about one per second), backs off when asked to slow down, and does not attempt to bypass bot
+          protection or logins. Public job-board APIs that employers publish for distribution are read
+          directly.
         </p>
       </LegalSection>
       <LegalSection title="Opting out or correcting a listing">

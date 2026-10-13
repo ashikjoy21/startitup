@@ -358,8 +358,8 @@ export function SourcesPanel() {
                       {s.consecutive_failures}
                     </td>
                     <td className="max-w-[280px] px-3 py-3 text-[12px] text-muted-foreground">
-                      {s.last_error ??
-                        s.permission_note ??
+                      {s.last_error ||
+                        s.permission_note ||
                         (s.connector === "html" && !s.trusted
                           ? "HTML source needs trust review."
                           : "—")}
@@ -413,6 +413,23 @@ export function SourcesPanel() {
                         >
                           {s.run_requested ? "Queued" : "Run next"}
                         </button>
+                        {s.last_error?.startsWith("suspicious drop") && (
+                          <button
+                            type="button"
+                            aria-label={`Accept new opening count for ${s.organizations?.name ?? s.slug}`}
+                            className={btn}
+                            disabled={busy}
+                            onClick={() =>
+                              void act(() =>
+                                adminUpdateSource({
+                                  data: { adminSecret: secret, id: s.id, acceptCount: true },
+                                }),
+                              )
+                            }
+                          >
+                            Accept new count
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

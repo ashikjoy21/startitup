@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
+import { SourcesPanel } from "@/components/admin/sources-panel";
 import {
   useOpportunitiesStore,
   upsertOpportunity,
@@ -40,7 +41,7 @@ const emptyOpp: Opportunity = {
 function AdminPage() {
   const { items, categories } = useOpportunitiesStore();
   const [editing, setEditing] = useState<Opportunity | null>(null);
-  const [tab, setTab] = useState<"opps" | "cats">("opps");
+  const [tab, setTab] = useState<"opps" | "cats" | "sources">("opps");
   const [q, setQ] = useState("");
   const [catInput, setCatInput] = useState(categories.join(", "));
 
@@ -89,7 +90,7 @@ function AdminPage() {
 
       <section className="mx-auto max-w-[1280px] px-6 py-10">
         <div className="mb-6 flex gap-6 border-b border-border">
-          {(["opps", "cats"] as const).map((t) => (
+          {(["opps", "cats", "sources"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -100,7 +101,11 @@ function AdminPage() {
                   : "border-transparent text-foreground/70 hover:text-primary")
               }
             >
-              {t === "opps" ? `Opportunities (${items.length})` : `Categories (${categories.length})`}
+              {t === "opps"
+                ? `Opportunities (${items.length})`
+                : t === "cats"
+                  ? `Categories (${categories.length})`
+                  : "Sources & ingestion"}
             </button>
           ))}
         </div>
@@ -232,6 +237,8 @@ function AdminPage() {
             </ul>
           </div>
         )}
+
+        {tab === "sources" && <SourcesPanel />}
       </section>
     </SiteLayout>
   );

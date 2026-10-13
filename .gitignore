@@ -27,6 +27,8 @@ supabase/
 
 # Internal / local-only
 docs/superpowers/
+ingest/
+.superpowers/
 .lovable/
 .firecrawl/
 

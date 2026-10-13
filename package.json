@@ -49,7 +49,13 @@
     "investors:scrape-titan": "node --experimental-strip-types scripts/scrape-titan-portfolio.ts",
     "meity:network": "node scripts/build-meity-network.mjs",
     "predev": "node scripts/build-meity-network.mjs && node --experimental-strip-types scripts/build-investor-ui.ts",
-    "sitemap:build": "node --experimental-strip-types src/build/build-sitemap.ts"
+    "sitemap:build": "node --experimental-strip-types src/build/build-sitemap.ts",
+    "test": "vitest run",
+    "ingest": "node --experimental-strip-types ingest/cli.ts ingest",
+    "discover": "node --experimental-strip-types ingest/cli.ts discover",
+    "ingest:check-links": "node --experimental-strip-types ingest/cli.ts check-links",
+    "ingest:export-seeds": "node --experimental-strip-types ingest/cli.ts export-seeds",
+    "ingest:typecheck": "tsc -p ingest/tsconfig.json"
   },
   "dependencies": {
     "@fontsource/instrument-serif": "^5.2.8",
@@ -122,6 +128,7 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "fast-xml-parser": "^5.11.2",
     "globals": "^15.15.0",
     "nitro": "3.0.260603-beta",
     "pg": "^8.21.0",
@@ -130,6 +137,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
-    "wrangler": "^4.99.0"
+    "vitest": "^5.0.4",
+    "wrangler": "^4.99.0",
+    "yaml": "^2.9.1"
   }
 }

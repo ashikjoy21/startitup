@@ -23,7 +23,8 @@ const KPIS: Array<[Exclude<keyof IngestKpis, "sources_by_method">, string]> = [
   ["orgs_without_source", "Orgs without a source"],
 ];
 
-const btn = "h-8 border border-border bg-background px-2.5 text-[12.5px] hover:bg-muted disabled:opacity-50";
+const btn =
+  "h-8 border border-border bg-background px-2.5 text-[12.5px] hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 function ago(iso: string | null): string {
   if (!iso) return "never";
@@ -81,7 +82,7 @@ export function SourcesPanel() {
   if (!secret) {
     return (
       <form
-        className="flex max-w-sm gap-2"
+        className="flex w-full max-w-sm flex-col gap-2 sm:flex-row"
         onSubmit={(e) => {
           e.preventDefault();
           setAdminSecret(draft);
@@ -92,10 +93,11 @@ export function SourcesPanel() {
           type="password"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
+          aria-label="Admin secret"
           placeholder="Admin secret"
-          className="h-9 flex-1 border border-border bg-background px-3 text-[13.5px] outline-none focus:border-primary"
+          className="h-9 flex-1 border border-border bg-background px-3 text-[13.5px] outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         />
-        <button className="h-9 bg-primary px-4 text-[13.5px] font-medium text-primary-foreground hover:bg-primary-dark">
+        <button className="h-9 bg-primary px-4 text-[13.5px] font-medium text-primary-foreground hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
           Unlock
         </button>
       </form>
@@ -111,141 +113,325 @@ export function SourcesPanel() {
     });
 
   return (
-    <div className="space-y-10">
+    <div className="min-w-0 space-y-12">
       {error && (
-        <p className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-[13px] text-destructive">{error}</p>
+        <p
+          role="alert"
+          className="border border-destructive/40 bg-destructive/5 px-3 py-2 text-[13px] text-destructive"
+        >
+          {error}
+        </p>
       )}
 
-      <div>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-serif text-[26px]">Health</h2>
-          <button className={btn} disabled={busy} onClick={() => void load()}>
+      <section aria-labelledby="source-health-heading" className="min-w-0">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              01 · Health
+            </p>
+            <h2 id="source-health-heading" className="font-serif text-[30px] leading-none">
+              Ingestion at a glance
+            </h2>
+          </div>
+          <button type="button" className={btn} disabled={busy} onClick={() => void load()}>
             {busy ? "Loading…" : "Refresh"}
           </button>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {KPIS.map(([key, label]) => (
-            <div key={key} className="border border-border px-4 py-3">
-              <div className="text-[12px] text-muted-foreground">{label}</div>
-              <div className="mt-1 text-[22px] font-medium tabular-nums">{kpis ? kpis[key] : "—"}</div>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {KPIS.map(([key, label]) => {
+            const emphasized =
+              (key === "needs_review" || key === "failing_sources") && Number(kpis?.[key] ?? 0) > 0;
+            return (
+              <div
+                key={key}
+                className={`border px-3 py-3 sm:px-4 ${emphasized ? "border-primary bg-primary-soft" : "border-border bg-card"}`}
+              >
+                <div
+                  className={`text-[11px] leading-snug ${emphasized ? "text-primary" : "text-muted-foreground"}`}
+                >
+                  {label}
+                </div>
+                <div
+                  className={`mt-2 font-serif text-[27px] leading-none tabular-nums ${emphasized ? "text-primary" : ""}`}
+                >
+                  {kpis ? kpis[key] : "—"}
+                </div>
+              </div>
+            );
+          })}
         </div>
         {kpis && (
-          <p className="mt-3 text-[12.5px] text-muted-foreground">
-            Sources by discovery method:{" "}
+          <p className="mt-3 text-[12px] text-muted-foreground">
+            Discovery methods <span className="px-1">·</span>
             {Object.entries(kpis.sources_by_method)
               .map(([k, v]) => `${k} ${v}`)
               .join(" · ") || "none yet"}
           </p>
         )}
-      </div>
+      </section>
 
-      <div>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-serif text-[26px]">Review queue ({queue.length})</h2>
+      <section aria-labelledby="review-queue-heading" className="min-w-0">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              02 · Review queue
+            </p>
+            <h2 id="review-queue-heading" className="font-serif text-[30px] leading-none">
+              Listings to review{" "}
+              <span className="font-sans text-[13px] text-muted-foreground">({queue.length})</span>
+            </h2>
+          </div>
           <div className="flex gap-2">
-            <button className={btn} disabled={!selected.size} onClick={() => void act(() => adminReviewListings({ data: { adminSecret: secret, ids: [...selected], decision: "ok" } }))}>
+            <button
+              type="button"
+              className={btn}
+              disabled={!selected.size || busy}
+              onClick={() =>
+                void act(() =>
+                  adminReviewListings({
+                    data: { adminSecret: secret, ids: [...selected], decision: "ok" },
+                  }),
+                )
+              }
+            >
               Approve {selected.size || ""}
             </button>
-            <button className={btn} disabled={!selected.size} onClick={() => void act(() => adminReviewListings({ data: { adminSecret: secret, ids: [...selected], decision: "rejected" } }))}>
+            <button
+              type="button"
+              className={btn}
+              disabled={!selected.size || busy}
+              onClick={() =>
+                void act(() =>
+                  adminReviewListings({
+                    data: { adminSecret: secret, ids: [...selected], decision: "rejected" },
+                  }),
+                )
+              }
+            >
               Reject {selected.size || ""}
             </button>
           </div>
         </div>
-        <table className="w-full text-[13px]">
-          <thead className="text-left text-[12px] text-muted-foreground">
-            <tr>
-              <th className="w-8 py-2">
-                <input
-                  type="checkbox"
-                  aria-label="Select all"
-                  checked={queue.length > 0 && selected.size === queue.length}
-                  onChange={(e) => setSelected(e.target.checked ? new Set(queue.map((q) => q.id)) : new Set())}
-                />
-              </th>
-              <th>Listing</th>
-              <th>Location</th>
-              <th>Why</th>
-            </tr>
-          </thead>
-          <tbody>
-            {queue.map((q) => (
-              <tr key={q.id} className="border-t border-border align-top">
-                <td className="py-2">
-                  <input type="checkbox" aria-label={`Select ${q.name}`} checked={selected.has(q.id)} onChange={() => toggle(q.id)} />
-                </td>
-                <td className="py-2 pr-4">
-                  {q.apply_url ? (
-                    <a href={q.apply_url} target="_blank" rel="noreferrer" className="hover:text-primary">
-                      {q.name}
-                    </a>
-                  ) : (
-                    q.name
-                  )}
-                  <div className="text-[12px] text-muted-foreground">
-                    {q.org} · {q.kind ?? "—"}
-                  </div>
-                </td>
-                <td className="py-2 pr-4">{q.location}</td>
-                <td className="py-2 text-[12px] text-muted-foreground">{q.review_reasons.join("; ")}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div>
-        <h2 className="mb-3 font-serif text-[26px]">Sources ({sources.length})</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-[13px]">
-            <thead className="text-left text-[12px] text-muted-foreground">
+        <div
+          className="overflow-x-auto border-y border-border"
+          role="region"
+          aria-label="Review queue listings"
+          tabIndex={0}
+        >
+          <table className="w-full min-w-[620px] bg-card text-left text-[13px]">
+            <thead className="border-b border-border text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               <tr>
-                <th className="py-2">Source</th>
-                <th>Method</th>
-                <th>Last success</th>
-                <th>Items</th>
-                <th>Failures</th>
-                <th>Last error / note</th>
-                <th />
+                <th className="w-10 px-3 py-3">
+                  <input
+                    className="accent-primary focus-visible:ring-2 focus-visible:ring-ring"
+                    type="checkbox"
+                    aria-label="Select all listings"
+                    checked={queue.length > 0 && selected.size === queue.length}
+                    onChange={(e) =>
+                      setSelected(e.target.checked ? new Set(queue.map((q) => q.id)) : new Set())
+                    }
+                  />
+                </th>
+                <th className="px-3 py-3">Listing</th>
+                <th className="px-3 py-3">Location</th>
+                <th className="px-3 py-3">Why it needs review</th>
               </tr>
             </thead>
             <tbody>
-              {sources.map((s) => (
-                <tr key={s.id} className={"border-t border-border align-top " + (s.enabled ? "" : "opacity-60")}>
-                  <td className="py-2 pr-3">
-                    {s.organizations?.name ?? s.slug}
-                    <div className="text-[12px] text-muted-foreground">{s.connector}</div>
+              {queue.map((q) => (
+                <tr key={q.id} className="border-b border-border last:border-0 align-top">
+                  <td className="px-3 py-3">
+                    <input
+                      className="accent-primary focus-visible:ring-2 focus-visible:ring-ring"
+                      type="checkbox"
+                      aria-label={`Select ${q.name}`}
+                      checked={selected.has(q.id)}
+                      onChange={() => toggle(q.id)}
+                    />
                   </td>
-                  <td className="pr-3">
-                    {s.discovery_method}
-                    {s.connector === "html" && !s.trusted ? " (untrusted)" : ""}
-                  </td>
-                  <td className="pr-3">{ago(s.last_success_at)}</td>
-                  <td className="pr-3 tabular-nums">{s.last_item_count ?? "—"}</td>
-                  <td className="pr-3 tabular-nums">{s.consecutive_failures}</td>
-                  <td className="max-w-[280px] pr-3 text-[12px] text-muted-foreground">{s.last_error ?? s.permission_note}</td>
-                  <td className="whitespace-nowrap py-2">
-                    <div className="flex gap-1.5">
-                      <button className={btn} onClick={() => void act(() => adminUpdateSource({ data: { adminSecret: secret, id: s.id, enabled: !s.enabled } }))}>
-                        {s.enabled ? "Disable" : "Enable"}
-                      </button>
-                      {s.connector === "html" && !s.trusted && (
-                        <button className={btn} onClick={() => void act(() => adminUpdateSource({ data: { adminSecret: secret, id: s.id, trusted: true } }))}>
-                          Trust
-                        </button>
-                      )}
-                      <button className={btn} disabled={s.run_requested} onClick={() => void act(() => adminUpdateSource({ data: { adminSecret: secret, id: s.id, runRequested: true } }))}>
-                        {s.run_requested ? "Queued" : "Run next"}
-                      </button>
+                  <td className="px-3 py-3">
+                    {q.apply_url ? (
+                      <a
+                        href={q.apply_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {q.name}
+                      </a>
+                    ) : (
+                      q.name
+                    )}
+                    <div className="mt-1 text-[11px] text-muted-foreground">
+                      {q.org} · {q.kind ?? "—"}
                     </div>
+                  </td>
+                  <td className="px-3 py-3">{q.location}</td>
+                  <td className="px-3 py-3 text-[12px] text-muted-foreground">
+                    {q.review_reasons.join("; ")}
                   </td>
                 </tr>
               ))}
+              {queue.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-3 py-8 text-center text-[13px] text-muted-foreground"
+                  >
+                    The queue is clear for now.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
+
+      <section aria-labelledby="sources-heading" className="min-w-0">
+        <div className="mb-4">
+          <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            03 · Sources
+          </p>
+          <h2 id="sources-heading" className="font-serif text-[30px] leading-none">
+            Sources{" "}
+            <span className="font-sans text-[13px] text-muted-foreground">({sources.length})</span>
+          </h2>
+          <p className="mt-2 text-[12px] text-muted-foreground">
+            A quiet view of the feeds behind the listings.
+          </p>
+        </div>
+        <div
+          className="overflow-x-auto border-y border-border"
+          role="region"
+          aria-label="Ingestion sources"
+          tabIndex={0}
+        >
+          <table className="w-full min-w-[900px] bg-card text-left text-[13px]">
+            <thead className="border-b border-border text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              <tr>
+                <th className="px-3 py-3">Source</th>
+                <th className="px-3 py-3">Method</th>
+                <th className="px-3 py-3">Last success</th>
+                <th className="px-3 py-3">Items</th>
+                <th className="px-3 py-3">Failures</th>
+                <th className="px-3 py-3">Last error / note</th>
+                <th className="px-3 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sources.map((s) => {
+                const status = !s.enabled
+                  ? "Disabled"
+                  : s.consecutive_failures > 0
+                    ? "Failing"
+                    : s.connector === "html" && !s.trusted
+                      ? "Untrusted HTML"
+                      : "Healthy";
+                const statusClass = !s.enabled
+                  ? "border-border text-muted-foreground"
+                  : s.consecutive_failures > 0
+                    ? "border-destructive/40 text-destructive"
+                    : s.connector === "html" && !s.trusted
+                      ? "border-primary/30 text-primary"
+                      : "border-primary/30 text-primary";
+                return (
+                  <tr key={s.id} className="border-b border-border last:border-0 align-top">
+                    <td className="px-3 py-3">
+                      <div className="font-medium">{s.organizations?.name ?? s.slug}</div>
+                      <div className="mt-1 text-[11px] text-muted-foreground">{s.connector}</div>
+                      <span
+                        className={`mt-2 inline-flex items-center gap-1.5 border px-2 py-0.5 text-[10px] ${statusClass}`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`h-1.5 w-1.5 rounded-full ${!s.enabled ? "bg-muted-foreground" : s.consecutive_failures > 0 ? "bg-destructive" : "bg-primary"}`}
+                        />
+                        {status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">{s.discovery_method}</td>
+                    <td className="px-3 py-3 whitespace-nowrap">{ago(s.last_success_at)}</td>
+                    <td className="px-3 py-3 tabular-nums">{s.last_item_count ?? "—"}</td>
+                    <td
+                      className={`px-3 py-3 tabular-nums ${s.consecutive_failures > 0 ? "text-destructive" : "text-muted-foreground"}`}
+                    >
+                      {s.consecutive_failures}
+                    </td>
+                    <td className="max-w-[280px] px-3 py-3 text-[12px] text-muted-foreground">
+                      {s.last_error ??
+                        s.permission_note ??
+                        (s.connector === "html" && !s.trusted
+                          ? "HTML source needs trust review."
+                          : "—")}
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        <button
+                          type="button"
+                          aria-label={`${s.enabled ? "Disable" : "Enable"} ${s.organizations?.name ?? s.slug}`}
+                          className={btn}
+                          disabled={busy}
+                          onClick={() =>
+                            void act(() =>
+                              adminUpdateSource({
+                                data: { adminSecret: secret, id: s.id, enabled: !s.enabled },
+                              }),
+                            )
+                          }
+                        >
+                          {s.enabled ? "Disable" : "Enable"}
+                        </button>
+                        {s.connector === "html" && !s.trusted && (
+                          <button
+                            type="button"
+                            aria-label={`Trust ${s.organizations?.name ?? s.slug}`}
+                            className={btn}
+                            disabled={busy}
+                            onClick={() =>
+                              void act(() =>
+                                adminUpdateSource({
+                                  data: { adminSecret: secret, id: s.id, trusted: true },
+                                }),
+                              )
+                            }
+                          >
+                            Trust
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          aria-label={`${s.run_requested ? "Run queued for" : "Run next for"} ${s.organizations?.name ?? s.slug}`}
+                          className={btn}
+                          disabled={s.run_requested || busy}
+                          onClick={() =>
+                            void act(() =>
+                              adminUpdateSource({
+                                data: { adminSecret: secret, id: s.id, runRequested: true },
+                              }),
+                            )
+                          }
+                        >
+                          {s.run_requested ? "Queued" : "Run next"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {sources.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-3 py-8 text-center text-[13px] text-muted-foreground"
+                  >
+                    No sources configured yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

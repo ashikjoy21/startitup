@@ -1,4 +1,4 @@
-export type OpportunityStatus = "published" | "archived";
+export type OpportunityStatus = "published" | "archived" | "expired" | "unverified";
 export type SubmissionStatus = "pending" | "approved" | "rejected";
 export type SubmissionType = "new" | "edit" | "report";
 
@@ -22,6 +22,33 @@ export type DbOpportunity = {
   created_at: string;
   updated_at: string;
   published_at: string;
+  audience: string[];
+  kind: string | null;
+  organization_id: string | null;
+  work_mode: "onsite" | "hybrid" | "remote" | null;
+  locations: string[];
+  country: string | null;
+  india_eligible: boolean | null;
+  skills: string[];
+  degrees: string[];
+  streams: string[];
+  grad_year_min: number | null;
+  grad_year_max: number | null;
+  experience_min: number | null;
+  experience_max: number | null;
+  pay_min: number | null;
+  pay_max: number | null;
+  pay_currency: string | null;
+  pay_period: "hour" | "month" | "year" | "total" | null;
+  posted_at: string | null;
+  deadline_at: string | null;
+  last_verified_at: string | null;
+  apply_url: string | null;
+  notice_number: string | null;
+  review_state: "ok" | "needs_review" | "rejected";
+  review_reasons: string[];
+  review_locked: boolean;
+  source_rank: number;
 };
 
 export type DbCategory = {

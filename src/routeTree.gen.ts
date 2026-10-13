@@ -28,6 +28,7 @@ import { Route as IncubatorsRouteImport } from './routes/incubators'
 import { Route as FundingRouteImport } from './routes/funding'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalculatorRouteImport } from './routes/calculator'
+import { Route as BotRouteImport } from './routes/bot'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AcceleratorsRouteImport } from './routes/accelerators'
 import { Route as IndexRouteImport } from './routes/index'
@@ -137,6 +138,11 @@ const CalculatorRoute = CalculatorRouteImport.update({
   path: '/calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BotRoute = BotRouteImport.update({
+  id: '/bot',
+  path: '/bot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -207,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
+  '/bot': typeof BotRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
+  '/bot': typeof BotRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
+  '/bot': typeof BotRoute
   '/calculator': typeof CalculatorRoute
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accelerators'
     | '/admin'
+    | '/bot'
     | '/calculator'
     | '/dashboard'
     | '/funding'
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accelerators'
     | '/admin'
+    | '/bot'
     | '/calculator'
     | '/dashboard'
     | '/funding'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accelerators'
     | '/admin'
+    | '/bot'
     | '/calculator'
     | '/dashboard'
     | '/funding'
@@ -407,6 +419,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcceleratorsRoute: typeof AcceleratorsRoute
   AdminRoute: typeof AdminRoute
+  BotRoute: typeof BotRoute
   CalculatorRoute: typeof CalculatorRoute
   DashboardRoute: typeof DashboardRoute
   FundingRoute: typeof FundingRoute
@@ -565,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bot': {
+      id: '/bot'
+      path: '/bot'
+      fullPath: '/bot'
+      preLoaderRoute: typeof BotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -719,6 +739,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcceleratorsRoute: AcceleratorsRoute,
   AdminRoute: AdminRoute,
+  BotRoute: BotRoute,
   CalculatorRoute: CalculatorRoute,
   DashboardRoute: DashboardRoute,
   FundingRoute: FundingRoute,

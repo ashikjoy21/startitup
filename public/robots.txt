@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://startitup.in/sitemap.xml
+Sitemap: https://startitup.in/sitemap-jobs.xml

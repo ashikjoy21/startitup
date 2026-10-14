@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JOBS_PAGE_SIZE, pageRange, sanitizeTerm, postedLabel, searchWords } from "./jobs-search";
+import { JOBS_PAGE_SIZE, pageRange, sanitizeTerm, postedLabel, searchWords, toSlug, roleFromSlug } from "./jobs-search";
 
 describe("jobs search helpers", () => {
   it("strips characters that would break a PostgREST or() filter", () => {
@@ -31,5 +31,15 @@ describe("searchWords", () => {
     expect(searchWords("Data Analyst jobs in Pune")).toEqual(["data", "analyst", "pune"]);
     expect(searchWords("java, java (remote)")).toEqual(["java", "remote"]);
     expect(searchWords("  ")).toEqual([]);
+  });
+});
+
+describe("landing page slugs", () => {
+  it("round-trips role families and slugs cities", () => {
+    expect(toSlug("Data & AI")).toBe("data-ai");
+    expect(toSlug("Finance, Banking & Insurance")).toBe("finance-banking-insurance");
+    expect(toSlug("New Delhi")).toBe("new-delhi");
+    expect(roleFromSlug("data-ai")).toBe("Data & AI");
+    expect(roleFromSlug("nope")).toBeUndefined();
   });
 });

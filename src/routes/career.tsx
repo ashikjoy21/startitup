@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
 import { getJobFacets } from "@/lib/api/jobs.functions";
 import { ROLE_FAMILIES } from "@/lib/jobs-search";
+import { toSlug } from "@/lib/jobs-search";
 
 export const Route = createFileRoute("/career")({
   head: () => ({
@@ -89,8 +90,8 @@ function CareerHome() {
               .map((role) => (
                 <Link
                   key={role.name}
-                  to="/jobs"
-                  search={{ role: role.name as (typeof ROLE_FAMILIES)[number] }}
+                  to="/jobs/role/$role"
+                  params={{ role: toSlug(role.name) }}
                   className="group flex min-h-32 flex-col justify-between bg-card p-5 hover:bg-primary-soft"
                 >
                   <span className="font-serif text-[22px] leading-tight">{role.name}</span>
@@ -115,8 +116,8 @@ function CareerHome() {
             {facets.cities.slice(0, 12).map((city) => (
               <Link
                 key={city.name}
-                to="/jobs"
-                search={{ city: city.name }}
+                to="/jobs/city/$city"
+                params={{ city: toSlug(city.name) }}
                 className="group flex h-32 flex-col justify-between bg-card p-5 hover:bg-primary-soft"
               >
                 <span className="font-serif text-[22px] leading-tight">{city.name}</span>

@@ -64,3 +64,12 @@ export function postedLabel(iso: string | null, now = new Date()): string {
   if (days <= 30) return `${days} days ago`;
   return "Over a month ago";
 }
+
+/** URL slug for landing pages: "Data & AI" → "data-ai", "New Delhi" → "new-delhi". */
+export function toSlug(name: string): string {
+  return name.toLowerCase().replace(/&/g, " ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export function roleFromSlug(slug: string): (typeof ROLE_FAMILIES)[number] | undefined {
+  return ROLE_FAMILIES.find((r) => toSlug(r) === slug);
+}

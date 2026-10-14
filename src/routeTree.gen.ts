@@ -14,6 +14,7 @@ import { Route as SuccessStoriesRouteImport } from './routes/success-stories'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as StartupsRouteImport } from './routes/startups'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapJobsDotxmlRouteImport } from './routes/sitemap-jobs[.]xml'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -38,13 +39,17 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StartupsIndexRouteImport } from './routes/startups.index'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
+import { Route as JobsIndexRouteImport } from './routes/jobs.index'
 import { Route as InvestorsIndexRouteImport } from './routes/investors.index'
 import { Route as StartupsIdRouteImport } from './routes/startups.$id'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
+import { Route as JobsIdRouteImport } from './routes/jobs.$id'
 import { Route as InvestorsIdRouteImport } from './routes/investors.$id'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiMcpRouteImport } from './routes/api/mcp'
+import { Route as JobsRoleRoleRouteImport } from './routes/jobs.role.$role'
+import { Route as JobsCityCityRouteImport } from './routes/jobs.city.$city'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -69,6 +74,11 @@ const StartupsRoute = StartupsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapJobsDotxmlRoute = SitemapJobsDotxmlRouteImport.update({
+  id: '/sitemap-jobs.xml',
+  path: '/sitemap-jobs.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -191,6 +201,11 @@ const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OpportunitiesRoute,
 } as any)
+const JobsIndexRoute = JobsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => JobsRoute,
+} as any)
 const InvestorsIndexRoute = InvestorsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -211,6 +226,11 @@ const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => OpportunitiesRoute,
 } as any)
+const JobsIdRoute = JobsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => JobsRoute,
+} as any)
 const InvestorsIdRoute = InvestorsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -226,6 +246,16 @@ const ApiMcpRoute = ApiMcpRouteImport.update({
   path: '/api/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JobsRoleRoleRoute = JobsRoleRoleRouteImport.update({
+  id: '/role/$role',
+  path: '/role/$role',
+  getParentRoute: () => JobsRoute,
+} as any)
+const JobsCityCityRoute = JobsCityCityRouteImport.update({
+  id: '/city/$city',
+  path: '/city/$city',
+  getParentRoute: () => JobsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -239,7 +269,7 @@ export interface FileRoutesByFullPath {
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
   '/investors': typeof InvestorsRouteWithChildren
-  '/jobs': typeof JobsRoute
+  '/jobs': typeof JobsRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -249,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
+  '/sitemap-jobs.xml': typeof SitemapJobsDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
@@ -257,13 +288,17 @@ export interface FileRoutesByFullPath {
   '/api/mcp': typeof ApiMcpRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/investors/$id': typeof InvestorsIdRoute
+  '/jobs/$id': typeof JobsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/startups/$id': typeof StartupsIdRoute
   '/investors/': typeof InvestorsIndexRoute
+  '/jobs/': typeof JobsIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/resources/': typeof ResourcesIndexRoute
   '/startups/': typeof StartupsIndexRoute
+  '/jobs/city/$city': typeof JobsCityCityRoute
+  '/jobs/role/$role': typeof JobsRoleRoleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -276,7 +311,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
-  '/jobs': typeof JobsRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -284,6 +318,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
+  '/sitemap-jobs.xml': typeof SitemapJobsDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/submit': typeof SubmitRoute
   '/success-stories': typeof SuccessStoriesRoute
@@ -291,13 +326,17 @@ export interface FileRoutesByTo {
   '/api/mcp': typeof ApiMcpRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/investors/$id': typeof InvestorsIdRoute
+  '/jobs/$id': typeof JobsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/startups/$id': typeof StartupsIdRoute
   '/investors': typeof InvestorsIndexRoute
+  '/jobs': typeof JobsIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
   '/resources': typeof ResourcesIndexRoute
   '/startups': typeof StartupsIndexRoute
+  '/jobs/city/$city': typeof JobsCityCityRoute
+  '/jobs/role/$role': typeof JobsRoleRoleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -312,7 +351,7 @@ export interface FileRoutesById {
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
   '/investors': typeof InvestorsRouteWithChildren
-  '/jobs': typeof JobsRoute
+  '/jobs': typeof JobsRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -322,6 +361,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/saved': typeof SavedRoute
+  '/sitemap-jobs.xml': typeof SitemapJobsDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/startups': typeof StartupsRouteWithChildren
   '/submit': typeof SubmitRoute
@@ -330,13 +370,17 @@ export interface FileRoutesById {
   '/api/mcp': typeof ApiMcpRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/investors/$id': typeof InvestorsIdRoute
+  '/jobs/$id': typeof JobsIdRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/startups/$id': typeof StartupsIdRoute
   '/investors/': typeof InvestorsIndexRoute
+  '/jobs/': typeof JobsIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/resources/': typeof ResourcesIndexRoute
   '/startups/': typeof StartupsIndexRoute
+  '/jobs/city/$city': typeof JobsCityCityRoute
+  '/jobs/role/$role': typeof JobsRoleRoleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -362,6 +406,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/resources'
     | '/saved'
+    | '/sitemap-jobs.xml'
     | '/sitemap.xml'
     | '/startups'
     | '/submit'
@@ -370,13 +415,17 @@ export interface FileRouteTypes {
     | '/api/mcp'
     | '/auth/callback'
     | '/investors/$id'
+    | '/jobs/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/startups/$id'
     | '/investors/'
+    | '/jobs/'
     | '/opportunities/'
     | '/resources/'
     | '/startups/'
+    | '/jobs/city/$city'
+    | '/jobs/role/$role'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -389,7 +438,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/funding'
     | '/incubators'
-    | '/jobs'
     | '/login'
     | '/logout'
     | '/newsletter'
@@ -397,6 +445,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/profile'
     | '/saved'
+    | '/sitemap-jobs.xml'
     | '/sitemap.xml'
     | '/submit'
     | '/success-stories'
@@ -404,13 +453,17 @@ export interface FileRouteTypes {
     | '/api/mcp'
     | '/auth/callback'
     | '/investors/$id'
+    | '/jobs/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/startups/$id'
     | '/investors'
+    | '/jobs'
     | '/opportunities'
     | '/resources'
     | '/startups'
+    | '/jobs/city/$city'
+    | '/jobs/role/$role'
   id:
     | '__root__'
     | '/'
@@ -434,6 +487,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/resources'
     | '/saved'
+    | '/sitemap-jobs.xml'
     | '/sitemap.xml'
     | '/startups'
     | '/submit'
@@ -442,13 +496,17 @@ export interface FileRouteTypes {
     | '/api/mcp'
     | '/auth/callback'
     | '/investors/$id'
+    | '/jobs/$id'
     | '/opportunities/$id'
     | '/resources/$slug'
     | '/startups/$id'
     | '/investors/'
+    | '/jobs/'
     | '/opportunities/'
     | '/resources/'
     | '/startups/'
+    | '/jobs/city/$city'
+    | '/jobs/role/$role'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -463,7 +521,7 @@ export interface RootRouteChildren {
   FundingRoute: typeof FundingRoute
   IncubatorsRoute: typeof IncubatorsRoute
   InvestorsRoute: typeof InvestorsRouteWithChildren
-  JobsRoute: typeof JobsRoute
+  JobsRoute: typeof JobsRouteWithChildren
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   NewsletterRoute: typeof NewsletterRoute
@@ -473,6 +531,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   SavedRoute: typeof SavedRoute
+  SitemapJobsDotxmlRoute: typeof SitemapJobsDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StartupsRoute: typeof StartupsRouteWithChildren
   SubmitRoute: typeof SubmitRoute
@@ -517,6 +576,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-jobs.xml': {
+      id: '/sitemap-jobs.xml'
+      path: '/sitemap-jobs.xml'
+      fullPath: '/sitemap-jobs.xml'
+      preLoaderRoute: typeof SitemapJobsDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -687,6 +753,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIndexRouteImport
       parentRoute: typeof OpportunitiesRoute
     }
+    '/jobs/': {
+      id: '/jobs/'
+      path: '/'
+      fullPath: '/jobs/'
+      preLoaderRoute: typeof JobsIndexRouteImport
+      parentRoute: typeof JobsRoute
+    }
     '/investors/': {
       id: '/investors/'
       path: '/'
@@ -715,6 +788,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdRouteImport
       parentRoute: typeof OpportunitiesRoute
     }
+    '/jobs/$id': {
+      id: '/jobs/$id'
+      path: '/$id'
+      fullPath: '/jobs/$id'
+      preLoaderRoute: typeof JobsIdRouteImport
+      parentRoute: typeof JobsRoute
+    }
     '/investors/$id': {
       id: '/investors/$id'
       path: '/$id'
@@ -736,6 +816,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMcpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/jobs/role/$role': {
+      id: '/jobs/role/$role'
+      path: '/role/$role'
+      fullPath: '/jobs/role/$role'
+      preLoaderRoute: typeof JobsRoleRoleRouteImport
+      parentRoute: typeof JobsRoute
+    }
+    '/jobs/city/$city': {
+      id: '/jobs/city/$city'
+      path: '/city/$city'
+      fullPath: '/jobs/city/$city'
+      preLoaderRoute: typeof JobsCityCityRouteImport
+      parentRoute: typeof JobsRoute
+    }
   }
 }
 
@@ -752,6 +846,22 @@ const InvestorsRouteChildren: InvestorsRouteChildren = {
 const InvestorsRouteWithChildren = InvestorsRoute._addFileChildren(
   InvestorsRouteChildren,
 )
+
+interface JobsRouteChildren {
+  JobsIdRoute: typeof JobsIdRoute
+  JobsIndexRoute: typeof JobsIndexRoute
+  JobsCityCityRoute: typeof JobsCityCityRoute
+  JobsRoleRoleRoute: typeof JobsRoleRoleRoute
+}
+
+const JobsRouteChildren: JobsRouteChildren = {
+  JobsIdRoute: JobsIdRoute,
+  JobsIndexRoute: JobsIndexRoute,
+  JobsCityCityRoute: JobsCityCityRoute,
+  JobsRoleRoleRoute: JobsRoleRoleRoute,
+}
+
+const JobsRouteWithChildren = JobsRoute._addFileChildren(JobsRouteChildren)
 
 interface OpportunitiesRouteChildren {
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
@@ -807,7 +917,7 @@ const rootRouteChildren: RootRouteChildren = {
   FundingRoute: FundingRoute,
   IncubatorsRoute: IncubatorsRoute,
   InvestorsRoute: InvestorsRouteWithChildren,
-  JobsRoute: JobsRoute,
+  JobsRoute: JobsRouteWithChildren,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   NewsletterRoute: NewsletterRoute,
@@ -817,6 +927,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   SavedRoute: SavedRoute,
+  SitemapJobsDotxmlRoute: SitemapJobsDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StartupsRoute: StartupsRouteWithChildren,
   SubmitRoute: SubmitRoute,

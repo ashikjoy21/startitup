@@ -3,6 +3,7 @@ import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
 import { getJobFacets, listJobs } from "@/lib/api/jobs.functions";
 import { ROLE_FAMILIES, roleFromSlug, toSlug } from "@/lib/jobs-search";
+import { telegramTopic } from "@/lib/telegram";
 
 export const Route = createFileRoute("/jobs/role/$role")({
   loader: async ({ params }) => {
@@ -45,6 +46,7 @@ function RolePage() {
   const { role, list, facets } = Route.useLoaderData();
   const cities = facets.cities.slice(0, 12);
   const count = facets.roles.find((r) => r.name === role)?.n ?? 0;
+  const telegram = telegramTopic({ roleFamily: role, kind: null, experienceMin: null });
   return (
     <SiteLayout>
       <main className="mx-auto max-w-[1280px] px-6 py-14">
@@ -55,6 +57,14 @@ function RolePage() {
           {count.toLocaleString("en-IN")} open roles across India, refreshed from employers' careers
           sites.
         </p>
+        <a
+          href={telegram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 block border border-border bg-primary-soft px-3 py-2 text-[13px] text-primary hover:underline"
+        >
+          New {telegram.name} jobs on Telegram: join the group →
+        </a>
         <ul className="mt-8 space-y-3">
           {list.items.map((job) => (
             <li key={job.id} className="flex items-start gap-4 border border-border bg-card p-4">

@@ -5,6 +5,7 @@ import { OrgLogo } from "@/components/opportunity-row";
 import { getJob, type JobListing } from "@/lib/api/jobs.functions";
 import { isIndexable, jobPostingJsonLd, jobUrl, type JobDetail } from "@/lib/job-posting";
 import { postedLabel } from "@/lib/jobs-search";
+import { telegramTopic } from "@/lib/telegram";
 
 export const Route = createFileRoute("/jobs/$id")({
   loader: async ({ params }) => {
@@ -45,6 +46,11 @@ function JobDetailPage() {
   const { job, similar } = Route.useLoaderData();
   const city = job.locations[0] || (job.workMode === "remote" ? "Remote" : "India");
   const closed = job.status !== "published";
+  const topic = telegramTopic({
+    roleFamily: job.roleFamily,
+    kind: job.kind,
+    experienceMin: job.experienceMin,
+  });
   const paragraphs = job.description
     .trim()
     .split(/\n\s*\n/)
@@ -116,6 +122,14 @@ function JobDetailPage() {
           </div>
         )}
         <Share title={`${job.title} at ${job.org}`} />
+        <a
+          href={topic.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex max-w-full flex-wrap items-center gap-x-1 border border-border bg-primary-soft px-3 py-2 text-[13px] text-primary hover:underline"
+        >
+          Get new {topic.name} jobs on Telegram →
+        </a>
         <section className="mt-10 max-w-[72ch] text-[15px] leading-[1.75]">
           <h2 className="font-serif text-[30px]">About this role</h2>
           {paragraphs.length && job.description.length >= 200 ? (

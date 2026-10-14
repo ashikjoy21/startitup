@@ -39,7 +39,9 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center bg-primary font-serif text-base">S</span>
+              <span className="flex h-7 w-7 items-center justify-center bg-primary font-serif text-base">
+                S
+              </span>
               <span className="text-[15px] font-medium">StartItUp</span>
             </div>
             <p className="mt-4 max-w-xs text-[13.5px] text-white/60">
@@ -52,11 +54,23 @@ export function SiteFooter() {
               <ul className="mt-4 space-y-3">
                 {c.links.map(([label, to]) => (
                   <li key={label}>
-                    <Link to={to as any} className="text-[13.5px] text-white/65 hover:text-white">
+                    <Link to={to as never} className="text-[13.5px] text-white/65 hover:text-white">
                       {label}
                     </Link>
                   </li>
                 ))}
+                {c.title === "Company" && (
+                  <li>
+                    <a
+                      href="https://t.me/startitupjobs"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[13.5px] text-white/65 hover:text-white"
+                    >
+                      Telegram
+                    </a>
+                  </li>
+                )}
               </ul>
             </div>
           ))}

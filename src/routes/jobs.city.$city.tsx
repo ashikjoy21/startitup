@@ -3,6 +3,7 @@ import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
 import { getJobFacets, listJobs } from "@/lib/api/jobs.functions";
 import { ROLE_FAMILIES, toSlug } from "@/lib/jobs-search";
+import { TELEGRAM_GROUP_URL } from "@/lib/telegram";
 
 export const Route = createFileRoute("/jobs/city/$city")({
   loader: async ({ params }) => {
@@ -55,6 +56,14 @@ function CityPage() {
           {city.n.toLocaleString("en-IN")} open roles in {city.name}, refreshed from employers'
           careers sites.
         </p>
+        <a
+          href={TELEGRAM_GROUP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 block border border-border bg-primary-soft px-3 py-2 text-[13px] text-primary hover:underline"
+        >
+          New jobs every 30 minutes on Telegram: join t.me/startitupjobs →
+        </a>
         <ul className="mt-8 space-y-3">
           {list.items.map((job) => (
             <li key={job.id} className="flex items-start gap-4 border border-border bg-card p-4">

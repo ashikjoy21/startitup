@@ -12,6 +12,7 @@ import {
   postedLabel,
   toSlug,
 } from "@/lib/jobs-search";
+import { TELEGRAM_GROUP_URL, telegramTopic } from "@/lib/telegram";
 
 const KINDS = [
   { id: undefined, label: "All types" },
@@ -147,6 +148,17 @@ function JobsPage() {
   };
   const cityOptions = facets.cities.slice(0, showAllCities ? 40 : 8);
   const employerOptions = employerFacets.slice(0, showAllEmployers ? 80 : 8);
+  const telegram =
+    search.exp === "fresher" ||
+    ["internship", "graduate_program", "apprenticeship"].includes(search.kind ?? "")
+      ? telegramTopic({
+          roleFamily: null,
+          kind: search.kind,
+          experienceMin: search.exp === "fresher" ? 0 : null,
+        })
+      : search.role
+        ? telegramTopic({ roleFamily: search.role, kind: null, experienceMin: null })
+        : null;
 
   return (
     <SiteLayout>
@@ -337,7 +349,28 @@ function JobsPage() {
               </div>
             )}
 
-            <ul className="mt-6 space-y-3">
+            <div className="mt-6 border border-border bg-primary-soft px-3 py-2 text-[13px] text-muted-foreground">
+              {telegram ? (
+                <a
+                  href={telegram.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  New {telegram.name} jobs on Telegram: join the group →
+                </a>
+              ) : (
+                <a
+                  href={TELEGRAM_GROUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  New jobs every 30 minutes on Telegram: join t.me/startitupjobs →
+                </a>
+              )}
+            </div>
+            <ul className="mt-3 space-y-3">
               {items.map((j) => (
                 <JobRow key={j.id} j={j} />
               ))}

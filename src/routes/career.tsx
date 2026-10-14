@@ -56,9 +56,14 @@ function CareerHome() {
               Search roles
             </button>
           </form>
-          <Link to="/jobs" className="mt-5 inline-block text-[13px] text-primary hover:underline">
-            Explore all {facets.total.toLocaleString("en-IN")} roles →
-          </Link>
+          <div className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13px]">
+            <Link to="/jobs" className="text-primary hover:underline">
+              Explore all {facets.total.toLocaleString("en-IN")} roles →
+            </Link>
+            <a href="https://t.me/startitupjobs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              Get new jobs on Telegram ↗
+            </a>
+          </div>
         </div>
       </section>
 

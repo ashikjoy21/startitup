@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JOBS_PAGE_SIZE, pageRange, sanitizeTerm, postedLabel, searchWords, toSlug, roleFromSlug } from "./jobs-search";
+import { JOBS_PAGE_SIZE, pageRange, sanitizeTerm, postedLabel, searchWords, toSlug, roleFromSlug, verifiedLabel } from "./jobs-search";
 
 describe("jobs search helpers", () => {
   it("strips characters that would break a PostgREST or() filter", () => {
@@ -41,5 +41,16 @@ describe("landing page slugs", () => {
     expect(toSlug("New Delhi")).toBe("new-delhi");
     expect(roleFromSlug("data-ai")).toBe("Data & AI");
     expect(roleFromSlug("nope")).toBeUndefined();
+  });
+});
+
+describe("verifiedLabel", () => {
+  const now = new Date("2026-10-14T12:00:00Z");
+  it("shows how recently the role was seen live on the employer site", () => {
+    expect(verifiedLabel("2026-10-14T11:20:00Z", now)).toEqual({ text: "Verified live · 40 min ago", fresh: true });
+    expect(verifiedLabel("2026-10-14T06:30:00Z", now)).toEqual({ text: "Verified live · 5h ago", fresh: true });
+    expect(verifiedLabel("2026-10-13T06:00:00Z", now)).toEqual({ text: "Last checked yesterday", fresh: false });
+    expect(verifiedLabel("2026-10-10T12:00:00Z", now)).toEqual({ text: "Last checked 4 days ago", fresh: false });
+    expect(verifiedLabel(null, now)).toBeNull();
   });
 });

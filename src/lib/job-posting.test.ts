@@ -15,6 +15,7 @@ const base: JobDetail = {
   roleFamily: "Data & AI",
   postedAt: "2026-10-10T05:00:00Z",
   firstSeenAt: "2026-10-11T00:00:00Z",
+  lastVerifiedAt: "2026-10-14T06:00:00Z",
   deadlineAt: null,
   experienceMin: 2,
   experienceMax: 4,

@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { getJob, type JobListing } from "@/lib/api/jobs.functions";
 import { isIndexable, jobPostingJsonLd, jobUrl, type JobDetail } from "@/lib/job-posting";
 import { postedLabel } from "@/lib/jobs-search";
@@ -117,7 +118,9 @@ function JobDetailPage() {
               Apply on {job.org}'s site ↗
             </a>
             <p className="mt-3 text-[12.5px] text-muted-foreground">
-              Read directly from {job.org}'s careers site. StartItUp never charges candidates.
+              <VerifiedBadge at={job.lastVerifiedAt} org={job.org} size="md" />
+              {job.lastVerifiedAt && <span> · </span>}
+              StartItUp never charges candidates.
             </p>
           </div>
         )}
@@ -216,6 +219,9 @@ function SimilarRow({ job }: { job: JobListing }) {
         <p className="mt-1 text-[12.5px] text-muted-foreground">
           {job.org} · {job.locations.join(", ") || "India"}
         </p>
+        <div className="mt-1">
+          <VerifiedBadge at={job.lastVerifiedAt} org={job.org} size="sm" />
+        </div>
       </div>
       <span className="text-[12px] text-muted-foreground">{postedLabel(job.postedAt)}</span>
     </li>

@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { getJobFacets, listJobs, type JobListing } from "@/lib/api/jobs.functions";
 import {
   EXPERIENCE_BANDS,
@@ -172,7 +173,8 @@ function JobsPage() {
           <p className="mx-auto mt-6 max-w-xl text-[14.5px] text-foreground/80">
             {facets.total.toLocaleString("en-IN")} live roles from{" "}
             {facets.companies.toLocaleString("en-IN")} employers, read directly from their own
-            careers sites and refreshed every few hours. Closed roles drop off automatically.
+            careers sites. Every job is re-checked on the employer's site; closed roles disappear
+            automatically.
           </p>
         </div>
       </section>
@@ -472,6 +474,9 @@ function JobRow({ j }: { j: JobListing }) {
         {j.roleFamily && j.roleFamily !== "Other" && (
           <div className="mt-1 text-[11.5px] text-muted-foreground">{j.roleFamily}</div>
         )}
+        <div className="mt-1">
+          <VerifiedBadge at={j.lastVerifiedAt} org={j.org} size="sm" />
+        </div>
       </div>
       {j.applyUrl && (
         <a

@@ -45,6 +45,9 @@ function CareerHome() {
             <br />
             <em className="italic text-primary">straight from the source.</em>
           </h1>
+          <p className="mx-auto mt-4 max-w-xl text-[14px] text-muted-foreground">
+            Every job is re-checked on the employer's site; closed roles disappear automatically.
+          </p>
           <form action="/jobs" method="get" className="mx-auto mt-10 flex max-w-2xl gap-2">
             <input
               name="q"
@@ -78,7 +81,7 @@ function CareerHome() {
             [facets.total.toLocaleString("en-IN"), "Live roles"],
             [facets.companies.toLocaleString("en-IN"), "Employers"],
             [facets.cities.length.toLocaleString("en-IN"), "Cities"],
-            ["Every 2 hours", "Refreshed"],
+            ["Every few hours", "Re-checked live"],
           ].map(([value, label]) => (
             <div
               key={label}

@@ -73,3 +73,18 @@ export function toSlug(name: string): string {
 export function roleFromSlug(slug: string): (typeof ROLE_FAMILIES)[number] | undefined {
   return ROLE_FAMILIES.find((r) => toSlug(r) === slug);
 }
+
+/**
+ * "Verified live" badge: when we last saw the role open on the employer's own careers site.
+ * Only checks from the last 24 hours count as fresh; older ones are shown plainly as a last check.
+ */
+export function verifiedLabel(iso: string | null | undefined, now = new Date()): { text: string; fresh: boolean } | null {
+  if (!iso) return null;
+  const minutes = Math.floor((now.getTime() - Date.parse(iso)) / 60_000);
+  if (Number.isNaN(minutes) || minutes < 0) return null;
+  if (minutes < 60) return { text: `Verified live · ${Math.max(minutes, 1)} min ago`, fresh: true };
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return { text: `Verified live · ${hours}h ago`, fresh: true };
+  const days = Math.floor(hours / 24);
+  return { text: `Last checked ${days === 1 ? "yesterday" : `${days} days ago`}`, fresh: false };
+}

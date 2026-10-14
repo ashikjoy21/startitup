@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site-layout";
 import { OrgLogo } from "@/components/opportunity-row";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { getJobFacets, listJobs } from "@/lib/api/jobs.functions";
 import { ROLE_FAMILIES, roleFromSlug, toSlug } from "@/lib/jobs-search";
 import { telegramTopic } from "@/lib/telegram";
@@ -79,6 +80,9 @@ function RolePage() {
                 </Link>
                 <div className="mt-1 text-[13px] text-muted-foreground">
                   {job.org} · {job.locations.join(", ") || "India"}
+                </div>
+                <div className="mt-1">
+                  <VerifiedBadge at={job.lastVerifiedAt} org={job.org} size="sm" />
                 </div>
               </div>
             </li>

@@ -15,6 +15,7 @@ export type JobDetail = {
   roleFamily: string | null;
   postedAt: string | null;
   firstSeenAt: string;
+  lastVerifiedAt: string | null;
   deadlineAt: string | null;
   experienceMin: number | null;
   experienceMax: number | null;

@@ -33,6 +33,7 @@ export type JobListing = {
   kind: string | null;
   roleFamily: string | null;
   postedAt: string | null;
+  lastVerifiedAt: string | null;
   applyUrl: string;
   experienceMin: number | null;
   experienceMax: number | null;
@@ -50,7 +51,7 @@ export const listJobs = createServerFn({ method: "GET" })
     let query = supabase
       .from("opportunities")
       .select(
-        "id, name, org, logo, locations, work_mode, kind, role_family, posted_at, apply_url, source_url, experience_min, experience_max",
+        "id, name, org, logo, locations, work_mode, kind, role_family, posted_at, last_verified_at, apply_url, source_url, experience_min, experience_max",
         { count: "exact" },
       )
       .eq("status", "published")
@@ -89,6 +90,7 @@ export const listJobs = createServerFn({ method: "GET" })
       kind: r.kind,
       roleFamily: r.role_family,
       postedAt: r.posted_at,
+      lastVerifiedAt: r.last_verified_at,
       applyUrl: r.apply_url ?? r.source_url ?? "",
       experienceMin: r.experience_min,
       experienceMax: r.experience_max,
@@ -104,7 +106,7 @@ export const getJobFacets = createServerFn({ method: "GET" }).handler(async (): 
 });
 
 const JOB_DETAIL_COLUMNS =
-  "id, name, org, logo, description, locations, country, work_mode, kind, role_family, posted_at, created_at, deadline_at, experience_min, experience_max, pay_min, pay_max, pay_currency, pay_period, apply_url, source_url, status, organizations(website)";
+  "id, name, org, logo, description, locations, country, work_mode, kind, role_family, posted_at, created_at, last_verified_at, deadline_at, experience_min, experience_max, pay_min, pay_max, pay_currency, pay_period, apply_url, source_url, status, organizations(website)";
 
 export const getJob = createServerFn({ method: "GET" })
   .inputValidator(z.object({ id: z.string().min(1).max(200) }))
@@ -134,6 +136,7 @@ export const getJob = createServerFn({ method: "GET" })
       roleFamily: r.role_family,
       postedAt: r.posted_at,
       firstSeenAt: r.created_at,
+      lastVerifiedAt: r.last_verified_at,
       deadlineAt: r.deadline_at,
       experienceMin: r.experience_min,
       experienceMax: r.experience_max,
@@ -149,7 +152,7 @@ export const getJob = createServerFn({ method: "GET" })
     let q = supabase
       .from("opportunities")
       .select(
-        "id, name, org, logo, locations, work_mode, kind, role_family, posted_at, apply_url, source_url, experience_min, experience_max",
+        "id, name, org, logo, locations, work_mode, kind, role_family, posted_at, last_verified_at, apply_url, source_url, experience_min, experience_max",
       )
       .eq("status", "published")
       .contains("audience", ["jobs"])
@@ -169,6 +172,7 @@ export const getJob = createServerFn({ method: "GET" })
       kind: s.kind,
       roleFamily: s.role_family,
       postedAt: s.posted_at,
+      lastVerifiedAt: s.last_verified_at,
       applyUrl: s.apply_url ?? s.source_url ?? "",
       experienceMin: s.experience_min,
       experienceMax: s.experience_max,

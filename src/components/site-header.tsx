@@ -31,6 +31,9 @@ export function SiteHeader() {
           <Link to="/opportunities" className="text-[13.5px] text-foreground/75 hover:text-foreground">
             Opportunities
           </Link>
+          <Link to="/jobs" className="text-[13.5px] text-foreground/75 hover:text-foreground">
+            Jobs
+          </Link>
 
           <div
             className="relative"

@@ -29,3 +29,11 @@ describe("founder scope guard", () => {
     });
   }
 });
+
+describe("all-jobs scope guard", () => {
+  it("src/lib/api/jobs.functions.ts: every opportunities read is scoped to the jobs audience", () => {
+    const chains = readChains(readFileSync("src/lib/api/jobs.functions.ts", "utf8"));
+    expect(chains.length).toBeGreaterThan(0);
+    for (const chain of chains) expect(chain).toContain('.contains("audience", ["jobs"])');
+  });
+});

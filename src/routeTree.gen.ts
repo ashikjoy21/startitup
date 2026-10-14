@@ -23,6 +23,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as InvestorsRouteImport } from './routes/investors'
 import { Route as IncubatorsRouteImport } from './routes/incubators'
 import { Route as FundingRouteImport } from './routes/funding'
@@ -111,6 +112,11 @@ const LogoutRoute = LogoutRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsRoute = JobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestorsRoute = InvestorsRouteImport.update({
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
   '/investors': typeof InvestorsRouteWithChildren
+  '/jobs': typeof JobsRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
+  '/jobs': typeof JobsRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
   '/investors': typeof InvestorsRouteWithChildren
+  '/jobs': typeof JobsRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/newsletter': typeof NewsletterRoute
@@ -323,6 +332,7 @@ export interface FileRouteTypes {
     | '/funding'
     | '/incubators'
     | '/investors'
+    | '/jobs'
     | '/login'
     | '/logout'
     | '/newsletter'
@@ -357,6 +367,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/funding'
     | '/incubators'
+    | '/jobs'
     | '/login'
     | '/logout'
     | '/newsletter'
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/funding'
     | '/incubators'
     | '/investors'
+    | '/jobs'
     | '/login'
     | '/logout'
     | '/newsletter'
@@ -425,6 +437,7 @@ export interface RootRouteChildren {
   FundingRoute: typeof FundingRoute
   IncubatorsRoute: typeof IncubatorsRoute
   InvestorsRoute: typeof InvestorsRouteWithChildren
+  JobsRoute: typeof JobsRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   NewsletterRoute: typeof NewsletterRoute
@@ -541,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs': {
+      id: '/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof JobsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investors': {
@@ -745,6 +765,7 @@ const rootRouteChildren: RootRouteChildren = {
   FundingRoute: FundingRoute,
   IncubatorsRoute: IncubatorsRoute,
   InvestorsRoute: InvestorsRouteWithChildren,
+  JobsRoute: JobsRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   NewsletterRoute: NewsletterRoute,

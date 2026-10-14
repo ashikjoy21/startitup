@@ -33,6 +33,8 @@ export const Route = createFileRoute("/jobs/city/$city")({
           content: `Browse ${count.toLocaleString("en-IN")} open jobs in ${city} from ${employers}. Find roles refreshed from employers' careers sites.`,
         },
         { property: "og:title", content: title },
+        { property: "og:image", content: "https://startitup.in/og-careers.png" },
+        { name: "twitter:image", content: "https://startitup.in/og-careers.png" },
       ],
       links: [{ rel: "canonical", href: `https://startitup.in/jobs/city/${params.city}` }],
     };

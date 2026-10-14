@@ -49,6 +49,8 @@ export const Route = createFileRoute("/jobs/")({
           "Every open role at hundreds of Indian and global employers, read straight from their own careers sites and refreshed every few hours.",
       },
       { property: "og:title", content: "Jobs in India — StartItUp.in" },
+      { property: "og:image", content: "https://startitup.in/og-careers.png" },
+      { name: "twitter:image", content: "https://startitup.in/og-careers.png" },
       { property: "og:url", content: "https://startitup.in/jobs" },
     ],
     links: [{ rel: "canonical", href: "https://startitup.in/jobs" }],

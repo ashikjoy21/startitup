@@ -26,6 +26,8 @@ export const Route = createFileRoute("/jobs/$id")({
         { title },
         { name: "description", content: description },
         { property: "og:title", content: title },
+        { property: "og:image", content: "https://startitup.in/og-careers.png" },
+        { name: "twitter:image", content: "https://startitup.in/og-careers.png" },
         { property: "og:description", content: description },
         { property: "og:url", content: jobUrl(params.id) },
         ...(!isIndexable(job) ? [{ name: "robots", content: "noindex, follow" }] : []),

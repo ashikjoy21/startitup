@@ -32,6 +32,8 @@ export const Route = createFileRoute("/jobs/role/$role")({
           content: `Browse ${count.toLocaleString("en-IN")} ${role.toLowerCase()} jobs in India from ${employers}. Find roles refreshed from employers' careers sites.`,
         },
         { property: "og:title", content: title },
+        { property: "og:image", content: "https://startitup.in/og-careers.png" },
+        { name: "twitter:image", content: "https://startitup.in/og-careers.png" },
       ],
       links: [{ rel: "canonical", href: `https://startitup.in/jobs/role/${params.role}` }],
     };

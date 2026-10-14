@@ -14,6 +14,8 @@ export const Route = createFileRoute("/career")({
           "Find live jobs, internships, graduate programmes and apprenticeships, read directly from employers' own careers sites.",
       },
       { property: "og:title", content: "Careers in India — StartItUp.in" },
+      { property: "og:image", content: "https://startitup.in/og-careers.png" },
+      { name: "twitter:image", content: "https://startitup.in/og-careers.png" },
       { property: "og:description", content: "Every open role, straight from the source." },
     ],
     links: [{ rel: "canonical", href: "https://startitup.in/career" }],

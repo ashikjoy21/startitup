@@ -60,7 +60,12 @@ function CareerHome() {
             <Link to="/jobs" className="text-primary hover:underline">
               Explore all {facets.total.toLocaleString("en-IN")} roles →
             </Link>
-            <a href="https://t.me/startitupjobs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            <a
+              href="https://t.me/startitupjobs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
               Get new jobs on Telegram ↗
             </a>
           </div>

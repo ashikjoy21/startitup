@@ -1,27 +1,34 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { SiteLayout } from "@/components/site-layout";
-import { listOpportunities } from "@/lib/api/opportunities.functions";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { z } from "zod";
+import { SiteHeader } from "@/components/site-header";
 import { getInvestorMeta } from "@/lib/api/investors.functions";
-import { meityIncubators, meityAccelerators } from "@/lib/meity";
-import { defaultCategories } from "@/lib/opportunities";
-
-const INCUBATOR_COUNT = meityIncubators.length;
-const ACCELERATOR_COUNT = meityAccelerators.length;
+import { getJobFacets } from "@/lib/api/jobs.functions";
+import { getPreferredSiteMode } from "@/lib/api/site-mode.functions";
+import { listOpportunities } from "@/lib/api/opportunities.functions";
+import { meityAccelerators, meityIncubators } from "@/lib/meity";
+import { siteModeCookie } from "@/lib/site-mode";
 
 export const Route = createFileRoute("/")({
+  // The router parses ?choose=1 as a number, so accept both forms.
+  validateSearch: z.object({ choose: z.union([z.string(), z.number()]).optional() }),
+  beforeLoad: async ({ search }) => {
+    if (String(search.choose) === "1") return;
+    const mode = await getPreferredSiteMode();
+    if (mode) throw redirect({ to: mode === "career" ? "/career" : "/business" });
+  },
   head: () => ({
     meta: [
-      { title: "StartItUp.in — Every startup opportunity in India." },
+      { title: "StartItUp.in — Build a business or a career." },
       {
         name: "description",
         content:
-          "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders.",
+          "Explore India's startup ecosystem or find live jobs directly from employers' own careers sites.",
       },
-      { property: "og:title", content: "StartItUp.in — Every startup opportunity in India." },
+      { property: "og:title", content: "StartItUp.in — Build a business or a career." },
       {
         property: "og:description",
         content:
-          "Discover startup credits, grants, accelerators, incubators, fellowships, and funding opportunities for Indian founders.",
+          "Explore India's startup ecosystem or find live jobs directly from employers' own careers sites.",
       },
       { property: "og:url", content: "https://startitup.in" },
     ],
@@ -37,12 +44,7 @@ export const Route = createFileRoute("/")({
               "@id": "https://startitup.in/#website",
               url: "https://startitup.in",
               name: "StartItUp.in",
-              description: "Every startup opportunity in India. One place.",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: { "@type": "EntryPoint", urlTemplate: "https://startitup.in/opportunities?q={search_term_string}" },
-                "query-input": "required name=search_term_string",
-              },
+              description: "A home for India's founders and job seekers.",
             },
             {
               "@type": "Organization",
@@ -62,190 +64,87 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: async () => {
-    const list = await listOpportunities({ data: { limit: 1, offset: 0 } });
-    let investorCounts = { investors: 0, funding_rounds: 0, funded_startups: 0, startups: 0 };
-    try {
-      const meta = await getInvestorMeta();
-      investorCounts = meta.counts;
-    } catch {
-      /* investor bundle not built yet */
-    }
-    return { total: list.total, source: list.source, investorCounts };
+    const [opportunities, jobs, investors] = await Promise.all([
+      listOpportunities({ data: { limit: 1, offset: 0 } }),
+      getJobFacets(),
+      getInvestorMeta().catch(() => null),
+    ]);
+    return { opportunities: opportunities.total, jobs, investors: investors?.counts ?? null };
   },
-  component: Index,
+  component: ChooseSide,
 });
 
-function Index() {
-  const { total, source, investorCounts } = Route.useLoaderData();
+function ChooseSide() {
+  const { opportunities, jobs, investors } = Route.useLoaderData();
+  const incubators = meityIncubators.length;
+  const accelerators = meityAccelerators.length;
+  const businessMeta = `${incubators.toLocaleString("en-IN")} incubators · ${accelerators.toLocaleString("en-IN")} accelerators · ${(investors?.investors ?? opportunities).toLocaleString("en-IN")} ${investors?.investors ? "investors" : "opportunities"} · ${(investors?.funding_rounds ?? 0).toLocaleString("en-IN")} funding rounds`;
+  const choose = (mode: "business" | "career") => {
+    document.cookie = siteModeCookie(mode);
+  };
 
   return (
-    <SiteLayout>
-      {/* Hero */}
-      <section className="relative flex min-h-[90vh] flex-col items-center justify-center px-6 py-24 text-center">
-        <h1 className="font-serif text-[48px] leading-[1.06] tracking-[-0.01em] text-foreground md:text-[62px] lg:text-[76px]">
-          Building a startup is hard.
-          <br />
-          <em className="italic text-primary">Finding opportunities</em>
-          <br />
-          <em className="italic text-primary">shouldn't be.<sup className="font-serif text-[22px] not-italic text-foreground/40 md:text-[28px]">[1]</sup></em>
-        </h1>
-
-        <div className="mt-14 max-w-md">
-          <p className="font-serif text-[18px] italic leading-relaxed text-foreground/60">
-            [1] "Opportunities don't happen. You create them."
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <main className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1280px] flex-col justify-center px-6 py-16">
+        <div className="mb-12 text-center">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            StartItUp.in
           </p>
-          <p className="mt-3 text-right font-serif text-[16px] italic text-foreground/45">
-            — Chris Grosser
+          <h1 className="mt-5 font-serif text-[48px] leading-[1.04] tracking-[-0.01em] md:text-[68px]">
+            Build a business,
+            <br className="sm:hidden" /> or <em className="italic text-primary">build a career.</em>
+          </h1>
+          <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
+            One place for India's founders and the people ready for their next role.
           </p>
         </div>
-
-        {source === "seed" && (
-          <p className="mt-6 text-[12px] text-amber-700">
-            Demo data — connect Supabase in .env to load the live database.
-          </p>
-        )}
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-foreground/30">
-          <svg className="h-5 w-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </section>
-
-      {/* Stats row */}
-      <section className="border-b border-t border-border">
-        <div className="mx-auto grid max-w-[1280px] grid-cols-2 divide-x divide-border md:grid-cols-4">
-          {[
-            [INCUBATOR_COUNT.toString(), "Incubators"],
-            [ACCELERATOR_COUNT.toString(), "Accelerators"],
-            [
-              investorCounts.investors > 0
-                ? `${investorCounts.investors.toLocaleString()}+`
-                : `${total}+`,
-              investorCounts.investors > 0 ? "Investors" : "Opportunities",
-            ],
-            [
-              investorCounts.funding_rounds > 0
-                ? `${investorCounts.funding_rounds.toLocaleString()}+`
-                : "Weekly",
-              investorCounts.funding_rounds > 0 ? "Funding rounds" : "Updated",
-            ],
-          ].map(([n, l]) => (
-            <div key={l} className="px-8 py-10">
-              <div className="font-serif text-[44px] leading-none text-foreground">{n}</div>
-              <div className="mt-3 text-[13px] text-muted-foreground">{l}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* What is StartItUp? */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
-          <div className="grid grid-cols-1 gap-14 md:grid-cols-[1fr_1px_1fr] md:gap-0">
-            {/* Left: description */}
-            <div className="md:pr-16">
+        <div className="grid gap-px border border-border bg-border md:grid-cols-2">
+          <Link
+            to="/business"
+            onClick={() => choose("business")}
+            className="group flex min-h-[260px] flex-col justify-between bg-card p-8 transition-colors hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-primary md:min-h-[320px] md:p-12"
+          >
+            <div>
               <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                About
+                For founders
               </p>
-              <h2 className="mt-4 font-serif text-[36px] leading-[1.1] md:text-[44px]">
-                What is StartItUp?
+              <h2 className="mt-5 font-serif text-[36px] leading-tight md:text-[44px]">
+                Build a business<span className="text-primary"> →</span>
               </h2>
-              <p className="mt-6 text-[15.5px] leading-[1.75] text-muted-foreground">
-                StartItUp is a startup intelligence platform that helps founders, investors,
-                students, incubators, and researchers discover structured information about
-                startups, funding rounds, investors, accelerators, grants, and ecosystem
-                opportunities.
+              <p className="mt-4 max-w-md text-[14px] leading-relaxed text-muted-foreground">
+                Find funding, incubators, investors, grants and the people building India's next
+                companies.
               </p>
             </div>
-
-            {/* Divider */}
-            <div className="hidden border-r border-border md:block" />
-
-            {/* Right: capabilities */}
-            <div className="md:pl-16">
+            <p className="mt-10 border-t border-border pt-4 text-[12.5px] text-muted-foreground">
+              {businessMeta}
+            </p>
+          </Link>
+          <Link
+            to="/career"
+            onClick={() => choose("career")}
+            className="group flex min-h-[260px] flex-col justify-between bg-card p-8 transition-colors hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-primary md:min-h-[320px] md:p-12"
+          >
+            <div>
               <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                What can you do?
+                For your next move
               </p>
-              <ul className="mt-6">
-                {[
-                  "Discover startups",
-                  "Explore investors",
-                  "Track funding rounds",
-                  "Find incubators & accelerators",
-                  "Access startup ecosystem resources",
-                  "Connect through APIs and MCP integrations",
-                ].map((item, i) => (
-                  <li
-                    key={item}
-                    className="flex items-baseline gap-4 border-b border-border py-3.5 last:border-0"
-                  >
-                    <span className="font-serif text-[13px] text-muted-foreground/50 tabular-nums">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[15px]">{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <h2 className="mt-5 font-serif text-[36px] leading-tight md:text-[44px]">
+                Build a career<span className="text-primary"> →</span>
+              </h2>
+              <p className="mt-4 max-w-md text-[14px] leading-relaxed text-muted-foreground">
+                Search open roles from employers' own career sites. Find the source, then apply
+                direct.
+              </p>
             </div>
-          </div>
+            <p className="mt-10 border-t border-border pt-4 text-[12.5px] text-muted-foreground">
+              {jobs.total.toLocaleString("en-IN")} live roles ·{" "}
+              {jobs.companies.toLocaleString("en-IN")} employers
+            </p>
+          </Link>
         </div>
-      </section>
-
-      {/* Browse by category */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-20">
-          <div className="flex items-end justify-between">
-            <h2 className="font-serif text-[40px] leading-tight md:text-[48px]">Browse by category</h2>
-            <Link to="/opportunities" className="text-[13.5px] text-primary hover:underline">
-              All opportunities →
-            </Link>
-          </div>
-          <div className="mt-10 grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
-            {defaultCategories.map((c) => (
-              <Link
-                key={c}
-                to="/opportunities"
-                search={{ cat: c }}
-                className="group flex h-36 flex-col justify-between bg-card p-5 hover:bg-primary-soft"
-              >
-                <span className="font-serif text-[22px] leading-tight">{c}</span>
-                <span className="text-[12.5px] text-muted-foreground group-hover:text-primary">
-                  Browse →
-                </span>
-              </Link>
-            ))}
-          </div>
-          {(investorCounts.investors > 0 || investorCounts.funding_rounds > 0) && (
-            <div className="mt-8 flex flex-wrap gap-4">
-              {investorCounts.investors > 0 && (
-                <Link
-                  to="/investors"
-                  className="border border-border bg-card px-6 py-4 text-[14px] hover:border-primary/40"
-                >
-                  Browse {investorCounts.investors.toLocaleString()} investors →
-                </Link>
-              )}
-              {investorCounts.funding_rounds > 0 && (
-                <Link
-                  to="/funding"
-                  className="border border-border bg-card px-6 py-4 text-[14px] hover:border-primary/40"
-                >
-                  {investorCounts.funding_rounds.toLocaleString()} funding rounds →
-                </Link>
-              )}
-              {(investorCounts.funded_startups ?? 0) > 0 && (
-                <Link
-                  to="/startups"
-                  className="border border-border bg-card px-6 py-4 text-[14px] hover:border-primary/40"
-                >
-                  {(investorCounts.funded_startups ?? 0).toLocaleString()} funded startups →
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-    </SiteLayout>
+      </main>
+    </div>
   );
 }

@@ -1,18 +1,22 @@
-import { Link } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { Route as RootRoute } from "@/routes/__root";
+import { modeForPathname, siteModeCookie } from "@/lib/site-mode";
+
+const linkClass = "text-[13.5px] text-foreground/75 hover:text-foreground";
 
 export function SiteHeader() {
   const { user } = RootRoute.useLoaderData();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const isChoice = pathname === "/";
+  const mode = modeForPathname(pathname);
   const [dirOpen, setDirOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
-      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
-        setAvatarOpen(false);
-      }
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) setAvatarOpen(false);
     }
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -21,106 +25,127 @@ export function SiteHeader() {
   const name = user?.user_metadata?.name as string | undefined;
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
   const initial = name?.charAt(0)?.toUpperCase() ?? user?.email?.charAt(0)?.toUpperCase() ?? "U";
+  const home = isChoice ? "/" : mode === "career" ? "/career" : "/business";
+  const switcher = (
+    <div
+      className="inline-flex border border-border text-[11px] md:text-[12px]"
+      aria-label="Choose site"
+    >
+      {(["business", "career"] as const).map((side) => (
+        <Link
+          key={side}
+          to={side === "business" ? "/business" : "/career"}
+          onClick={() => {
+            if (side !== mode) document.cookie = siteModeCookie(side);
+          }}
+          aria-current={!isChoice && mode === side ? "page" : undefined}
+          aria-pressed={!isChoice && mode === side}
+          className={`px-2 py-1.5 capitalize focus-visible:outline-2 focus-visible:outline-primary md:px-3 ${!isChoice && mode === side ? "bg-primary text-primary-foreground" : "text-foreground/75 hover:bg-primary-soft"}`}
+        >
+          {side === "business" ? "Business" : "Career"}
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <header className="border-b border-border bg-background">
-      <div className="relative mx-auto flex h-16 max-w-[1280px] items-center px-6">
-
-        {/* Left nav */}
-        <div className="hidden flex-1 items-center justify-center gap-10 md:flex">
-          <Link to="/opportunities" className="text-[13.5px] text-foreground/75 hover:text-foreground">
-            Opportunities
-          </Link>
-          <Link to="/jobs" className="text-[13.5px] text-foreground/75 hover:text-foreground">
-            Jobs
-          </Link>
-
-          <div
-            className="relative"
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget)) setDirOpen(false);
-            }}
-          >
-            <button
-              onClick={() => setDirOpen((v) => !v)}
-              onKeyDown={(e) => { if (e.key === "Escape") setDirOpen(false); }}
-              aria-expanded={dirOpen}
-              aria-haspopup="true"
-              className="flex items-center gap-1 text-[13.5px] text-foreground/75 hover:text-foreground"
-            >
-              Directories
-              <svg
-                aria-hidden="true"
-                className={`h-3 w-3 transition-transform ${dirOpen ? "rotate-180" : ""}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {dirOpen && (
-              <div className="absolute left-0 top-full z-50 mt-1 w-40 rounded-sm border border-border bg-background shadow-sm">
-                <Link
-                  to="/incubators"
-                  onClick={() => setDirOpen(false)}
-                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                >
-                  Incubators
-                </Link>
-                <Link
-                  to="/accelerators"
-                  onClick={() => setDirOpen(false)}
-                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                >
-                  Accelerators
-                </Link>
-                <Link
-                  to="/investors"
-                  onClick={() => setDirOpen(false)}
-                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                >
-                  Investors
-                </Link>
-                <Link
-                  to="/funding"
-                  onClick={() => setDirOpen(false)}
-                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                >
-                  Funding rounds
-                </Link>
-                <Link
-                  to="/startups"
-                  onClick={() => setDirOpen(false)}
-                  className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                >
-                  Funded startups
-                </Link>
-              </div>
-            )}
-          </div>
-
-          <Link to="/resources" className="text-[13.5px] text-foreground/75 hover:text-foreground">
-            Resources
-          </Link>
-        </div>
-
-        {/* Centered logo */}
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2">
+      <div className="relative mx-auto flex h-16 max-w-[1280px] items-center px-4 md:px-6">
+        <Link to={home} className="z-10 flex shrink-0 md:hidden" aria-label="StartItUp home">
           <span className="flex h-8 w-8 items-center justify-center bg-primary font-serif text-[15px] text-primary-foreground">
             S
           </span>
         </Link>
 
-        {/* Right nav */}
-        <div className="hidden flex-1 items-center justify-center gap-10 md:flex">
-          <Link to="/success-stories" className="text-[13.5px] text-foreground/75 hover:text-foreground">
-            Stories
-          </Link>
-          <Link to="/submit" className="text-[13.5px] text-foreground/75 hover:text-foreground">
-            Submit
-          </Link>
+        {!isChoice && mode === "business" && (
+          <nav className="hidden w-1/2 items-center justify-center gap-6 pr-12 md:flex lg:gap-8">
+            <Link to="/opportunities" className={linkClass}>
+              Opportunities
+            </Link>
+            <div
+              className="relative"
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) setDirOpen(false);
+              }}
+            >
+              <button
+                onClick={() => setDirOpen((v) => !v)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setDirOpen(false);
+                }}
+                aria-expanded={dirOpen}
+                aria-haspopup="true"
+                className={linkClass}
+              >
+                Directories⌄
+              </button>
+              {dirOpen && (
+                <div className="absolute left-0 top-full z-50 mt-2 w-44 border border-border bg-background shadow-sm">
+                  {[
+                    ["Incubators", "/incubators"],
+                    ["Accelerators", "/accelerators"],
+                    ["Investors", "/investors"],
+                    ["Funding rounds", "/funding"],
+                    ["Funded startups", "/startups"],
+                  ].map(([label, to]) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      onClick={() => setDirOpen(false)}
+                      className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-primary-soft"
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Link to="/resources" className={linkClass}>
+              Resources
+            </Link>
+          </nav>
+        )}
+        {!isChoice && mode === "career" && (
+          <nav className="hidden w-1/2 items-center justify-center gap-5 pr-12 md:flex lg:gap-8">
+            <Link to="/jobs" className={linkClass}>
+              Jobs
+            </Link>
+            <Link to="/jobs" search={{ kind: "internship" }} className={linkClass}>
+              Internships
+            </Link>
+            <Link to="/jobs" search={{ kind: "graduate_program" }} className={linkClass}>
+              Graduate programmes
+            </Link>
+          </nav>
+        )}
 
+        <Link
+          to={home}
+          className="absolute left-4 hidden translate-x-0 md:left-1/2 md:block md:-translate-x-1/2"
+          aria-label="StartItUp home"
+        >
+          <span className="flex h-8 w-8 items-center justify-center bg-primary font-serif text-[15px] text-primary-foreground">
+            S
+          </span>
+        </Link>
+
+        <div
+          className={
+            "ml-auto flex items-center gap-2 md:gap-6 " +
+            (isChoice ? "" : "md:ml-0 md:w-1/2 md:justify-center md:pl-12")
+          }
+        >
+          {!isChoice && mode === "business" && (
+            <>
+              <Link to="/success-stories" className={`${linkClass} hidden md:inline`}>
+                Stories
+              </Link>
+              <Link to="/submit" className={`${linkClass} hidden md:inline`}>
+                Submit
+              </Link>
+            </>
+          )}
+          {!isChoice && switcher}
           {user ? (
             <div className="relative" ref={avatarRef}>
               <button
@@ -138,37 +163,22 @@ export function SiteHeader() {
                 )}
               </button>
               {avatarOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-44 rounded-sm border border-border bg-background shadow-sm">
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setAvatarOpen(false)}
-                    className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/profile"
-                    onClick={() => setAvatarOpen(false)}
-                    className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    search={{ tab: "saved" }}
-                    onClick={() => setAvatarOpen(false)}
-                    className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                  >
-                    Saved
-                  </Link>
-                  <div className="my-1 border-t border-border" />
-                  <Link
-                    to="/logout"
-                    onClick={() => setAvatarOpen(false)}
-                    className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-muted hover:text-foreground"
-                  >
-                    Sign out
-                  </Link>
+                <div className="absolute right-0 top-full z-50 mt-2 w-44 border border-border bg-background shadow-sm">
+                  {[
+                    ["Dashboard", "/dashboard"],
+                    ["Profile", "/profile"],
+                    ["Saved", "/saved"],
+                    ["Sign out", "/logout"],
+                  ].map(([label, to]) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      onClick={() => setAvatarOpen(false)}
+                      className="block px-4 py-2.5 text-[13.5px] text-foreground/75 hover:bg-primary-soft"
+                    >
+                      {label}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
@@ -178,24 +188,6 @@ export function SiteHeader() {
               search={{ redirect: undefined }}
               className="text-[13.5px] font-medium text-primary hover:underline"
             >
-              Sign in →
-            </Link>
-          )}
-        </div>
-
-        {/* Mobile: logo + auth link */}
-        <Link to="/" className="flex md:hidden">
-          <span className="flex h-8 w-8 items-center justify-center bg-primary font-serif text-[15px] text-primary-foreground">
-            S
-          </span>
-        </Link>
-        <div className="ml-auto flex items-center md:hidden">
-          {user ? (
-            <Link to="/dashboard" className="text-[13.5px] font-medium text-primary">
-              Dashboard
-            </Link>
-          ) : (
-            <Link to="/login" search={{ redirect: undefined }} className="text-[13.5px] font-medium text-primary">
               Sign in
             </Link>
           )}

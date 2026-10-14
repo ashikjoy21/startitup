@@ -2,6 +2,9 @@ export const SITEMAP_BASE = "https://startitup.in";
 
 const STATIC_ROUTES = [
   { loc: SITEMAP_BASE, priority: "1.0", changefreq: "daily" },
+  { loc: `${SITEMAP_BASE}/business`, priority: "0.9", changefreq: "daily" },
+  { loc: `${SITEMAP_BASE}/career`, priority: "0.9", changefreq: "daily" },
+  { loc: `${SITEMAP_BASE}/jobs`, priority: "0.9", changefreq: "hourly" },
   { loc: `${SITEMAP_BASE}/opportunities`, priority: "0.9", changefreq: "daily" },
   { loc: `${SITEMAP_BASE}/investors`, priority: "0.8", changefreq: "weekly" },
   { loc: `${SITEMAP_BASE}/startups`, priority: "0.8", changefreq: "weekly" },
@@ -22,12 +25,7 @@ export type SitemapInput = {
   lastmod?: string;
 };
 
-function urlEntry(
-  loc: string,
-  priority: string,
-  changefreq: string,
-  lastmod?: string,
-): string {
+function urlEntry(loc: string, priority: string, changefreq: string, lastmod?: string): string {
   return `  <url>\n    <loc>${escapeXml(loc)}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ""}\n  </url>`;
 }
 
@@ -52,12 +50,7 @@ export function buildSitemapXml(input: SitemapInput): string {
   );
 
   const opportunityUrls = input.opportunityIds.map((id) =>
-    urlEntry(
-      `${SITEMAP_BASE}/opportunities/${encodeURIComponent(id)}`,
-      "0.6",
-      "weekly",
-      lastmod,
-    ),
+    urlEntry(`${SITEMAP_BASE}/opportunities/${encodeURIComponent(id)}`, "0.6", "weekly", lastmod),
   );
 
   const investorUrls = input.investorIds.map((id) =>

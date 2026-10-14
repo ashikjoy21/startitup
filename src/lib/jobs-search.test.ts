@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JOBS_PAGE_SIZE, pageRange, sanitizeTerm, postedLabel } from "./jobs-search";
+import { JOBS_PAGE_SIZE, pageRange, sanitizeTerm, postedLabel, searchWords } from "./jobs-search";
 
 describe("jobs search helpers", () => {
   it("strips characters that would break a PostgREST or() filter", () => {
@@ -23,5 +23,13 @@ describe("jobs search helpers", () => {
     expect(postedLabel("2026-10-04T03:00:00Z", now)).toBe("10 days ago");
     expect(postedLabel("2026-06-01T00:00:00Z", now)).toBe("Over a month ago");
     expect(postedLabel(null, now)).toBe("");
+  });
+});
+
+describe("searchWords", () => {
+  it("splits a query into distinct words and drops filler", () => {
+    expect(searchWords("Data Analyst jobs in Pune")).toEqual(["data", "analyst", "pune"]);
+    expect(searchWords("java, java (remote)")).toEqual(["java", "remote"]);
+    expect(searchWords("  ")).toEqual([]);
   });
 });

@@ -28,7 +28,9 @@ import { Route as InvestorsRouteImport } from './routes/investors'
 import { Route as IncubatorsRouteImport } from './routes/incubators'
 import { Route as FundingRouteImport } from './routes/funding'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CareerRouteImport } from './routes/career'
 import { Route as CalculatorRouteImport } from './routes/calculator'
+import { Route as BusinessRouteImport } from './routes/business'
 import { Route as BotRouteImport } from './routes/bot'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AcceleratorsRouteImport } from './routes/accelerators'
@@ -139,9 +141,19 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareerRoute = CareerRouteImport.update({
+  id: '/career',
+  path: '/career',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalculatorRoute = CalculatorRouteImport.update({
   id: '/calculator',
   path: '/calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessRoute = BusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BotRoute = BotRouteImport.update({
@@ -220,7 +232,9 @@ export interface FileRoutesByFullPath {
   '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
   '/bot': typeof BotRoute
+  '/business': typeof BusinessRoute
   '/calculator': typeof CalculatorRoute
+  '/career': typeof CareerRoute
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
@@ -256,7 +270,9 @@ export interface FileRoutesByTo {
   '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
   '/bot': typeof BotRoute
+  '/business': typeof BusinessRoute
   '/calculator': typeof CalculatorRoute
+  '/career': typeof CareerRoute
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
@@ -289,7 +305,9 @@ export interface FileRoutesById {
   '/accelerators': typeof AcceleratorsRoute
   '/admin': typeof AdminRoute
   '/bot': typeof BotRoute
+  '/business': typeof BusinessRoute
   '/calculator': typeof CalculatorRoute
+  '/career': typeof CareerRoute
   '/dashboard': typeof DashboardRoute
   '/funding': typeof FundingRoute
   '/incubators': typeof IncubatorsRoute
@@ -327,7 +345,9 @@ export interface FileRouteTypes {
     | '/accelerators'
     | '/admin'
     | '/bot'
+    | '/business'
     | '/calculator'
+    | '/career'
     | '/dashboard'
     | '/funding'
     | '/incubators'
@@ -363,7 +383,9 @@ export interface FileRouteTypes {
     | '/accelerators'
     | '/admin'
     | '/bot'
+    | '/business'
     | '/calculator'
+    | '/career'
     | '/dashboard'
     | '/funding'
     | '/incubators'
@@ -395,7 +417,9 @@ export interface FileRouteTypes {
     | '/accelerators'
     | '/admin'
     | '/bot'
+    | '/business'
     | '/calculator'
+    | '/career'
     | '/dashboard'
     | '/funding'
     | '/incubators'
@@ -432,7 +456,9 @@ export interface RootRouteChildren {
   AcceleratorsRoute: typeof AcceleratorsRoute
   AdminRoute: typeof AdminRoute
   BotRoute: typeof BotRoute
+  BusinessRoute: typeof BusinessRoute
   CalculatorRoute: typeof CalculatorRoute
+  CareerRoute: typeof CareerRoute
   DashboardRoute: typeof DashboardRoute
   FundingRoute: typeof FundingRoute
   IncubatorsRoute: typeof IncubatorsRoute
@@ -591,11 +617,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/career': {
+      id: '/career'
+      path: '/career'
+      fullPath: '/career'
+      preLoaderRoute: typeof CareerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calculator': {
       id: '/calculator'
       path: '/calculator'
       fullPath: '/calculator'
       preLoaderRoute: typeof CalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business': {
+      id: '/business'
+      path: '/business'
+      fullPath: '/business'
+      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bot': {
@@ -760,7 +800,9 @@ const rootRouteChildren: RootRouteChildren = {
   AcceleratorsRoute: AcceleratorsRoute,
   AdminRoute: AdminRoute,
   BotRoute: BotRoute,
+  BusinessRoute: BusinessRoute,
   CalculatorRoute: CalculatorRoute,
+  CareerRoute: CareerRoute,
   DashboardRoute: DashboardRoute,
   FundingRoute: FundingRoute,
   IncubatorsRoute: IncubatorsRoute,
